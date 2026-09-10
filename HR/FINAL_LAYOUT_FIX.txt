@@ -1,0 +1,17 @@
+FINAL HR PORTAL LAYOUT FIX
+
+Root cause of the screenshot issue:
+App.css contained the HR sidebar/topbar layout styles but was not imported by main.jsx. The browser therefore rendered the sidebar/logo/navigation with unstyled/default dimensions and the page content became badly positioned.
+
+Fixed:
+- Added import "./App.css" to src/main.jsx.
+- Preserved HR Dashboard and all existing HR page content.
+- Preserved the Admin-style shell: fixed sidebar + top navbar.
+- Emergency floating/button UI remains removed; the New Joining emergency-contact FORM fields are intentionally preserved because they are part of the existing HR content.
+- No Admin-only dashboard content was added.
+
+Run:
+  npm install
+  npm run dev
+
+Then hard refresh the browser with Ctrl+Shift+R.

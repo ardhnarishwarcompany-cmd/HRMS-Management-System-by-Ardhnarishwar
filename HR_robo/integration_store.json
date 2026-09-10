@@ -1,0 +1,122 @@
+{
+ "reports": [
+  {
+   "candidate_id": 491213,
+   "generated_at": "2026-08-27T03:46:15.996Z",
+   "interview_score": 16,
+   "communication": 50,
+   "answers_count": 5,
+   "meaningful_answers": 2,
+   "incomplete": true,
+   "avg_answer_words": 6,
+   "skill_scores": [
+    {
+     "skill": "MERN",
+     "score": 30
+    }
+   ],
+   "duration_sec": 243,
+   "recommendation": {
+    "composite": 33,
+    "verdict": "INCOMPLETE — RE-INTERVIEW NEEDED",
+    "cls": "amber",
+    "emoji": "⚠️",
+    "components": [
+     {
+      "name": "AI Interview Performance",
+      "w": 0.45,
+      "v": 16
+     },
+     {
+      "name": "Communication",
+      "w": 0.15,
+      "v": 50
+     }
+    ],
+    "reasons": [
+     "Only 2 meaningful answers captured — session likely hit mic/echo issues, schedule a re-interview",
+     "Weak ai interview performance (16%)",
+     "Weak communication (50%)",
+     "Fresher — consider trainee/junior track"
+    ],
+    "integrity": 75
+   }
+  }
+ ],
+ "proctor_logs": [
+  {
+   "candidate_id": 491213,
+   "at": "2026-08-27T03:56:26.539Z",
+   "integrity": 75,
+   "warnings": 1,
+   "terminated": false,
+   "eye_tracking": "unavailable",
+   "face_consistency": "MISMATCH DETECTED",
+   "speech_seconds": 5,
+   "violations": [
+    {
+     "type": "face_mismatch",
+     "at": "2026-08-27T03:55:57.002Z"
+    }
+   ],
+   "events": [
+    {
+     "type": "tech_monitor",
+     "detail": "technical monitoring active",
+     "at": "2026-08-27T03:54:54.042Z"
+    },
+    {
+     "type": "audio_monitor",
+     "detail": "speaker detection active",
+     "at": "2026-08-27T03:54:56.667Z"
+    },
+    {
+     "type": "face_enrolled",
+     "detail": "identity baseline captured",
+     "at": "2026-08-27T03:55:11.037Z"
+    },
+    {
+     "type": "face_mismatch",
+     "detail": "signature distance 0.54",
+     "at": "2026-08-27T03:55:57.001Z"
+    }
+   ]
+  }
+ ],
+ "candidates": [
+  {
+   "id": 491213,
+   "name": "Phabindra Kumar Sah",
+   "email": "phabindrakumar777@gmail.com",
+   "phone": "+919992785583",
+   "position_title": "UI/UX Designer",
+   "experience_years": 0,
+   "skills": [
+    "MERN"
+   ],
+   "status": "shortlisted"
+  }
+ ],
+ "schedules": [
+  {
+   "id": 1787802093584,
+   "candidate_id": 491213,
+   "scheduled_at": "2026-08-27T09:27",
+   "interview_end_at": "2026-08-27T09:31",
+   "round": "ai_screening",
+   "notes": "",
+   "status": "completed"
+  },
+  {
+   "id": 1787802853296,
+   "candidate_id": 491213,
+   "scheduled_at": "2026-08-27T09:39",
+   "interview_end_at": "2026-08-27T09:41",
+   "round": "ai_screening",
+   "notes": "",
+   "status": "completed"
+  }
+ ],
+ "config": {},
+ "synced_at": "2026-08-27T06:26:02.263669Z"
+}

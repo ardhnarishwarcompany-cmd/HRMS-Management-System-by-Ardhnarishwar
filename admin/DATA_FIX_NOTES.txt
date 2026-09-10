@@ -1,0 +1,29 @@
+ADMIN DATA RESTORE / LOCAL API FIX
+
+Problem:
+The Admin ZIP had no .env for Vite development. Therefore VITE_API_BASE_URL was undefined
+when running `npm run dev` at localhost:5173. Axios then requested relative URLs such as
+/super-admin/employees from the Vite server itself, which returns index.html (<!doctype html>)
+instead of JSON. This caused the JSON '<!doctype' error and all dashboard counts became 0.
+
+Fix:
+1. Added admin/.env pointing to http://localhost:5000/api.
+2. Added a safe development fallback in src/services/api.js.
+3. Added the same safe fallback to Topbar.jsx notifications.
+4. Production .env.production remains unchanged.
+
+Run:
+Backend:
+  cd backend
+  npm install
+  npm run dev
+
+Admin:
+  cd admin
+  npm install
+  npm run dev
+
+Then open http://localhost:5173 and login again if needed.
+
+IMPORTANT:
+Do not delete/reset the MySQL database. The fix is for API routing; existing database data is preserved.

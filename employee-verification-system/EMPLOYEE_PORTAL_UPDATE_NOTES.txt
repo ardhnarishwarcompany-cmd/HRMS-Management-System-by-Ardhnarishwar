@@ -1,0 +1,25 @@
+Employee Verification Portal update
+
+Frontend changes:
+- Single Employee-only login page inspired by the supplied HRMS login visual.
+- Password login uses /api/employee/auth/login.
+- OTP login uses the existing /api/otp-auth request + verify flow with portal=employee.
+- No Admin / HR / Client login choices on this portal.
+- New employee dashboard with the supplied HRMS-style layout: dark sidebar, white top bar, purple overview hero, stat cards and quick actions.
+- Dashboard content is focused on employee verification.
+- Added My Verification page for uploading verification documents.
+- Added My Profile page using the employee self-service profile API.
+- Verification documents submitted from the portal are routed to the Super Admin verification queue.
+- Existing legacy EVS pages are left in the project, but the employee sidebar no longer exposes admin-only areas.
+
+Backend changes required for document submission:
+- Added /api/employee/verification GET and POST routes.
+- The routes are scoped to the logged-in employee.
+- Uploaded documents are inserted into the existing verification_documents table, so the existing Super Admin verification screen can review them.
+
+Production API:
+VITE_HRMS_API_URL=https://backend-hrms.recruweb.com/api
+
+Build frontend with:
+npm install
+npm run build
