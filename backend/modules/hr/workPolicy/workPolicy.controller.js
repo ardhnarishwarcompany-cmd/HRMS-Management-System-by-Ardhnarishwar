@@ -37,6 +37,50 @@ export const getPolicies = async (req, res) => {
 
     const [rows] = await db.query(query, params);
 
+    // BUGFIX: Super Admin's "Work Policy & Target" page (Company Policies)
+    // creates/reads from a *different* table (`policies` + `policy_rules`,
+    // via /api/super-admin/policies) than the one this endpoint reads
+    // (`work_policies`). The two were never wired together, so anything
+    // created from the Admin/Super Admin panel never appeared here for
+    // HR (and for IT, which reuses this same /hr/work-policies endpoint).
+    // The Sales (`modules/sales/workPolicy`) and Client
+    // (`modules/client/workPolicy`) portals already merge in rows from
+    // `policies` for exactly this reason — mirroring that same merge here
+    // so HR and IT show Super-Admin-created policies too.
+    let globalPolicies = [];
+    if (!department || department === "All") {
+      const [globalRows] = await db.query(
+        `SELECT id, title, category, description, is_active, auto_apply, created_at, updated_at
+         FROM policies ORDER BY id DESC`
+      );
+      globalPolicies = globalRows;
+    }
+
+    const existingTitles = new Set(
+      rows.map((r) => String(r.title || "").trim().toLowerCase())
+    );
+
+    for (const p of globalPolicies) {
+      if (category && p.category !== category) continue;
+      const wantsActive = status === "active" ? 1 : status === "archived" ? 0 : null;
+      if (wantsActive !== null && Boolean(p.is_active) !== Boolean(wantsActive)) continue;
+
+      const key = String(p.title || "").trim().toLowerCase();
+      if (!key || existingTitles.has(key)) continue;
+
+      rows.push({
+        id: `sa-${p.id}`,
+        policy_code: `SA-POL-${p.id}`,
+        title: p.title,
+        category: p.category,
+        department: "All",
+        effective_date: p.created_at,
+        updatedAt: p.updated_at,
+        status: p.is_active ? "active" : "archived",
+        description: p.description || "",
+      });
+    }
+
     // 🔥 mapping for frontend
     const formatted = rows.map((r) => ({
       id: r.id,

@@ -101,12 +101,13 @@ export const startConversation = async (req, res) => {
       });
     }
 
-    // Make sure the selected HR member is actually an active HR employee.
+    // Make sure the selected HR/IT member is actually an active staff account.
+    // (Previously this required department = 'HR', which blocked IT-portal
+    // staff from ever starting a client chat even though the UI allows it.)
     const [hrRows] = await db.query(
       `SELECT e.id
          FROM employees e
-         JOIN departments d ON d.id = e.departmentId
-        WHERE e.id = ? AND d.name = 'HR' AND e.isActive = 1
+        WHERE e.id = ? AND e.isActive = 1
         LIMIT 1`,
       [hrId],
     );
@@ -114,7 +115,7 @@ export const startConversation = async (req, res) => {
     if (!hrRows.length) {
       return res.status(400).json({
         success: false,
-        message: "Selected HR member is not available",
+        message: "Your account is not available to start a chat",
       });
     }
 
@@ -410,6 +411,14 @@ export const getClientEmployeeConversations = async (req, res) => {
       if (!employeeId) return res.status(403).json({ success: false, message: "Employee context required" });
       where.push("c.employee_id = ?");
       params.push(employeeId);
+    }
+
+    if (!isEmployee) {
+      await db.query(
+        `INSERT IGNORE INTO client_employee_conversations (client_id, employee_id)
+         SELECT ?, id FROM client_employees WHERE client_id=? AND isActive=1`,
+        [clientId, clientId],
+      );
     }
 
     const [rows] = await db.query(

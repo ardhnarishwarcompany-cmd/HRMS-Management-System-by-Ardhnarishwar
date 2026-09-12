@@ -43,30 +43,36 @@ WHERE c.is_active = 1
 `;
   let values = [];
 
-  // Admin → no restriction
+  const unrestricted = ["admin", "super_admin", "SUPER_ADMIN", "manager", "MANAGER"].includes(user.role);
 
-  if (user.role === "employee") {
+  if (!unrestricted && user.role === "employee") {
     query += ` AND c.created_by_id = ? AND c.created_by_role = 'employee' AND c.client_id = ?`;
     values.push(user.id, user.client_id);
   }
 
-  if (user.role === "client") {
+  if (!unrestricted && user.role === "client") {
     query += ` AND c.client_id = ?`;
     values.push(user.id);
   }
 
-  if (user.role === "hr") {
-    query += ` AND c.created_by_id = ? AND c.created_by_role = 'hr'`;
+  if (!unrestricted && user.role === "hr") {
+    // BUGFIX: the IT complaint box tells IT staff their complaint is
+    // "routed to HR and Super Admin automatically", but this used to only
+    // ever show HR their *own* complaints (created_by_role = 'hr'), so an
+    // IT-raised complaint was never visible to HR and could never get a
+    // reply from them — only Super Admin could see/answer it. HR now also
+    // sees complaints raised from the IT portal, matching that promise.
+    query += ` AND ((c.created_by_id = ? AND c.created_by_role = 'hr') OR c.created_by_role = 'it')`;
     values.push(user.employee_id || user.id);
   }
 
-  if (user.role === "sales") {
+  if (!unrestricted && user.role === "sales") {
     query += ` AND c.created_by_id = ? AND c.created_by_role = 'sales'`;
     values.push(user.id);
   }
 
   // IT developers see only the complaints they raised
-  if (user.role === "it") {
+  if (!unrestricted && user.role === "it") {
     query += ` AND c.created_by_id = ? AND c.created_by_role = 'it'`;
     values.push(user.id);
   }
@@ -98,9 +104,10 @@ export const getSingleComplaint = async (id, user) => {
     values.push(user.id, user.client_id);
   }
 
-  // 🔒 HR sees only their complaints
+  // 🔒 HR sees their own complaints + complaints raised from the IT portal
+  // (see matching note in getComplaints above for why 'it' is included)
   if (user.role === "hr") {
-    query += ` AND c.created_by_id = ? AND c.created_by_role = 'hr'`;
+    query += ` AND ((c.created_by_id = ? AND c.created_by_role = 'hr') OR c.created_by_role = 'it')`;
     values.push(user.employee_id || user.id);
   }
 

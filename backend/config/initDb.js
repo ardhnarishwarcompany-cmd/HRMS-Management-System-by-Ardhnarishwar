@@ -1478,7 +1478,9 @@ CREATE TABLE IF NOT EXISTS candidate_policies (
         'hr',
         'client',
         'sales',
-        'admin'
+        'admin',
+        'it',
+        'manager'
     ) NOT NULL,
 
     -- OPTIONAL: who it is assigned to
@@ -1513,7 +1515,9 @@ CREATE TABLE IF NOT EXISTS candidate_policies (
         'hr',
         'client',
         'sales',
-        'admin'
+        'admin',
+        'it',
+        'manager'
     ) NOT NULL,
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

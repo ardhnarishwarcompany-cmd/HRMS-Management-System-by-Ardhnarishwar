@@ -573,7 +573,7 @@ export default function WorkReportSystem() {
                 {itDailyWork.map((r, i) => (
                   <tr key={r.id || i} className="border-t border-gray-100">
                     <td className="px-4 py-3 whitespace-nowrap">{r.work_date ? dayjs(r.work_date).format("DD MMM YYYY") : "-"}</td>
-                    <td className="px-4 py-3 font-medium">{r.employee_name || r.employeeName || r.employee?.name || r.employee_id || "-"}</td>
+                    <td className="px-4 py-3 font-medium">{r.employee_name || r.employeeName || (typeof r.employee === "string" ? r.employee : r.employee?.name) || r.employee_id || "-"}</td>
                     <td className="px-4 py-3 min-w-[280px]">{r.summary || "-"}</td>
                     <td className="px-4 py-3">{r.hours_spent ?? r.hoursSpent ?? 0}</td>
                     <td className="px-4 py-3 max-w-[280px]">{r.blockers || "—"}</td>

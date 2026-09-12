@@ -59,7 +59,7 @@ const AddEditSaleModal = ({
         headers: { Authorization: `Bearer ${token}` },
       };
 
-      // ðŸ”¥ VERY IMPORTANT â€” sanitize dates
+      // 🔥 VERY IMPORTANT — sanitize dates
       const cleanForm = {
         ...form,
         purchase_date: form.purchase_date || null,

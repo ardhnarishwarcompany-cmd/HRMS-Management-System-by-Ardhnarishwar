@@ -1,0 +1,30 @@
+
+=== admin  (admin)  env.production=yes
+  BUILD OK  19s  dist=11 files 3.58 MB  index.html=yes
+  baked URLs: recruweb.com=57  localhost=0
+
+=== client  (client)  env.production=yes
+  BUILD OK  38s  dist=12 files 2.61 MB  index.html=yes
+  baked URLs: recruweb.com=15  localhost=0
+
+=== employee  (employee)  env.production=yes
+  BUILD OK  8s  dist=11 files 1.15 MB  index.html=yes
+  baked URLs: recruweb.com=3  localhost=0
+
+=== HR  (HR)  env.production=yes
+  BUILD OK  27s  dist=7 files 1.68 MB  index.html=yes
+  baked URLs: recruweb.com=19  localhost=0
+
+=== IT  (IT)  env.production=yes
+  BUILD OK  30s  dist=8 files 2.81 MB  index.html=yes
+  baked URLs: recruweb.com=12  localhost=0
+
+=== Sales  (Sales)  env.production=yes
+  BUILD OK  26s  dist=6 files 1.65 MB  index.html=yes
+  baked URLs: recruweb.com=8  localhost=0
+
+=== evs-frontend  (employee-verification-system\frontend\frontend)  env.production=yes
+  BUILD OK  7s  dist=8 files 3.47 MB  index.html=yes
+  baked URLs: recruweb.com=1  localhost=0
+
+SUMMARY: 7/7 portals built

@@ -41,6 +41,19 @@ export const getPolicies = async (req, res) => {
 
     const [rows] = await db.query(query, params);
 
+    const [globalPolicies] = await db.query(
+      `SELECT id, title, category, description, is_active, updated_at AS createdAt, created_at AS effective_date
+       FROM policies ORDER BY id DESC`
+    );
+    const existingTitles = new Set(rows.map((r) => String(r.title || "").trim().toLowerCase()));
+    for (const p of globalPolicies) {
+      const key = String(p.title || "").trim().toLowerCase();
+      if (!key || existingTitles.has(key)) continue;
+      rows.push({ id:`sa-${p.id}`, title:p.title, category:p.category, description:p.description,
+        status:p.is_active ? "active" : "archived", effective_date:p.effective_date,
+        policy_code:`SA-POL-${p.id}`, departmentId:0, createdAt:p.createdAt, department_name:"All" });
+    }
+
     // 🔥 map for frontend compatibility
     const formatted = rows.map((r) => ({
       id: r.id,

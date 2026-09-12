@@ -51,20 +51,18 @@ export const assignLead = async (id, hrId, adminId) => {
   );
 };
 
-// 🔥 UPDATE LEAD (HR)
+// 🔥 UPDATE LEAD
 export const updateLead = async (id, data) => {
-  const { status, remarks } = data;
-
-  await db.query(
-    `UPDATE leads 
-     SET status=?, remarks=?, 
-     response_date = CASE 
-       WHEN ? != 'pending' THEN NOW() 
-       ELSE response_date 
-     END
-     WHERE id=?`,
-    [status, remarks, status, id]
-  );
+  const current = data || {};
+  const fields = []; const values = [];
+  if (current.name !== undefined) { fields.push("name=?"); values.push(String(current.name).trim()); }
+  if (current.phone !== undefined) { fields.push("phone=?"); values.push(String(current.phone).trim()); }
+  if (current.status !== undefined) { fields.push("status=?"); values.push(current.status); fields.push("response_date = CASE WHEN ? != 'pending' THEN NOW() ELSE response_date END"); values.push(current.status); }
+  if (current.remarks !== undefined) { fields.push("remarks=?"); values.push(current.remarks); }
+  if (!fields.length) return false;
+  values.push(id);
+  const [result] = await db.query(`UPDATE leads SET ${fields.join(", ")} WHERE id=?`, values);
+  return result.affectedRows > 0;
 };
 
 // 🔥 ALL LEADS (ADMIN)
@@ -119,3 +117,41 @@ const [rows] = await db.query(`
   }
 };
 
+// 🔥 RENAME BATCH (edit)
+export const renameBatch = async (id, fileName) => {
+  const [result] = await db.query(
+    `UPDATE lead_batches SET file_name=? WHERE id=?`,
+    [String(fileName).trim(), id]
+  );
+  return result.affectedRows > 0;
+};
+
+// 🔥 DELETE BATCH (and every lead inside it)
+export const deleteBatch = async (id) => {
+  const connection = await db.getConnection();
+  try {
+    await connection.beginTransaction();
+    const [[batch]] = await connection.query("SELECT id FROM lead_batches WHERE id=? LIMIT 1", [id]);
+    if (!batch) { await connection.rollback(); return false; }
+    await connection.query("DELETE FROM leads WHERE batch_id=?", [id]);
+    await connection.query("DELETE FROM lead_batches WHERE id=?", [id]);
+    await connection.commit();
+    return true;
+  } catch (err) { await connection.rollback(); throw err; } finally { connection.release(); }
+};
+
+
+
+export const deleteLead = async (id) => {
+  const connection = await db.getConnection();
+  try {
+    await connection.beginTransaction();
+    const [[lead]] = await connection.query("SELECT id, batch_id FROM leads WHERE id=? LIMIT 1", [id]);
+    if (!lead) { await connection.rollback(); return false; }
+    await connection.query("DELETE FROM leads WHERE id=?", [id]);
+    const [[remaining]] = await connection.query("SELECT COUNT(*) AS total FROM leads WHERE batch_id=?", [lead.batch_id]);
+    if (Number(remaining.total) === 0) await connection.query("DELETE FROM lead_batches WHERE id=?", [lead.batch_id]);
+    else await connection.query("UPDATE lead_batches SET total_records=? WHERE id=?", [Number(remaining.total), lead.batch_id]);
+    await connection.commit(); return true;
+  } catch (err) { await connection.rollback(); throw err; } finally { connection.release(); }
+};

@@ -1,11 +1,21 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { MessageCircle, Search } from "lucide-react";
+import { Search } from "lucide-react";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
+// NOTE (12 Sep 2026): the "Clients" section used to be shown here so IT
+// staff could message a client directly. That message *did* save to the
+// database, but the Client portal's own chat page never had any way to
+// see it: the client UI only ever loads HR-department contacts
+// (`/chat/client/hrs` is hard-filtered to department = 'HR') and never
+// calls the generic `/chat/client/conversations` endpoint that would show
+// a conversation started by IT. So a client could never see or reply to
+// an IT-initiated chat — it looked "sent" on the IT side but went
+// nowhere. Rather than ship a half-working feature, the Clients list has
+// been removed from IT chat entirely; IT <-> HR internal chat below is
+// unaffected and works normally.
 export default function ChatList({ setActiveChat, activeChat }) {
-  const [clients, setClients] = useState([]);
   const [hrs, setHrs] = useState([]);
   const [search, setSearch] = useState("");
   const token = localStorage.getItem("hrms_it_Token");
@@ -13,47 +23,14 @@ export default function ChatList({ setActiveChat, activeChat }) {
   useEffect(() => {
     const headers = { Authorization: `Bearer ${token}` };
 
-    Promise.allSettled([
-      axios.get(`${BASE_URL}/chat/hr/clients`, { headers }),
-      axios.get(`${BASE_URL}/chat/internal/hrs`, {
+    axios
+      .get(`${BASE_URL}/chat/internal/hrs`, {
         headers: { ...headers, "X-Portal-Type": "it" },
-      }),
-    ]).then(([clientsResult, hrsResult]) => {
-      if (clientsResult.status === "fulfilled") {
-        setClients(clientsResult.value.data?.data || []);
-      } else {
-        console.error("Client directory load error:", clientsResult.reason);
-      }
-
-      if (hrsResult.status === "fulfilled") {
-        setHrs(hrsResult.value.data?.data || []);
-      } else {
-        console.error("HR directory load error:", hrsResult.reason);
-      }
-    });
+      })
+      .then((res) => setHrs(res.data?.data || []))
+      .catch((err) => console.error("HR directory load error:", err));
   }, []);
 
-  const openChat = async (client) => {
-    try {
-      const res = await axios.post(
-        `${BASE_URL}/chat/hr/start`,
-        { clientId: client.id },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setActiveChat({
-        conversation_id: res.data.conversationId,
-        company_name: client.company_name,
-        client_name: client.client_name,
-      });
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const filtered = clients.filter(c =>
-    c.company_name?.toLowerCase().includes(search.toLowerCase()) ||
-    c.client_name?.toLowerCase().includes(search.toLowerCase())
-  );
   const filteredHrs = hrs.filter((hr) =>
     hr.name?.toLowerCase().includes(search.toLowerCase()) ||
     hr.email?.toLowerCase().includes(search.toLowerCase())
@@ -68,7 +45,7 @@ export default function ChatList({ setActiveChat, activeChat }) {
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
-            placeholder="Search HR or clients..."
+            placeholder="Search HR..."
             className="w-full pl-9 pr-3 py-2 bg-white/20 text-white placeholder-white/60 rounded-xl text-sm outline-none focus:bg-white/30"
           />
         </div>
@@ -81,7 +58,16 @@ export default function ChatList({ setActiveChat, activeChat }) {
         {filteredHrs.length === 0 ? (
           <div className="px-4 py-3 text-xs text-gray-400">No HR contacts found</div>
         ) : filteredHrs.map((hr) => {
-          const room = `hr-it:${hr.id}`;
+          // BUGFIX (12 Sep 2026): the backend (getInternalHRs) already
+          // computes and returns the correct private room id as `hr.room`
+          // (format hr-it:<hrId>:<itId>). This used to be rebuilt locally
+          // as `hr-it:${hr.id}` (missing the logged-in IT employee's own
+          // id), which pointed at a different room than the one
+          // `sendInternalMessage` actually writes to on the backend.
+          // Result: messages appeared to send, but disappeared again on
+          // the next 3s poll because GET and POST used different room
+          // strings. Using the server-provided room keeps both in sync.
+          const room = hr.room || `hr-it:${hr.id}`;
           const isActive = activeChat?.internal && activeChat?.room === room;
           return (
             <div
@@ -115,38 +101,6 @@ export default function ChatList({ setActiveChat, activeChat }) {
             </div>
           );
         })}
-        <div className="px-4 pt-3 pb-1 text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
-          Clients
-        </div>
-        {filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-gray-400">
-            <MessageCircle size={40} className="mb-2 text-gray-200" />
-            <p className="text-sm">No clients found</p>
-          </div>
-        ) : (
-          filtered.map(client => {
-            const isActive = activeChat?.company_name === client.company_name;
-            return (
-              <div
-                key={client.id}
-                onClick={() => openChat(client)}
-                className={`p-4 border-b cursor-pointer transition-all ${
-                  isActive ? "bg-purple-50 border-l-4 border-l-purple-500" : "hover:bg-gray-50 border-l-4 border-l-transparent"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-sm">
-                    {client.company_name?.charAt(0)}
-                  </div>
-                  <div>
-                    <div className="font-semibold text-gray-800 text-sm">{client.company_name}</div>
-                    <div className="text-xs text-gray-500">{client.client_name}</div>
-                  </div>
-                </div>
-              </div>
-            );
-          })
-        )}
       </div>
 
       <div className="p-3 border-t bg-gray-50">

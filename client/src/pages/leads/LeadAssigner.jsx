@@ -51,12 +51,9 @@ export default function LeadAssigner() {
   // ✅ FETCH EMPLOYEES (ONLY ADMIN)
   const fetchEmployees = async (deptId = "") => {
     try {
-      let url = "/client/employees";
-
-      if (deptId) {
-        url = `/client/employees/by-department?departmentId=${deptId}`;
-      }
-
+      const url = deptId
+        ? `/client/employees/by-department?departmentId=${encodeURIComponent(deptId)}`
+        : "/client/employees/by-department";
       const res = await API.get(url);
       setEmployees(res.data.data || res.data.employees || []);
     } catch (err) {

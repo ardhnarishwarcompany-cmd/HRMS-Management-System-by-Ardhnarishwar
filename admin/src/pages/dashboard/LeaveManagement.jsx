@@ -214,7 +214,7 @@ export default function LeaveManagement() {
     }
   };
 
-  const fmt = (d) => (d ? new Date(d).toLocaleDateString("en-IN") : "â€”");
+  const fmt = (d) => (d ? new Date(d).toLocaleDateString("en-IN") : "—");
 
   const visibleApplications = statusFilter
     ? applications.filter((a) => a.status === statusFilter)
@@ -363,7 +363,7 @@ export default function LeaveManagement() {
                     <td className="num px-4 py-3 text-[#33405c]">{fmt(a.to_date)}</td>
                     <td className="num px-4 py-3 font-bold text-[#0b1220]">{Number(a.days)}</td>
                     <td className="max-w-[200px] truncate px-4 py-3 text-[#7b8698]" title={a.reason}>
-                      {a.reason || "â€”"}
+                      {a.reason || "—"}
                     </td>
                     <td className="px-4 py-3">
                       <Badge status={a.status} />
@@ -376,7 +376,7 @@ export default function LeaveManagement() {
                         />
                       ) : (
                         <span className="text-xs text-[#7b8698]">
-                          {a.approved_by ? `by ${a.approved_by}` : "â€”"}
+                          {a.approved_by ? `by ${a.approved_by}` : "—"}
                         </span>
                       )}
                     </td>
@@ -447,7 +447,7 @@ export default function LeaveManagement() {
                     <td className="num px-4 py-3 text-[#33405c]">{fmt(a.to_date)}</td>
                     <td className="num px-4 py-3 font-bold text-[#0b1220]">{Number(a.days)}</td>
                     <td className="max-w-[200px] truncate px-4 py-3 text-[#7b8698]" title={a.reason}>
-                      {a.reason || "â€”"}
+                      {a.reason || "—"}
                     </td>
                     <td className="px-4 py-3">
                       <Badge status={a.status} />
@@ -493,7 +493,7 @@ export default function LeaveManagement() {
               {balances.length === 0 && !loading && (
                 <EmptyRow
                   colSpan={6}
-                  text="No balances yet â€” rows appear once employees apply for leave"
+                  text="No balances yet — rows appear once employees apply for leave"
                 />
               )}
               {balances.map((b) => {
@@ -611,7 +611,7 @@ export default function LeaveManagement() {
                       {fmt(h.holiday_date)}
                     </td>
                     <td className="px-4 py-3 font-semibold text-[#33405c]">{h.name}</td>
-                    <td className="px-4 py-3 text-[#7b8698]">{h.description || "â€”"}</td>
+                    <td className="px-4 py-3 text-[#7b8698]">{h.description || "—"}</td>
                     <td className="px-4 py-3">
                       <button
                         onClick={() =>
@@ -655,7 +655,7 @@ export default function LeaveManagement() {
                 >
                   {employeeCell(c.employee_name, c.employee_id, c.employeeCode)}
                   <td className="num px-4 py-3 text-[#33405c]">{fmt(c.worked_date)}</td>
-                  <td className="px-4 py-3 text-[#7b8698]">{c.reason || "â€”"}</td>
+                  <td className="px-4 py-3 text-[#7b8698]">{c.reason || "—"}</td>
                   <td className="px-4 py-3">
                     <Badge status={c.status} />
                   </td>
@@ -667,7 +667,7 @@ export default function LeaveManagement() {
                       />
                     ) : (
                       <span className="text-xs text-[#7b8698]">
-                        {c.approved_by ? `by ${c.approved_by}` : "â€”"}
+                        {c.approved_by ? `by ${c.approved_by}` : "—"}
                       </span>
                     )}
                   </td>
@@ -704,7 +704,7 @@ export default function LeaveManagement() {
                   {employeeCell(o.employee_name, o.employee_id)}
                   <td className="num px-4 py-3 text-[#33405c]">{fmt(o.ot_date)}</td>
                   <td className="num px-4 py-3 font-bold text-[#0b1220]">{o.hours}</td>
-                  <td className="px-4 py-3 text-[#7b8698]">{o.reason || "â€”"}</td>
+                  <td className="px-4 py-3 text-[#7b8698]">{o.reason || "—"}</td>
                   <td className="px-4 py-3">
                     <Badge status={o.status} />
                   </td>
@@ -716,7 +716,7 @@ export default function LeaveManagement() {
                       />
                     ) : (
                       <span className="text-xs text-[#7b8698]">
-                        {o.decided_by ? `by ${o.decided_by}` : "â€”"}
+                        {o.decided_by ? `by ${o.decided_by}` : "—"}
                       </span>
                     )}
                   </td>

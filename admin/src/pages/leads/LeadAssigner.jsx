@@ -11,6 +11,9 @@ import {
   CalendarDays,
   Inbox,
   ChevronRight,
+  MoreVertical,
+  Pencil,
+  Trash2,
 } from "lucide-react";
 import { PageHero } from "../../components/common/Premium";
 
@@ -30,9 +33,20 @@ export default function LeadAssigner() {
   const [batches, setBatches] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [selectedDept, setSelectedDept] = useState("");
+  const [openMenuId, setOpenMenuId] = useState(null);
+  const [editingBatch, setEditingBatch] = useState(null); // { id, file_name }
+  const [renameValue, setRenameValue] = useState("");
 
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
+
+  // Close the three-dot menu when clicking anywhere else
+  useEffect(() => {
+    if (!openMenuId) return;
+    const closeMenu = () => setOpenMenuId(null);
+    window.addEventListener("click", closeMenu);
+    return () => window.removeEventListener("click", closeMenu);
+  }, [openMenuId]);
 
   // FETCH BATCHES
   const fetchBatches = async () => {
@@ -106,6 +120,46 @@ export default function LeadAssigner() {
     } catch (err) {
       console.log(err);
       toast.error("Upload failed");
+    }
+  };
+
+  // EDIT (rename) BATCH
+  const openRename = (batch) => {
+    setEditingBatch(batch);
+    setRenameValue(batch.file_name || "");
+    setOpenMenuId(null);
+  };
+
+  const saveRename = async () => {
+    if (!renameValue.trim()) {
+      return toast.error("Name can't be empty");
+    }
+    try {
+      await API.put(`/super-admin/leads/batches/${editingBatch.id}`, {
+        file_name: renameValue.trim(),
+      });
+      toast.success("Batch renamed");
+      setEditingBatch(null);
+      fetchBatches();
+    } catch (err) {
+      console.log(err);
+      toast.error("Failed to rename batch");
+    }
+  };
+
+  // DELETE BATCH
+  const handleDeleteBatch = async (batch) => {
+    setOpenMenuId(null);
+    if (!window.confirm(`Delete "${batch.file_name}" and all its leads? This cannot be undone.`)) {
+      return;
+    }
+    try {
+      await API.delete(`/super-admin/leads/batches/${batch.id}`);
+      toast.success("Batch deleted");
+      fetchBatches();
+    } catch (err) {
+      console.log(err);
+      toast.error("Failed to delete batch");
     }
   };
 
@@ -236,10 +290,43 @@ export default function LeadAssigner() {
                   <h2 className="min-w-0 truncate text-[15px] font-bold text-[#0b1220]">
                     {b.file_name}
                   </h2>
-                  <ChevronRight
-                    size={16}
-                    className="mt-0.5 shrink-0 opacity-40 transition group-hover:translate-x-0.5 group-hover:opacity-100"
-                  />
+                  <div className="flex shrink-0 items-center gap-1">
+                    <div className="relative">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setOpenMenuId(openMenuId === b.id ? null : b.id);
+                        }}
+                        className="rounded-lg p-1 text-[#33405c]/60 transition hover:bg-white/70 hover:text-[#0b1220]"
+                        title="More options"
+                      >
+                        <MoreVertical size={16} />
+                      </button>
+                      {openMenuId === b.id && (
+                        <div
+                          onClick={(e) => e.stopPropagation()}
+                          className="absolute right-0 top-7 z-10 w-36 overflow-hidden rounded-xl border border-[#e6e9f0] bg-white py-1 shadow-[0_10px_28px_-10px_rgba(11,18,32,0.35)]"
+                        >
+                          <button
+                            onClick={() => openRename(b)}
+                            className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] font-medium text-[#33405c] hover:bg-[#f7f8fb]"
+                          >
+                            <Pencil size={13} /> Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteBatch(b)}
+                            className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] font-medium text-[#c73e4c] hover:bg-[#fdf1f2]"
+                          >
+                            <Trash2 size={13} /> Delete
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                    <ChevronRight
+                      size={16}
+                      className="mt-0.5 shrink-0 opacity-40 transition group-hover:translate-x-0.5 group-hover:opacity-100"
+                    />
+                  </div>
                 </div>
 
                 <div className="mt-3 space-y-1.5 text-[13px] font-medium text-[#33405c]">
@@ -285,6 +372,44 @@ export default function LeadAssigner() {
           <p className="mt-0.5 text-xs text-[#7b8698]">
             Upload an .xlsx lead sheet above to create your first batch
           </p>
+        </div>
+      )}
+
+      {/* ── rename (edit) modal ── */}
+      {editingBatch && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0b1220]/40 p-4">
+          <div className="w-full max-w-sm rounded-2xl bg-white p-5 shadow-xl">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-bold text-[#0b1220]">Rename batch</h3>
+              <button
+                onClick={() => setEditingBatch(null)}
+                className="rounded-md p-1 text-[#7b8698] hover:bg-[#f7f8fb]"
+              >
+                <X size={15} />
+              </button>
+            </div>
+            <input
+              autoFocus
+              value={renameValue}
+              onChange={(e) => setRenameValue(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && saveRename()}
+              className="mt-3 w-full rounded-xl border border-[#e6e9f0] px-3.5 py-2.5 text-[13px] font-medium text-[#33405c] outline-none focus:border-[#4f63f0] focus:ring-2 focus:ring-[#4f63f0]/20"
+            />
+            <div className="mt-4 flex justify-end gap-2">
+              <button
+                onClick={() => setEditingBatch(null)}
+                className="rounded-xl px-4 py-2 text-sm font-semibold text-[#33405c] hover:bg-[#f7f8fb]"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={saveRename}
+                className="rounded-xl bg-[#4f63f0] px-4 py-2 text-sm font-semibold text-white hover:bg-[#3d4fd8]"
+              >
+                Save
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

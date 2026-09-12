@@ -161,7 +161,7 @@ export default function HRDocuments() {
       <PageHero
         eyebrow="Documents"
         title="HR Document Generator"
-        subtitle="Generate offer letters, appointment letters, experience letters and more â€” auto-filled from employee records."
+        subtitle="Generate offer letters, appointment letters, experience letters and more — auto-filled from employee records."
         icon={FileText}
         actions={<ExportButton data={docs} filename="hr-documents" />}
       />
@@ -267,7 +267,7 @@ export default function HRDocuments() {
 
           <div>
             <label className="text-xs font-semibold text-slate-500 flex items-center gap-1">
-              <PenLine size={12} /> Authorized Signature (optional â€” embedded in the letter)
+              <PenLine size={12} /> Authorized Signature (optional — embedded in the letter)
             </label>
             <div className="mt-1">
               <SignaturePad onChange={setGenSignature} height={110} />

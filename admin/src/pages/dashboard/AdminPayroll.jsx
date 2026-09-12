@@ -171,16 +171,16 @@ export default function AdminPayroll() {
                               {r.absentDays}
                             </td>
                             <td className="px-3 py-2 text-right">
-                              {`â‚¹${Number(r.gross).toFixed(2)}`}
+                              {`₹${Number(r.gross).toFixed(2)}`}
                             </td>
                             <td className="px-3 py-2 text-right">
-                              {`â‚¹${Number(r.pf).toFixed(2)}`}
+                              {`₹${Number(r.pf).toFixed(2)}`}
                             </td>
                             <td className="px-3 py-2 text-right">
-                              {`â‚¹${Number(r.esic).toFixed(2)}`}
+                              {`₹${Number(r.esic).toFixed(2)}`}
                             </td>
                             <td className="px-3 py-2 text-right font-semibold">
-                              {`â‚¹${Number(r.net).toFixed(2)}`}
+                              {`₹${Number(r.net).toFixed(2)}`}
                             </td>
                           </tr>
                         ))}
@@ -194,7 +194,7 @@ export default function AdminPayroll() {
                 <div className="mt-3 bg-amber-50 border border-amber-200 rounded-xl p-3">
                   <p className="text-xs font-semibold text-amber-800 mb-2">
                     Skipped (
-                    {autoResult.results.filter((r) => r.skipped).length}) â€”{" "}
+                    {autoResult.results.filter((r) => r.skipped).length}) —{" "}
                     {autoResult.results.find((r) => r.skipped)?.reason ||
                       "already processed"}
                   </p>
@@ -247,11 +247,11 @@ export default function AdminPayroll() {
                   </td>
 
                   <td className="px-2 sm:px-3 py-2 whitespace-nowrap">
-                    â‚¹{Number(p.gross_salary).toFixed(2)}
+                    ₹{Number(p.gross_salary).toFixed(2)}
                   </td>
 
                   <td className="px-2 sm:px-3 py-2 whitespace-nowrap">
-                    â‚¹{Number(p.net_salary).toFixed(2)}
+                    ₹{Number(p.net_salary).toFixed(2)}
                   </td>
 
                   <td className="px-2 sm:px-3 py-2">

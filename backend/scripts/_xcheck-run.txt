@@ -1,0 +1,20 @@
+SUMMARY {
+ "backendRoutes": 879,
+ "mounts": 147,
+ "frontendCalls": 984,
+ "unmatched": 116,
+ "unmatchedReachable": 8,
+ "doubleApiPrefix": 0,
+ "absoluteUrls": 1,
+ "brokenImports": 0,
+ "missingRouteFiles": [
+  {
+   "method": "MISSING_SUBROUTER",
+   "full": "/api/smart-attendance/static",
+   "file": "backend/modules/attendance/attendance.routes.js",
+   "line": 37,
+   "guards": []
+  }
+ ],
+ "mountsWithoutImport": []
+}

@@ -34,8 +34,11 @@ const findSubject = async (portal, identifier) => {
     return row;
   }
   const [[row]] = await db.query(
-    `SELECT id, name, email, phone, employeeCode, joiningId, departmentId, isActive
-     FROM employees WHERE ${field} = ? LIMIT 1`,
+    `SELECT e.id, e.name, e.email, e.phone, e.employeeCode, e.joiningId,
+            e.departmentId, e.isActive, dep.name AS departmentName
+     FROM employees e
+     LEFT JOIN departments dep ON dep.id = e.departmentId
+     WHERE e.${field} = ? LIMIT 1`,
     [identifier],
   );
   if (!row) return null;
@@ -44,6 +47,16 @@ const findSubject = async (portal, identifier) => {
     const salesDept = Number(ENV.SALES_DEPT_ID);
     if (salesDept && row.departmentId !== salesDept)
       throw new Error("Access denied for this portal");
+  }
+  // HR/IT portals are department-gated the same way their password logins
+  // are (see hrAuth.service.js / itAuth.service.js) — otherwise any active
+  // employee could OTP-login into either portal and be issued that portal's
+  // role regardless of which department they actually belong to.
+  if (portal === "hr" && row.departmentName !== "HR") {
+    throw new Error("Access denied for this portal");
+  }
+  if (portal === "it" && String(row.departmentName || "").toUpperCase() !== "IT") {
+    throw new Error("Access denied for this portal");
   }
   return row;
 };
@@ -167,7 +180,13 @@ const issueForPortal = async (portal, subject) => {
         id: subject.id,
         employee_id: subject.id,
         employee_code: subject.employeeCode,
-        role: "hr",
+        // BUGFIX: this was hardcoded to "hr" even for the IT portal, so an
+        // IT staffer who logged in via OTP got an "hr" role token. Every
+        // complaint they raised was then saved with created_by_role = 'hr'
+        // instead of 'it' — Super Admin (unrestricted) still saw it, but
+        // the IT dashboard's own list (filtered to created_by_role = 'it')
+        // never did. Use the actual portal so IT stays IT.
+        role: portal,
       },
       ENV.JWT_SECRET,
       { expiresIn: "7d" },

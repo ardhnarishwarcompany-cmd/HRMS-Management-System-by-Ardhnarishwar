@@ -1,0 +1,33 @@
+{
+  "steps": [
+    {
+      "s": "B pushes new candidate",
+      "ok": true,
+      "merged": true,
+      "count": 1
+    },
+    {
+      "s": "A stale push keeps B candidate",
+      "ok": true,
+      "merged": true,
+      "count": 1
+    },
+    {
+      "s": "explicit removal drops it",
+      "ok": true,
+      "count": 0
+    },
+    {
+      "s": "non-array rejected",
+      "ok": true,
+      "status": 400
+    },
+    {
+      "s": "store unchanged in size",
+      "ok": true,
+      "before": 0,
+      "after": 0
+    }
+  ],
+  "pass": true
+}

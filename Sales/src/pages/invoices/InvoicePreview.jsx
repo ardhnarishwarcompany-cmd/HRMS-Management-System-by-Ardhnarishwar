@@ -40,7 +40,7 @@ export default function InvoicePreview() {
       filename: `invoice-${invoice.id}.pdf`,
       image: { type: "jpeg", quality: 1 },
       html2canvas: {
-        scale: 1.5, // ðŸ”¥ reduce scale (was 2)
+        scale: 1.5, // 🔥 reduce scale (was 2)
         useCORS: true,
       },
       jsPDF: {
@@ -122,10 +122,10 @@ export default function InvoicePreview() {
                 <td className="border p-2">{item.hsn_sac}</td>
                 <td className="border p-2">{item.quantity}</td>
                 <td className="border p-2">
-                  â‚¹{Number(item.rate).toLocaleString("en-IN")}
+                  ₹{Number(item.rate).toLocaleString("en-IN")}
                 </td>
                 <td className="border p-2">
-                  â‚¹{Number(item.amount).toLocaleString("en-IN")}
+                  ₹{Number(item.amount).toLocaleString("en-IN")}
                 </td>
               </tr>
             ))}
@@ -135,12 +135,12 @@ export default function InvoicePreview() {
         <div className="flex justify-end mt-4 text-sm">
           <div>
             <p>
-              Taxable: â‚¹{Number(invoice.taxable_amount).toLocaleString("en-IN")}
+              Taxable: ₹{Number(invoice.taxable_amount).toLocaleString("en-IN")}
             </p>
-            <p>CGST: â‚¹{Number(invoice.cgst).toLocaleString("en-IN")}</p>
-            <p>SGST: â‚¹{Number(invoice.sgst).toLocaleString("en-IN")}</p>
+            <p>CGST: ₹{Number(invoice.cgst).toLocaleString("en-IN")}</p>
+            <p>SGST: ₹{Number(invoice.sgst).toLocaleString("en-IN")}</p>
             <p className="font-semibold">
-              Total: â‚¹{Number(invoice.total_amount).toLocaleString("en-IN")}
+              Total: ₹{Number(invoice.total_amount).toLocaleString("en-IN")}
             </p>
           </div>
         </div>

@@ -174,7 +174,7 @@ export default function CandidateManagement() {
     } catch (err) {
       console.error("Error fetching quick forms:", err);
       setQuickForms([]);
-      // Real error surface karo â€” empty list ke jaise mat dikhao
+      // Real error surface karo — empty list ke jaise mat dikhao
       setQuickError(
         err?.response?.data?.message ||
           (err?.response?.status
@@ -302,7 +302,7 @@ export default function CandidateManagement() {
               <select value={filters.status} onChange={(e) => handleFilterChange("status", e.target.value)} className="w-full px-3 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all text-slate-600 font-medium">
                 <option value="">All Statuses</option>
                 <option value="pending">â³ Pending Review</option>
-                <option value="accepted">âœ… Passed / Accepted</option>
+                <option value="accepted">✓ Passed / Accepted</option>
                 <option value="rejected">âŒ Rejected</option>
               </select>
             </div>
@@ -360,7 +360,7 @@ export default function CandidateManagement() {
 
       </div>
 
-      {/* âœ… MODAL 1 â€” Add Candidate â†’ CandidateForm */}
+      {/* ✓ MODAL 1 — Add Candidate → CandidateForm */}
       {openCandidateForm &&
         createPortal(
           <div
@@ -386,14 +386,14 @@ export default function CandidateManagement() {
           document.body
         )}
 
-      {/* âœ… MODAL 2 â€” Quick Add â†’ getCandidateForms list with Delete */}
+      {/* ✓ MODAL 2 — Quick Add → getCandidateForms list with Delete */}
       {openQuickAdd && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-h-[90vh] flex flex-col w-full max-w-3xl">
 
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 shrink-0">
-              <h2 className="text-base font-bold text-slate-900">Quick Add â€” Submitted Candidate Forms</h2>
+              <h2 className="text-base font-bold text-slate-900">Quick Add — Submitted Candidate Forms</h2>
               <button
                 onClick={() => setOpenQuickAdd(false)}
                 className="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-sm"
@@ -433,11 +433,11 @@ export default function CandidateManagement() {
                   <tbody>
                     {quickForms.map((form) => (
                       <tr key={form.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
-                        <td className="py-3 pr-4 font-semibold text-slate-800">{form.full_name || "â€”"}</td>
-                        <td className="py-3 pr-4 text-slate-600">{form.phone || "â€”"}</td>
-                        <td className="py-3 pr-4 text-slate-600">{form.job_profile || "â€”"}</td>
-                        <td className="py-3 pr-4 text-slate-600">{form.language_name || "â€”"}</td>
-                        <td className="py-3 pr-4 text-slate-600">{form.experience || "â€”"}</td>
+                        <td className="py-3 pr-4 font-semibold text-slate-800">{form.full_name || "—"}</td>
+                        <td className="py-3 pr-4 text-slate-600">{form.phone || "—"}</td>
+                        <td className="py-3 pr-4 text-slate-600">{form.job_profile || "—"}</td>
+                        <td className="py-3 pr-4 text-slate-600">{form.language_name || "—"}</td>
+                        <td className="py-3 pr-4 text-slate-600">{form.experience || "—"}</td>
                         <td className="py-3 text-right">
                           <button
                             onClick={() => handleDeleteForm(form.id)}

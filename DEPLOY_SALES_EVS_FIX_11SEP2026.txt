@@ -1,0 +1,27 @@
+HRMS PRODUCTION FIX - 11 SEP 2026
+
+1) SALES LOGIN 403 FIX
+The Sales backend now resolves the actual Sales department from the shared
+`departments` table by name (case-insensitive) and uses SALES_DEPT_ID only as
+a fallback. This prevents a valid Sales employee from being rejected when
+the production database has a different numeric department ID.
+
+2) EVS REFRESH / PAGE NOT FOUND FIX
+EVS uses React BrowserRouter. Hostinger must rewrite deep links such as
+/dashboard, /profile, /my-verification, /verification-status,
+/identity-details and /background-verification to /index.html.
+The EVS production dist/.htaccess and source public/.htaccess are included.
+
+3) SINGLE PRODUCTION BACKEND
+Sales and EVS both use:
+https://backend-hrms.recruweb.com/api
+
+4) HOSTINGER DEPLOYMENT
+Backend: deploy/redeploy the `backend` application on backend-hrms.recruweb.com.
+Sales: upload the CONTENTS of `Sales/dist/` to the Sales domain public_html.
+EVS: upload the CONTENTS of `employee-verification-system/frontend/frontend/dist/`
+to the EVS domain public_html, including the hidden `.htaccess` file.
+
+Do not point admin-hrms.recruweb.com at the Jobs/Sales/EVS document root.
+Keep existing server uploads/backups; this source package intentionally does
+not include large runtime upload/video folders.

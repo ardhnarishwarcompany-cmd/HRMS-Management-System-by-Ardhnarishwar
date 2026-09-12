@@ -1,0 +1,13 @@
+PASS admin login
+PASS offer-letter unauthenticated -> 401  got 401
+PASS offer-letter templates with admin -> 200  got 200
+PASS DELETE offer-letter/templates/:id wired (404 'Template not found')  got 404 {"success":false,"message":"Template not found"}
+PASS PATCH clients/assign-hr wired (400 on empty body, not 404)  got 400 {"success":false,"message":"client_id and hr_employee_id are required"}
+PASS temp client created  {"success":true,"message":"Client created successfully","data":{"clientId":15,"client_code":"C1001"}
+PASS GET client/leads/my with client_admin -> 200 (was 500)  got 200
+SKIP cross-tenant check: no leads in DB
+PASS GET client/leads/batch/:id responds (no hang)  got 200
+PASS employee-token path responds quickly (no hang)  got 403
+PASS temp client deleted  got 200
+
+RESULT pass=10 fail=0

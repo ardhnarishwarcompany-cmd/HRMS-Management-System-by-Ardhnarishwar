@@ -11,15 +11,29 @@ const getUserId = (req) => {
   );
 };
 const getRole = (req) => {
-  return req.user?.role || req.salesUser?.role || req.client?.role;
+  // BUGFIX: was only checking req.user?.role. On some deployments the auth
+  // middleware attaches the decoded token to req.employee instead of
+  // req.user (getUserId already accounted for this via req.employee?.employee_id,
+  // but getRole never did). When that happened, role came back undefined,
+  // mapRole(undefined) produced "", and MySQL silently stored created_by_role
+  // as blank (invalid ENUM value) even though created_by_id was correct and
+  // the JWT itself had the right role — this is why complaints showed up for
+  // Super Admin (unrestricted) but never in the raiser's own portal list.
+  return (
+    req.user?.role ||
+    req.employee?.role ||
+    req.salesUser?.role ||
+    req.client?.role
+  );
 };
 
 const mapRole = (role) => {
-  if (role === "SUPER_ADMIN") return "admin";
-  if (role === "MANAGER") return "manager";
-  if (role === "client_admin" || role === "CLIENT_ADMIN") return "client";
-  if (role === "CLIENT_EMPLOYEE") return "employee";
-  return role.toLowerCase();
+  const normalized = String(role || "").trim().toUpperCase();
+  if (normalized === "SUPER_ADMIN" || normalized === "ADMIN") return "admin";
+  if (normalized === "MANAGER") return "manager";
+  if (normalized === "CLIENT_ADMIN") return "client";
+  if (normalized === "CLIENT_EMPLOYEE") return "employee";
+  return normalized.toLowerCase();
 };
 
 export const createComplaint = async (req, res) => {

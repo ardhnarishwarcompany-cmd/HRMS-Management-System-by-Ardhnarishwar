@@ -27,7 +27,7 @@ const FILTERS = ["All", "Open", "In Progress", "Fixed", "Closed"];
 const EMPTY = { title: "", description: "", severity: "Medium", project: "", assigned_to: "" };
 
 const initials = (n = "") =>
-  n.split(" ").filter(Boolean).slice(0, 2).map((s) => s[0]?.toUpperCase()).join("") || "?";
+  String(n || "").split(" ").filter(Boolean).slice(0, 2).map((s) => s[0]?.toUpperCase()).join("") || "?";
 
 const ago = (d) => {
   const diff = (Date.now() - new Date(d).getTime()) / 1000;

@@ -1,12 +1,14 @@
 import { useState } from "react";
 import ChatList from "./ChatList";
-import ChatWindow from "./ChatWindow";
 import InternalChatWindow from "./InternalChatWindow";
 import HRNavbar from "../hr/HRNavbar";
 import { MessageCircle } from "lucide-react";
 
 const MY_TYPE = "it";
 
+// NOTE (12 Sep 2026): the client-chat branch (ChatWindow) was removed
+// together with the "Clients" list in ChatList.jsx — see the note there
+// for why. IT <-> HR internal chat (InternalChatWindow) is unaffected.
 export default function ChatPage() {
   const [activeChat, setActiveChat] = useState(null);
 
@@ -17,8 +19,6 @@ export default function ChatPage() {
         <ChatList setActiveChat={setActiveChat} activeChat={activeChat} />
         {activeChat?.internal ? (
           <InternalChatWindow activeChat={activeChat} myType={MY_TYPE} />
-        ) : activeChat ? (
-          <ChatWindow activeChat={activeChat} />
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center bg-gray-50 text-gray-400">
             <div className="w-20 h-20 bg-gradient-to-r from-purple-100 to-pink-100 rounded-full flex items-center justify-center mb-4">
@@ -28,7 +28,7 @@ export default function ChatPage() {
               Select a chat
             </h3>
             <p className="text-sm">
-              Choose HR team or a client to start chatting
+              Choose an HR team member to start chatting
             </p>
           </div>
         )}

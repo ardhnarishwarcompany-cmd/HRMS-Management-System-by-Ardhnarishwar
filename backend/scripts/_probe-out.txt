@@ -1,0 +1,33 @@
+[dotenv@17.3.1] injecting env (18) from .env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
+PASS  super admin login  -> HTTP 200
+PASS  GET my-clients lists the rep's client  -> n=1
+PASS  GET catalog  -> plans=11
+PASS  POST for a client you don't own -> 403  -> HTTP 403
+PASS  POST create draft  -> id=11 PRP-2026-0008
+PASS  GET own draft, totals computed server-side  -> total=2124.00 status=DRAFT
+PASS  other rep cannot read it -> 404  -> HTTP 404
+PASS  client list hides DRAFT  -> HTTP 200 visible=1
+PASS  PATCH submit -> PENDING_APPROVAL
+PASS  status is PENDING_APPROVAL  -> PENDING_APPROVAL
+PASS  edit while pending -> 400  -> This proposal is with the Super Admin for approval. Withdraw it first if you need to make changes.
+PASS  client list hides PENDING_APPROVAL
+PASS  admin list shows it with sales_employee_name  -> Rohan Verma
+PASS  admin stats.pending_approval >= 1  -> 1
+PASS  return without note -> 400
+PASS  PATCH return -> REVISION
+PASS  rep sees REVISION + approval_note  -> Discount too high, cap at 5%
+PASS  rep edits in REVISION
+PASS  resubmit -> PENDING_APPROVAL
+PASS  withdraw -> DRAFT
+PASS  submit again
+PASS  sales token cannot use admin review route  -> HTTP 403
+PASS  PATCH approve -> SENT
+PASS  rep sees SENT with approved_by  -> SENT by Super Admin
+PASS  rep cannot delete a SENT proposal
+PASS  client list shows SENT
+PASS  client ACCEPT
+PASS  rep sees ACCEPTED  -> ACCEPTED
+PASS  rep stats.accepted >= 1  -> {"total":1,"draft":"0","pending_approval":"0","revision":"0","sent":"0","accepted":"1","rejected":"0","expired":"0","accepted_value":"2242.00","open_value":"0.00"}
+PASS  admin direct create + send still works  -> id=12
+
+30/30 checks passed

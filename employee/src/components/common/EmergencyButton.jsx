@@ -35,7 +35,7 @@ export default function EmergencyButton() {
       disabled={loading}
       className="bg-red-600 hover:bg-red-700 text-white px-3 sm:px-4 py-2 rounded-lg font-semibold text-sm sm:text-base w-full sm:w-auto"
     >
-      {loading ? "Sending..." : "ðŸš¨ Emergency"}
+      {loading ? "Sending..." : "🚨 Emergency"}
     </button>
   );
 }

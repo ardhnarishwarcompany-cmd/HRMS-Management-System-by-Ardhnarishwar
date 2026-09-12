@@ -146,25 +146,22 @@ export const listEmployeesService = async (client_code) => {
 // LIST BY DEPARTMENT
 export const listEmployeesByDepartmentService = async (client_code, departmentId) => {
   const client_id = await getClientId(client_code);
-  const deptId = Number(departmentId);
-  if (!Number.isInteger(deptId) || deptId <= 0) throw new Error("Invalid departmentId");
-
+  const deptId = departmentId === undefined || departmentId === null || String(departmentId).trim() === ""
+    ? null : Number(departmentId);
+  if (deptId !== null && (!Number.isInteger(deptId) || deptId <= 0)) throw new Error("Invalid departmentId");
+  const params = [client_id];
+  const departmentWhere = deptId === null ? "" : " AND e.departmentId=?";
+  if (deptId !== null) params.push(deptId);
   const [rows] = await db.query(
-    `SELECT
-       e.*,
-       d.name AS departmentName,
-       des.name AS designationName,
-       s.name AS statusName,
+    `SELECT e.*, d.name AS departmentName, des.name AS designationName, s.name AS statusName,
        COALESCE((SELECT SUM(sr.amount) FROM client_sales_report sr WHERE sr.client_id=e.client_id AND sr.employee_id=e.id),0) AS sales_amount,
        COALESCE((SELECT COUNT(*) FROM client_sales_report sr WHERE sr.client_id=e.client_id AND sr.employee_id=e.id),0) AS sales_count
      FROM client_employees e
      LEFT JOIN departments d ON e.departmentId=d.id
      LEFT JOIN designations des ON e.designationId=des.id
      LEFT JOIN employee_statuses s ON e.statusId=s.id
-     WHERE e.client_id=? AND e.departmentId=? AND e.isActive=1
-     ORDER BY e.name ASC`,
-    [client_id, deptId]
-  );
+     WHERE e.client_id=? AND e.isActive=1${departmentWhere}
+     ORDER BY e.name ASC`, params);
   return rows;
 };
 

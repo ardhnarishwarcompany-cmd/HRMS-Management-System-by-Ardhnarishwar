@@ -384,10 +384,13 @@ app.use("/api/hr/eod", hrEodRoutes);
 app.use("/api/hr/eod-reports", hrEodReportsRoutes);
 app.use("/api/hr/office-locations", hrOfficeLocationsRoutes);
 
+// Sales authentication must stay public. A disabled portal must not block
+// the login endpoint itself with a 403; the portal status guard applies to
+// protected Sales APIs after authentication.
+app.use("/api/sales/auth", salesAuthRoutes);
+
 // Sales route
 app.use("/api/sales", checkPortalStatus("SALES"));
-
-app.use("/api/sales/auth", salesAuthRoutes);
 app.use("/api/sales/calls", salesCallsRoutes);
 app.use("/api/sales/reports", salesReportRoutes);
 app.use("/api/sales/work-assignment", salesWorkAssignmentRoutes);

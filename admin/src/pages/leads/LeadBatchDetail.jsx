@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import API from "../../services/api.js";
 import toast from "react-hot-toast";
+import { Trash2, Save } from "lucide-react";
 
 export default function LeadBatchDetail() {
   const { id } = useParams();
   const [leads, setLeads] = useState([]);
+  const [editing, setEditing] = useState({});
 
   const fetchLeads = async () => {
     try {
@@ -43,6 +45,7 @@ return (
             <th className="p-3 text-left">Phone</th>
             <th className="p-3 text-left">Status</th>
             <th className="p-3 text-left">Remarks</th>
+            <th className="p-3 text-left">Action</th>
           </tr>
         </thead>
 
@@ -55,10 +58,25 @@ return (
                 ? "bg-red-100 text-red-700"
                 : "bg-yellow-100 text-yellow-700";
 
-            return (
+            const update = async (lead) => {
+    try {
+      const d = editing[lead.id] || {};
+      await API.put(`/super-admin/leads/${lead.id}`, { name:d.name ?? lead.name ?? "", phone:d.phone ?? lead.phone ?? "", status:d.status ?? lead.status ?? "pending", remarks:d.remarks ?? lead.remarks ?? "" });
+      setLeads(rows => rows.map(r => r.id===lead.id ? {...r,...d} : r));
+      setEditing(x => { const n={...x}; delete n[lead.id]; return n; });
+      toast.success("Lead updated");
+    } catch(e) { toast.error(e?.response?.data?.message || "Update failed"); }
+  };
+  const remove = async (lead) => {
+    if (!window.confirm(`Delete lead ${lead.name || `#${lead.id}`}?`)) return;
+    try { await API.delete(`/super-admin/leads/${lead.id}`); setLeads(rows => rows.filter(r=>r.id!==lead.id)); toast.success("Lead deleted"); }
+    catch(e) { toast.error(e?.response?.data?.message || "Delete failed"); }
+  };
+
+  return (
               <tr key={l.id} className="border-t hover:bg-gray-50 transition">
-                <td className="p-3 font-medium">{l.name}</td>
-                <td className="p-3 text-gray-600">{l.phone}</td>
+                <td className="p-3 font-medium"><input value={editing[l.id]?.name ?? l.name ?? ""} onChange={e=>setEditing(x=>({...x,[l.id]:{...x[l.id],name:e.target.value}}))} className="w-full min-w-[150px] rounded-lg border px-2 py-1" placeholder="Lead name" /></td>
+                <td className="p-3 text-gray-600"><input value={editing[l.id]?.phone ?? l.phone ?? ""} onChange={e=>setEditing(x=>({...x,[l.id]:{...x[l.id],phone:e.target.value}}))} className="w-full min-w-[120px] rounded-lg border px-2 py-1" placeholder="Phone" /></td>
 
                 <td className="p-3">
                   <span className={`px-2 py-1 rounded-full text-xs ${statusColor}`}>
@@ -66,9 +84,8 @@ return (
                   </span>
                 </td>
 
-                <td className="p-3 text-gray-600">
-                  {l.remarks || "—"}
-                </td>
+                <td className="p-3 text-gray-600"><input value={editing[l.id]?.remarks ?? l.remarks ?? ""} onChange={e=>setEditing(x=>({...x,[l.id]:{...x[l.id],remarks:e.target.value}}))} className="w-full min-w-[180px] rounded-lg border px-2 py-1" placeholder="Remarks" /></td>
+                <td className="p-3"><div className="flex gap-2"><button onClick={()=>update(l)} disabled={!editing[l.id]} className="inline-flex items-center gap-1 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-40"><Save size={13}/>Save</button><button onClick={()=>remove(l)} className="inline-flex items-center gap-1 rounded-lg bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-700"><Trash2 size={13}/>Delete</button></div></td>
               </tr>
             );
           })}

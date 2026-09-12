@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { getTodayBirthdays, markNotificationsRead } from "../../services/notificationService";
 import ThemeToggle from "../../components/common/ThemeToggle";
+import ErrorBoundary from "../../components/common/ErrorBoundary";
 import { useHrAuth } from "../../context/HrAuthContext";
 
 export const IT_MENU_ITEMS = [
@@ -154,7 +155,9 @@ export function ITLayout() {
       )}
 
       <main className={`it-main ${collapsed ? "content-collapsed" : ""}`}>
-        <Outlet />
+        <ErrorBoundary>
+          <Outlet />
+        </ErrorBoundary>
       </main>
     </div>
   );

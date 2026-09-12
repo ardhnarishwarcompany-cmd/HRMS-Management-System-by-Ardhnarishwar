@@ -1,0 +1,16 @@
+PASS page / -> 200
+PASS page /admin -> 200
+PASS page /employee -> 200
+PASS page /employee/face -> 200
+PASS page /register-account -> 200
+PASS asset vendor/sa-face.js -> 200 2237b
+PASS asset vendor/face-api.min.js -> 200 663829b
+PASS asset vendor/models/tiny_face_detector_model-weights_manifest.json -> 200 2953b
+PASS asset vendor/models/face_recognition_model-weights_manifest.json -> 200 18303b
+PASS health -> {"status":"healthy","system":"Smart Attendance (Node)","face_engine":"browser face-api.js","database":"ok"}
+PASS stats without login -> 401 -> 401
+EXCEPTION TypeError: fetch failed
+    at node:internal/deps/undici/undici:16416:13
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async j (file:///D:/HRMS_new/HRMS_new/HRMS/HRMS%20Merging/backend/scripts/attendance-smoke.mjs:18:13)
+    at async file:///D:/HRMS_new/HRMS_new/HRMS/HRMS%20Merging/backend/scripts/attendance-smoke.mjs:55:14

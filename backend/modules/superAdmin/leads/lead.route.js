@@ -4,6 +4,10 @@ import {
   assignLead,
   getAllLeads,
   getAllBatches,
+  updateLead,
+  deleteLead,
+  updateBatch,
+  deleteBatch,
 } from "./lead.controller.js";
 import { upload } from "../../../config/multer.js";
 import { protect } from "../../../middleware/auth.middleware.js";
@@ -16,6 +20,10 @@ router.use(protect(["SUPER_ADMIN"]))
 router.post("/upload",  upload.single("file"), uploadLeads);
 router.put("/assign/:id", assignLead);
 router.get("/batches", getAllBatches);
+router.put("/batches/:id", updateBatch);
+router.delete("/batches/:id", deleteBatch);
+router.put("/:id", updateLead);
+router.delete("/:id", deleteLead);
 router.get("/", getAllLeads);
 
 export default router;

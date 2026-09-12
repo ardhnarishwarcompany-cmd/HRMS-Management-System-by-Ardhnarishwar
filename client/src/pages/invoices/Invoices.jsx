@@ -109,7 +109,7 @@ export default function Invoices() {
 
                   <td className="px-5 py-4">
                     <span className="px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
-                      â‚¹{Number(inv.total_amount).toLocaleString("en-IN")}
+                      ₹{Number(inv.total_amount).toLocaleString("en-IN")}
                     </span>
                   </td>
 

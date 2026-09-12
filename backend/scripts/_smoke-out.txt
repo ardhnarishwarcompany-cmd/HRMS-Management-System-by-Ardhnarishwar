@@ -1,0 +1,22 @@
+login admin -> 200 token=true
+subjects: hr=7 it=8 sales=10 emp=7 client=C1001
+
+### admin: 112 GET endpoints
+  all 2xx
+
+### HR: 32 GET endpoints
+  all 2xx
+
+### client: 53 GET endpoints
+  400 /api/ledger/by-date-range  {"msg":"startDate and endDate are required"}
+
+### employee: 16 GET endpoints
+  all 2xx
+
+### IT: 23 GET endpoints
+  all 2xx
+
+### Sales: 19 GET endpoints
+  all 2xx
+
+SUMMARY {"admin":{"total":112,"bad":0},"HR":{"total":32,"bad":0},"client":{"total":53,"bad":1},"employee":{"total":16,"bad":0},"IT":{"total":23,"bad":0},"Sales":{"total":19,"bad":0}}

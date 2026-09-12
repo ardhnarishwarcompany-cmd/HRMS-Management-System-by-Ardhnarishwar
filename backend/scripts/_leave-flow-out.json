@@ -1,0 +1,160 @@
+{
+ "appId": 25,
+ "compOffId": 5,
+ "results": [
+  {
+   "name": "super admin login",
+   "ok": true,
+   "info": {
+    "status": 200
+   }
+  },
+  {
+   "name": "employee login",
+   "ok": true,
+   "info": {
+    "status": 200,
+    "keys": [
+     "success",
+     "token",
+     "user"
+    ]
+   }
+  },
+  {
+   "name": "employee my-balance",
+   "ok": true,
+   "info": {
+    "used": "0.0",
+    "allocated": "12.0"
+   }
+  },
+  {
+   "name": "employee apply leave",
+   "ok": true,
+   "info": {
+    "status": 200,
+    "id": 25,
+    "days": 2
+   }
+  },
+  {
+   "name": "admin sees pending application with employee name",
+   "ok": true,
+   "info": {
+    "employee_name": "Rohan Verma",
+    "code": "DEMO003",
+    "days": "2.0"
+   }
+  },
+  {
+   "name": "admin approve",
+   "ok": true,
+   "info": {
+    "success": true
+   }
+  },
+  {
+   "name": "employee sees Approved status + note",
+   "ok": true,
+   "info": {
+    "status": "Approved",
+    "note": "_probe ok",
+    "approved_by": "Super Admin"
+   }
+  },
+  {
+   "name": "employee balance used increased by days",
+   "ok": true,
+   "info": {
+    "before": "0.0",
+    "after": "2.0",
+    "days": 2
+   }
+  },
+  {
+   "name": "admin balances row matches employee view",
+   "ok": true,
+   "info": {
+    "admin_used": "2.0",
+    "emp_used": "2.0"
+   }
+  },
+  {
+   "name": "employee request comp-off",
+   "ok": true,
+   "info": {
+    "success": true,
+    "id": 5
+   }
+  },
+  {
+   "name": "admin sees comp-off with employee name",
+   "ok": true,
+   "info": {
+    "name": "Rohan Verma"
+   }
+  },
+  {
+   "name": "admin reject comp-off",
+   "ok": true,
+   "info": {
+    "success": true
+   }
+  },
+  {
+   "name": "employee sees comp-off Rejected",
+   "ok": true
+  },
+  {
+   "name": "overlapping request rejected with 409",
+   "ok": true,
+   "info": {
+    "status": 409,
+    "msg": "You already have an approved leave request covering these dates"
+   }
+  },
+  {
+   "name": "employee cancel approved leave",
+   "ok": true,
+   "info": {
+    "success": true
+   }
+  },
+  {
+   "name": "balance reverted after cancel",
+   "ok": true,
+   "info": {
+    "before": "0.0",
+    "after": "0.0"
+   }
+  },
+  {
+   "name": "admin add holiday",
+   "ok": true,
+   "info": {
+    "success": true,
+    "id": 2
+   }
+  },
+  {
+   "name": "holiday excluded from charged days",
+   "ok": true,
+   "info": {
+    "days": 1,
+    "status": 200
+   }
+  },
+  {
+   "name": "pending days visible in balance",
+   "ok": true,
+   "info": {
+    "pending": "1.0"
+   }
+  },
+  {
+   "name": "probe holiday removed",
+   "ok": true
+  }
+ ]
+}

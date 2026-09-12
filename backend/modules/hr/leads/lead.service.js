@@ -17,8 +17,9 @@ export const updateLead = async (id, data) => {
 // assignment is used as a safe fallback.
 export const getMyLeads = async (hrId) => {
   const [rows] = await db.query(
-    `SELECT l.*
+    `SELECT l.*, e.name AS assigned_employee_name, e.employeeCode AS assigned_employee_code
        FROM leads l
+       LEFT JOIN employees e ON e.id = l.assigned_to
        LEFT JOIN lead_batches b ON b.id = l.batch_id
       WHERE l.assigned_to = ?
          OR (l.assigned_to IS NULL AND b.assigned_to = ?)
@@ -69,8 +70,9 @@ export const getAllBatches = async (hrId) => {
 
 export const getLeadsByBatch = async (batchId, hrId) => {
   const [rows] = await db.query(
-    `SELECT l.*
+    `SELECT l.*, e.name AS assigned_employee_name, e.employeeCode AS assigned_employee_code
        FROM leads l
+       LEFT JOIN employees e ON e.id = l.assigned_to
       WHERE l.batch_id = ?
         AND (l.assigned_to = ? OR l.assigned_to IS NULL AND EXISTS (
           SELECT 1 FROM lead_batches b WHERE b.id = l.batch_id AND b.assigned_to = ?

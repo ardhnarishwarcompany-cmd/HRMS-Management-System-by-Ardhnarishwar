@@ -1,0 +1,24 @@
+PASS admin login
+PASS templates list + meta (19 placeholders)
+PASS default body exposed
+PASS create template id=1
+PASS preview ok
+FAIL block types ["paragraph","paragraph","bullets","terms","paragraph"]
+PASS ctc_table omitted when include_ctc=0
+PASS placeholders substituted (name, grade)
+PASS joining_date formatted
+PASS template extra terms appended
+PASS template letterhead used
+PASS no unresolved placeholders
+PASS ctc_table + terms auto-appended when body omits them
+PASS unknown placeholder reported
+PASS annual CTC = 12 x monthly (en-IN)
+PASS update template
+PASS update persisted
+PASS pdf 200 4632 bytes
+PASS long body paginates (7 pages)
+PASS preview 400 on missing fields
+PASS template 400 on missing name
+PASS cleanup
+
+21/22 passed

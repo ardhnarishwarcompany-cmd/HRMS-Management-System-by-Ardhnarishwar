@@ -62,7 +62,7 @@ const handleJoinedChange = async (id, joined, joining_date, selection_date) => {
   try {
     await updateJoinedStatus(id, joined, joining_date, selection_date);
 
-    // UI update â€” also keep the dates so the inputs don't visually reset
+    // UI update — also keep the dates so the inputs don't visually reset
     setLocalRows((prev) =>
       prev.map((item) =>
         item.id === id
@@ -87,7 +87,7 @@ const handleJoinedChange = async (id, joined, joining_date, selection_date) => {
   }
 };
 
-  // âœ… DELETE (NO PAGE RELOAD)
+  // ✓ DELETE (NO PAGE RELOAD)
   const handleDelete = async (id) => {
     const ok = window.confirm("Are you sure you want to delete this interview?");
     if (!ok) return;
@@ -175,7 +175,7 @@ const handleJoinedChange = async (id, joined, joining_date, selection_date) => {
                 <td className="p-3">{item.experience || "-"}</td>
 
                 <td className="p-3">
-                  {item.current_ctc || "-"} â†’ {item.expected_ctc || "-"}
+                  {item.current_ctc || "-"} → {item.expected_ctc || "-"}
                 </td>
 
                 <td className="p-3">{item.notice_period || "-"}</td>

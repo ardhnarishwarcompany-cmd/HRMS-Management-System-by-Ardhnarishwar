@@ -12,10 +12,25 @@ export const salesLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // 1️⃣ find employee
+    // 1️⃣ Resolve the real Sales department from the shared production DB.
+    // The environment value is only a fallback because department IDs can differ
+    // between an older/local database and the current Hostinger database.
+    const [salesDepartments] = await db.query(
+      `SELECT id FROM departments
+       WHERE LOWER(TRIM(name)) = 'sales'
+       LIMIT 1`
+    );
+    const actualSalesDeptId = salesDepartments[0]?.id != null
+      ? Number(salesDepartments[0].id)
+      : SALES_DEPT_ID;
+
+    // 2️⃣ Find employee. Return the department ID as a number so the comparison
+    // is stable across MySQL driver/configuration differences.
     const [rows] = await db.query(
-      `SELECT * FROM employees
-       WHERE email = ? LIMIT 1`,
+      `SELECT e.*, d.name AS departmentName
+       FROM employees e
+       LEFT JOIN departments d ON d.id = e.departmentId
+       WHERE e.email = ? LIMIT 1`,
       [email]
     );
 
@@ -25,17 +40,20 @@ export const salesLogin = async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    // 2️⃣ check department (IMPORTANT)
-    if (employee.departmentId !== SALES_DEPT_ID) {
+    // 3️⃣ Check that this employee belongs to the actual Sales department.
+    // This prevents a stale SALES_DEPT_ID from blocking valid production users.
+    const employeeDeptId = Number(employee.departmentId);
+    const departmentIsSales = String(employee.departmentName || '').trim().toLowerCase() === 'sales';
+    if (employeeDeptId !== actualSalesDeptId && !departmentIsSales) {
       return res.status(403).json({ message: "Access denied for this portal" });
     }
 
-    // 3️⃣ check active
-    if (!employee.isActive) {
+    // 4️⃣ check active
+    if (!Number(employee.isActive)) {
       return res.status(403).json({ message: "Employee is inactive" });
     }
 
-    // 4️⃣ verify password
+    // 5️⃣ verify password
     if (!employee.password_hash) {
       return res.status(401).json({
         message:
@@ -48,7 +66,7 @@ export const salesLogin = async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    // 5️⃣ generate sales token
+    // 6️⃣ generate sales token
     const token = jwt.sign(
       {
         employeeId: employee.id,

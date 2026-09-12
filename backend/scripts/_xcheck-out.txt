@@ -1,0 +1,193 @@
+SUMMARY {
+ "backendRoutes": 890,
+ "mounts": 148,
+ "frontendCalls": 1001,
+ "unmatched": 121,
+ "unmatchedReachable": 13,
+ "doubleApiPrefix": 0,
+ "absoluteUrls": 1,
+ "brokenImports": 0,
+ "missingRouteFiles": [
+  {
+   "method": "MISSING_SUBROUTER",
+   "full": "/api/smart-attendance/static",
+   "file": "backend/modules/attendance/attendance.routes.js",
+   "line": 37,
+   "guards": []
+  }
+ ],
+ "mountsWithoutImport": []
+}
+
+== REACHABILITY ==
+{
+ "admin": {
+  "total": 185,
+  "reachable": 150,
+  "unreachable": 35
+ },
+ "HR": {
+  "total": 73,
+  "reachable": 67,
+  "unreachable": 6
+ },
+ "client": {
+  "total": 92,
+  "reachable": 90,
+  "unreachable": 2
+ },
+ "employee": {
+  "total": 32,
+  "reachable": 26,
+  "unreachable": 6
+ },
+ "IT": {
+  "total": 76,
+  "reachable": 48,
+  "unreachable": 28
+ },
+ "Sales": {
+  "total": 70,
+  "reachable": 56,
+  "unreachable": 14
+ },
+ "EVS": {
+  "total": 22,
+  "reachable": 21,
+  "unreachable": 2
+ }
+}
+
+== BROKEN IMPORTS ==
+
+
+== DOUBLE /api PREFIX ==
+
+
+== ABSOLUTE URLS ==
+Sales Sales/src/pages/fieldsales/LocationModal.jsx:32 GET /reverse?lat=:p&lon=:p&format=json  raw=https://nominatim.openstreetmap.org/reverse?lat=:p&lon=:p&format=json [ABSOLUTE_URL,host=nominatim.openstreetmap.org,EXTERNAL] reach=true
+
+== UNMATCHED (reachable) ==
+admin admin/src/pages/aiPlatform/AIPlatformAudit.jsx:38 GET /api/integration/proctor-logs  raw=:p/api/integration/proctor-logs [DYNAMIC_BASE]
+admin admin/src/pages/aiPlatform/AIPlatformAudit.jsx:39 GET /api/integration/summary  raw=:p/api/integration/summary [DYNAMIC_BASE]
+HR HR/src/pages/aiInterviews/AIInterviews.jsx:39 GET /api/integration/reports  raw=:p/api/integration/reports [DYNAMIC_BASE]
+HR HR/src/pages/aiInterviews/AIInterviews.jsx:40 GET /api/integration/summary  raw=:p/api/integration/summary [DYNAMIC_BASE]
+client client/src/services/fieldSalesService.js:13 DELETE /api/client/field-sales/:p  raw=/client/field-sales/:p
+client client/src/services/financeService.js:71 GET /api/client/purchase-orders/by-status/:p  raw=/client/purchase-orders/by-status/:p
+client client/src/services/financeService.js:94 GET /api/client/audit-logs/user/:p  raw=/client/audit-logs/user/:p?limit=:p
+client client/src/services/financeService.js:97 GET /api/client/audit-logs/by-date-range  raw=/client/audit-logs/by-date-range?startDate=:p&endDate=:p
+employee employee/src/pages/attendance/OtpAttendance.jsx:38 GET /api/my-status  raw=:p/my-status [DYNAMIC_BASE]
+employee employee/src/pages/attendance/OtpAttendance.jsx:39 GET /api/my-history  raw=:p/my-history [DYNAMIC_BASE]
+employee employee/src/pages/attendance/OtpAttendance.jsx:66 POST /api/otp/send  raw=:p/otp/send [DYNAMIC_BASE]
+employee employee/src/pages/attendance/OtpAttendance.jsx:92 POST /api/otp/verify  raw=:p/otp/verify [DYNAMIC_BASE]
+employee employee/src/pages/attendance/OtpAttendance.jsx:113 POST /api/check-out  raw=:p/check-out [DYNAMIC_BASE]
+
+== UNMATCHED (unreachable / dead files) ==
+admin admin/src/services/aiChatService.js:4 GET /api/super-admin/ai-chat/conversations  raw=/super-admin/ai-chat/conversations
+admin admin/src/services/aiChatService.js:7 GET /api/super-admin/ai-chat/conversations/:p  raw=/super-admin/ai-chat/conversations/:p
+admin admin/src/services/aiChatService.js:10 POST /api/super-admin/ai-chat/conversations/:p/message  raw=/super-admin/ai-chat/conversations/:p/message
+admin admin/src/services/aiChatService.js:16 POST /api/super-admin/ai-chat/conversations  raw=/super-admin/ai-chat/conversations
+admin admin/src/services/aiChatService.js:19 GET /api/super-admin/ai-chat/stats  raw=/super-admin/ai-chat/stats
+admin admin/src/services/aiChatService.js:22 GET /api/super-admin/ai-chat/logs  raw=/super-admin/ai-chat/logs
+admin admin/src/services/aiChatService.js:25 GET /api/super-admin/ai-chat/responses  raw=/super-admin/ai-chat/responses
+admin admin/src/services/aiChatService.js:28 POST /api/super-admin/ai-chat/responses  raw=/super-admin/ai-chat/responses
+admin admin/src/services/aiChatService.js:31 PUT /api/super-admin/ai-chat/responses/:p  raw=/super-admin/ai-chat/responses/:p
+admin admin/src/services/aiChatService.js:34 DELETE /api/super-admin/ai-chat/responses/:p  raw=/super-admin/ai-chat/responses/:p
+admin admin/src/services/aiChatService.js:37 GET /api/super-admin/ai-chat/analytics  raw=/super-admin/ai-chat/analytics
+admin admin/src/services/aiChatService.js:40 POST /api/super-admin/ai-chat/train  raw=/super-admin/ai-chat/train
+admin admin/src/services/aiChatService.js:43 GET /api/super-admin/ai-chat/insights  raw=/super-admin/ai-chat/insights
+admin admin/src/services/attendanceService.js:4 GET /api/super-admin/attendance/auto  raw=/super-admin/attendance/auto
+admin admin/src/services/attendanceService.js:7 POST /api/super-admin/attendance/sync  raw=/super-admin/attendance/sync
+admin admin/src/services/attendanceService.js:10 POST /api/super-admin/attendance/import  raw=/super-admin/attendance/import
+admin admin/src/services/attendanceService.js:15 GET /api/super-admin/attendance/settings  raw=/super-admin/attendance/settings
+admin admin/src/services/attendanceService.js:21 POST /api/super-admin/attendance/generate  raw=/super-admin/attendance/generate
+admin admin/src/services/attendanceService.js:24 GET /api/super-admin/attendance/logs  raw=/super-admin/attendance/logs
+admin admin/src/services/chatbotService.js:4 GET /api/super-admin/chatbot/conversations  raw=/super-admin/chatbot/conversations
+admin admin/src/services/chatbotService.js:7 GET /api/super-admin/chatbot/conversations/:p/messages  raw=/super-admin/chatbot/conversations/:p/messages
+admin admin/src/services/chatbotService.js:10 POST /api/super-admin/chatbot/conversations/:p/messages  raw=/super-admin/chatbot/conversations/:p/messages
+admin admin/src/services/chatbotService.js:13 POST /api/super-admin/chatbot/conversations  raw=/super-admin/chatbot/conversations
+admin admin/src/services/chatbotService.js:16 GET /api/super-admin/chatbot/stats  raw=/super-admin/chatbot/stats
+admin admin/src/services/chatbotService.js:19 GET /api/super-admin/chatbot/unread  raw=/super-admin/chatbot/unread
+admin admin/src/services/chatbotService.js:22 POST /api/super-admin/chatbot/conversations/:p/read  raw=/super-admin/chatbot/conversations/:p/read
+admin admin/src/services/chatbotService.js:25 POST /api/super-admin/chatbot/conversations/:p/close  raw=/super-admin/chatbot/conversations/:p/close
+admin admin/src/services/chatbotService.js:28 GET /api/super-admin/chatbot/settings  raw=/super-admin/chatbot/settings
+admin admin/src/services/chatbotService.js:31 PUT /api/super-admin/chatbot/settings  raw=/super-admin/chatbot/settings
+admin admin/src/services/chatbotService.js:34 GET /api/super-admin/chatbot/quick-replies  raw=/super-admin/chatbot/quick-replies
+admin admin/src/services/chatbotService.js:37 POST /api/super-admin/chatbot/quick-replies  raw=/super-admin/chatbot/quick-replies
+admin admin/src/services/chatbotService.js:40 DELETE /api/super-admin/chatbot/quick-replies/:p  raw=/super-admin/chatbot/quick-replies/:p
+admin admin/src/services/clientCandidatePolicyService.js:10 PUT /api/super-admin/client-policies/:p  raw=/super-admin/client-policies/:p
+admin admin/src/services/clientCandidatePolicyService.js:16 POST /api/super-admin/client-policies/:p/toggle  raw=/super-admin/client-policies/:p/toggle
+admin admin/src/services/clientCandidatePolicyService.js:25 PUT /api/super-admin/candidate-policies/:p  raw=/super-admin/candidate-policies/:p
+admin admin/src/services/clientCandidatePolicyService.js:31 POST /api/super-admin/candidate-policies/:p/toggle  raw=/super-admin/candidate-policies/:p/toggle
+admin admin/src/services/clientCandidatePolicyService.js:34 GET /api/super-admin/work-policies/stats  raw=/super-admin/work-policies/stats
+admin admin/src/services/clientCandidatePolicyService.js:37 GET /api/super-admin/work-policies/logs  raw=/super-admin/work-policies/logs
+admin admin/src/services/companyPolicyService.js:19 GET /api/super-admin/policies/categories  raw=/super-admin/policies/categories
+admin admin/src/services/companyPolicyService.js:22 GET /api/super-admin/policies/category/:p  raw=/super-admin/policies/category/:p
+admin admin/src/services/companyPolicyService.js:25 POST /api/super-admin/policies/:p/toggle  raw=/super-admin/policies/:p/toggle
+admin admin/src/services/companyPolicyService.js:31 POST /api/super-admin/policies/import  raw=/super-admin/policies/import
+admin admin/src/services/companyPolicyService.js:36 GET /api/super-admin/policies/export  raw=/super-admin/policies/export
+admin admin/src/services/discussionPolicyService.js:4 GET /api/super-admin/discussion-policies  raw=/super-admin/discussion-policies
+admin admin/src/services/discussionPolicyService.js:7 POST /api/super-admin/discussion-policies  raw=/super-admin/discussion-policies
+admin admin/src/services/discussionPolicyService.js:10 PUT /api/super-admin/discussion-policies/:p  raw=/super-admin/discussion-policies/:p
+admin admin/src/services/discussionPolicyService.js:13 DELETE /api/super-admin/discussion-policies/:p  raw=/super-admin/discussion-policies/:p
+admin admin/src/services/discussionPolicyService.js:16 POST /api/super-admin/discussion-policies/:p/toggle  raw=/super-admin/discussion-policies/:p/toggle
+admin admin/src/services/discussionPolicyService.js:19 GET /api/super-admin/discussion-requests  raw=/super-admin/discussion-requests
+admin admin/src/services/discussionPolicyService.js:22 POST /api/super-admin/discussion-requests  raw=/super-admin/discussion-requests
+admin admin/src/services/discussionPolicyService.js:25 PUT /api/super-admin/discussion-requests/:p  raw=/super-admin/discussion-requests/:p
+admin admin/src/services/discussionPolicyService.js:28 GET /api/super-admin/discussion-logs  raw=/super-admin/discussion-logs
+admin admin/src/services/discussionPolicyService.js:31 POST /api/super-admin/discussion-requests/:p/escalate  raw=/super-admin/discussion-requests/:p/escalate
+admin admin/src/services/discussionPolicyService.js:34 POST /api/super-admin/discussion-requests/:p/resolve  raw=/super-admin/discussion-requests/:p/resolve
+admin admin/src/services/discussionPolicyService.js:37 GET /api/super-admin/discussion-policies/stats  raw=/super-admin/discussion-policies/stats
+admin admin/src/services/loginTimeService.js:7 PUT /api/super-admin/login-settings  raw=/super-admin/login-settings
+admin admin/src/services/loginTimeService.js:10 GET /api/super-admin/employee-login-times  raw=/super-admin/employee-login-times
+admin admin/src/services/loginTimeService.js:13 GET /api/super-admin/employee-login-times/:p  raw=/super-admin/employee-login-times/:p
+admin admin/src/services/loginTimeService.js:16 POST /api/super-admin/employee-login-times/:p  raw=/super-admin/employee-login-times/:p
+admin admin/src/services/loginTimeService.js:19 PUT /api/super-admin/employee-login-times/:p  raw=/super-admin/employee-login-times/:p
+admin admin/src/services/loginTimeService.js:22 GET /api/super-admin/login-logs/today  raw=/super-admin/login-logs/today
+admin admin/src/services/loginTimeService.js:25 GET /api/super-admin/login-logs  raw=/super-admin/login-logs
+admin admin/src/services/loginTimeService.js:28 POST /api/super-admin/login-logs/login  raw=/super-admin/login-logs/login
+admin admin/src/services/loginTimeService.js:31 POST /api/super-admin/login-logs/logout  raw=/super-admin/login-logs/logout
+admin admin/src/services/loginTimeService.js:34 GET /api/super-admin/login-logs/stats  raw=/super-admin/login-logs/stats
+admin admin/src/services/policyMailService.js:4 GET /api/super-admin/policy-mail/templates  raw=/super-admin/policy-mail/templates
+admin admin/src/services/policyMailService.js:7 POST /api/super-admin/policy-mail/templates  raw=/super-admin/policy-mail/templates
+admin admin/src/services/policyMailService.js:10 PUT /api/super-admin/policy-mail/templates/:p  raw=/super-admin/policy-mail/templates/:p
+admin admin/src/services/policyMailService.js:13 DELETE /api/super-admin/policy-mail/templates/:p  raw=/super-admin/policy-mail/templates/:p
+admin admin/src/services/policyMailService.js:16 POST /api/super-admin/policy-mail/send  raw=/super-admin/policy-mail/send
+admin admin/src/services/policyMailService.js:19 POST /api/super-admin/policy-mail/send-bulk  raw=/super-admin/policy-mail/send-bulk
+admin admin/src/services/policyMailService.js:22 POST /api/super-admin/policy-mail/schedule  raw=/super-admin/policy-mail/schedule
+admin admin/src/services/policyMailService.js:25 GET /api/super-admin/policy-mail/logs  raw=/super-admin/policy-mail/logs
+admin admin/src/services/policyMailService.js:28 GET /api/super-admin/policy-mail/stats  raw=/super-admin/policy-mail/stats
+admin admin/src/services/policyMailService.js:34 DELETE /api/super-admin/policy-mail/schedule/:p  raw=/super-admin/policy-mail/schedule/:p
+admin admin/src/services/subscriptionService.js:4 GET /api/super-admin/subscription/plans  raw=/super-admin/subscription/plans
+admin admin/src/services/subscriptionService.js:7 POST /api/super-admin/subscription/plans  raw=/super-admin/subscription/plans
+admin admin/src/services/subscriptionService.js:10 PUT /api/super-admin/subscription/plans/:p  raw=/super-admin/subscription/plans/:p
+admin admin/src/services/subscriptionService.js:13 DELETE /api/super-admin/subscription/plans/:p  raw=/super-admin/subscription/plans/:p
+admin admin/src/services/subscriptionService.js:16 GET /api/super-admin/subscription/active  raw=/super-admin/subscription/active
+admin admin/src/services/subscriptionService.js:19 GET /api/super-admin/subscription/:p  raw=/super-admin/subscription/:p
+admin admin/src/services/subscriptionService.js:22 POST /api/super-admin/subscription  raw=/super-admin/subscription
+admin admin/src/services/subscriptionService.js:25 PUT /api/super-admin/subscription/:p  raw=/super-admin/subscription/:p
+admin admin/src/services/subscriptionService.js:28 POST /api/super-admin/subscription/:p/cancel  raw=/super-admin/subscription/:p/cancel
+admin admin/src/services/subscriptionService.js:31 POST /api/super-admin/subscription/:p/renew  raw=/super-admin/subscription/:p/renew
+admin admin/src/services/subscriptionService.js:34 POST /api/super-admin/subscription/:p/upgrade  raw=/super-admin/subscription/:p/upgrade
+admin admin/src/services/subscriptionService.js:37 GET /api/super-admin/subscription/stats  raw=/super-admin/subscription/stats
+admin admin/src/services/subscriptionService.js:40 GET /api/super-admin/subscription/:p/payments  raw=/super-admin/subscription/:p/payments
+admin admin/src/services/subscriptionService.js:43 GET /api/super-admin/subscription/export  raw=/super-admin/subscription/export
+admin admin/src/services/workPolicyService.js:4 GET /api/super-admin/work-policies  raw=/super-admin/work-policies
+admin admin/src/services/workPolicyService.js:7 POST /api/super-admin/work-policies  raw=/super-admin/work-policies
+admin admin/src/services/workPolicyService.js:10 PUT /api/super-admin/work-policies/:p  raw=/super-admin/work-policies/:p
+admin admin/src/services/workPolicyService.js:13 DELETE /api/super-admin/work-policies/:p  raw=/super-admin/work-policies/:p
+admin admin/src/services/workPolicyService.js:16 POST /api/super-admin/work-policies/:p/toggle  raw=/super-admin/work-policies/:p/toggle
+admin admin/src/services/workPolicyService.js:19 GET /api/super-admin/work-targets  raw=/super-admin/work-targets
+admin admin/src/services/workPolicyService.js:22 GET /api/super-admin/work-targets/employee/:p  raw=/super-admin/work-targets/employee/:p
+admin admin/src/services/workPolicyService.js:25 POST /api/super-admin/work-targets  raw=/super-admin/work-targets
+admin admin/src/services/workPolicyService.js:28 PUT /api/super-admin/work-targets/:p  raw=/super-admin/work-targets/:p
+admin admin/src/services/workPolicyService.js:31 DELETE /api/super-admin/work-targets/:p  raw=/super-admin/work-targets/:p
+admin admin/src/services/workPolicyService.js:34 POST /api/super-admin/work-targets/:p/progress  raw=/super-admin/work-targets/:p/progress
+admin admin/src/services/workPolicyService.js:37 GET /api/super-admin/work-targets/stats  raw=/super-admin/work-targets/stats
+admin admin/src/services/workPolicyService.js:40 GET /api/super-admin/work-targets/:p/history  raw=/super-admin/work-targets/:p/history
+admin admin/src/services/workPolicyService.js:43 POST /api/super-admin/work-targets/:p/approve  raw=/super-admin/work-targets/:p/approve
+admin admin/src/services/workPolicyService.js:46 POST /api/super-admin/work-targets/bulk-assign  raw=/super-admin/work-targets/bulk-assign
+admin admin/src/services/workReportService.js:25 GET /api/super-admin/eod-reports/employee/:p  raw=/super-admin/eod-reports/employee/:p
+employee employee/src/components/workassignment/AssignWorkModal.jsx:32 POST /api/hr/work-assignments  raw=:p/hr/work-assignments [DYNAMIC_BASE]
+IT IT/src/components/workassignment/AssignWorkModal.jsx:32 POST /api/hr/work-assignments  raw=:p/hr/work-assignments [DYNAMIC_BASE]
+Sales Sales/src/services/auth.service.js:3 POST /api/auth/login  raw=/auth/login

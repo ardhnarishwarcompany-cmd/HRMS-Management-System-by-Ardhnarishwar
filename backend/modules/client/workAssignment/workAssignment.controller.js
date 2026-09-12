@@ -1,3 +1,4 @@
+import path from "path";
 import { db } from "../../../config/db.js";
 
 /* =========================================

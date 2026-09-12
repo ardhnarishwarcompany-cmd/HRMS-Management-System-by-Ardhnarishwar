@@ -42,7 +42,7 @@ const REVIEW_PILL = {
 };
 
 const initials = (name = "") =>
-  name
+  String(name || "")
     .split(" ")
     .filter(Boolean)
     .slice(0, 2)

@@ -94,11 +94,28 @@ import { db } from "../../../config/db.js";
 // ✅ GET
 export const getAllPolicies = async (clientId) => {
   const [rows] = await db.query(
-    `SELECT * FROM work_policies 
-     WHERE client_id = ? 
+    `SELECT * FROM work_policies
+     WHERE client_id = ? OR client_id = 0
      ORDER BY id DESC`,
     [clientId]
   );
+
+  const [globalPolicies] = await db.query(
+    `SELECT id, title, category, description, is_active, created_at, updated_at
+     FROM policies ORDER BY id DESC`
+  );
+  const existingTitles = new Set(rows.map((p) => String(p.title || "").trim().toLowerCase()));
+  for (const p of globalPolicies) {
+    const key = String(p.title || "").trim().toLowerCase();
+    if (!key || existingTitles.has(key)) continue;
+    rows.push({
+      id: `sa-${p.id}`, client_id: 0, title: p.title, category: p.category,
+      description: p.description || "", status: p.is_active ? "active" : "archived",
+      isActive: p.is_active ? 1 : 0, isAutomated: 1, autoApply: p.auto_apply ? 1 : 0,
+      policy_code: `SA-POL-${p.id}`, effective_date: p.created_at,
+      createdAt: p.created_at, updatedAt: p.updated_at, departmentId: 0, type: "general",
+    });
+  }
   return rows;
 };
 
