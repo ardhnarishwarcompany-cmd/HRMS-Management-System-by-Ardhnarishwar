@@ -3,6 +3,9 @@
 This release is prepared for a VPS deployment with **one Node.js backend + one MySQL database**.
 The browser uses only HTTPS live domains. EVS, AI Robo Interview and Smart Attendance are served by the unified Node backend.
 
+**Main portal:-**
+
+https://ardhnarishwar-hrms.portal-home.recruweb.com/
 ## Live portal routing
 
 | Portal | Live URL |
