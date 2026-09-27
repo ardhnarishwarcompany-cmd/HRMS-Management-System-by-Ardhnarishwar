@@ -1,0 +1,1 @@
+-- HR portal education fields already ensured safely by migration repair.\n-- Existing columns are preserved.\n

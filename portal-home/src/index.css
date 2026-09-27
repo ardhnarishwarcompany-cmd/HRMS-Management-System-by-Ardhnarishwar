@@ -1,0 +1,972 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-[#070913] text-slate-100 min-h-screen antialiased selection:bg-brand-orange selection:text-white;
+  }
+
+  /*
+   * The cinematic footer bleeds full-bleed via `w-screen; -ml-50vw`, which can
+   * push a horizontal scrollbar. `overflow-x: clip` contains that WITHOUT
+   * creating a scroll container -- unlike `overflow-x: hidden`, which would
+   * become the nearest scrollport and silently break every `position: sticky`
+   * on the page, including the footer's scroll sequence.
+   */
+  html,
+  body {
+    overflow-x: clip;
+  }
+}
+
+/* Glassmorphism custom utilities */
+.glass-panel {
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-card {
+  background: rgba(15, 22, 41, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-card-hover {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card-hover:hover {
+  background: rgba(23, 33, 60, 0.85);
+  border-color: rgba(99, 102, 241, 0.4);
+  box-shadow: 0 20px 40px -12px rgba(99, 102, 241, 0.3);
+  transform: translateY(-6px);
+}
+
+/* GlowBorderCard: rotating conic-gradient glow */
+@property --glow-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.glow-conic {
+  background: conic-gradient(
+    from var(--glow-angle),
+    var(--glow-color-1),
+    var(--glow-color-2),
+    var(--glow-color-3),
+    var(--glow-color-4),
+    var(--glow-color-5),
+    var(--glow-color-6),
+    var(--glow-color-7),
+    var(--glow-color-8),
+    var(--glow-color-9),
+    var(--glow-color-10)
+  );
+  animation: glow-rotate var(--glow-animation-duration, 4s) linear infinite;
+}
+
+.glow-paused {
+  animation-play-state: paused;
+}
+
+@keyframes glow-rotate {
+  to {
+    --glow-angle: 360deg;
+  }
+}
+
+/* ---------------------------------------------------------------------- */
+/* Cinematic footer ("THE WORKFORCE, CONNECTED.") — scoped utilities only */
+/* ---------------------------------------------------------------------- */
+
+.footer-grid-lines {
+  /* --footer-grid is set inline by the footer so the grid follows the theme. */
+  background-image:
+    linear-gradient(to right, var(--footer-grid, rgba(255, 255, 255, 0.05)) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--footer-grid, rgba(255, 255, 255, 0.05)) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 45%, black 40%, transparent 85%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 45%, black 40%, transparent 85%);
+}
+
+@keyframes footerDrift {
+  0%, 100% { transform: translate3d(0, 0, 0); opacity: 0.25; }
+  50% { transform: translate3d(0, -14px, 0); opacity: 0.7; }
+}
+
+.footer-particle {
+  animation: footerDrift 7s ease-in-out infinite;
+}
+
+/* Reduced motion: kill every ambient loop in the footer. Scroll-linked
+   transforms are additionally skipped in JS via useReducedMotion(). */
+@media (prefers-reduced-motion: reduce) {
+  .footer-particle,
+  .glow-conic {
+    animation: none !important;
+  }
+
+  .animate-spin-slow,
+  .animate-pulse {
+    animation: none !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* ---------------------------------------------------------------------- */
+/* Scroll-driven solution cards                                           */
+/* ---------------------------------------------------------------------- */
+/*
+ * GSAP ScrollTrigger writes --card-progress (reveal, 0->1) and --card-active
+ * (viewport dominance, 0->1) onto .solution-card. Everything below is pure
+ * CSS reading those two numbers, so scrolling costs no React renders and no
+ * layout-triggering property animations.
+ */
+
+.solution-card-outer {
+  perspective: 1400px;
+}
+
+.solution-card {
+  --card-progress: 0;
+  --card-active: 1;
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+  --px: 50%;
+  --py: 50%;
+
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 1.75rem;
+  border-radius: 28px;
+  overflow: hidden;
+  cursor: pointer;
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
+
+  transform:
+    translate3d(0, calc((1 - var(--card-progress)) * 42px), 0)
+    rotateX(var(--tilt-x))
+    rotateY(var(--tilt-y));
+
+  /* Revealed by scroll, then dimmed while another card is dominant. */
+  opacity: calc(var(--card-progress) * (0.72 + 0.28 * var(--card-active)));
+
+  transition:
+    box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.35s ease,
+    opacity 0.3s ease;
+}
+
+.solution-card.is-dark {
+  background: rgba(9, 14, 31, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 16px 40px -10px var(--card-shadow);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.solution-card.is-light {
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 14px 36px -8px var(--card-shadow);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* Animated accent border: a single arc that travels with scroll progress,
+   brightening on hover. Masked to a 1px ring so it never washes the card. */
+.solution-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(
+    from calc(var(--card-progress) * 360deg),
+    transparent 0deg,
+    var(--accent) 45deg,
+    transparent 130deg,
+    transparent 360deg
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  opacity: calc(0.2 + var(--card-active) * 0.4);
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+
+.solution-card:hover::before,
+.solution-card:focus-within::before {
+  opacity: 1;
+}
+
+.solution-card:hover {
+  transform:
+    translate3d(0, calc((1 - var(--card-progress)) * 42px - 8px), 0)
+    rotateX(var(--tilt-x))
+    rotateY(var(--tilt-y))
+    scale(1.015);
+  opacity: 1;
+}
+
+.solution-card.is-dark:hover {
+  box-shadow: 0 28px 60px -12px var(--card-shadow);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.solution-card.is-light:hover {
+  box-shadow: 0 24px 50px -12px var(--card-shadow);
+  border-color: rgba(148, 163, 184, 0.7);
+}
+
+.solution-card:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* --- Oversized outlined service number ------------------------------- */
+
+.card-number {
+  position: absolute;
+  top: -0.35em;
+  right: 0.1em;
+  font-family: 'Sora', sans-serif;
+  font-weight: 800;
+  font-size: clamp(6rem, 13vw, 11rem);
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1.5px currentColor;
+  pointer-events: none;
+  transform: translateY(calc((1 - var(--card-progress)) * 70px));
+  will-change: transform;
+}
+
+.solution-card.is-reversed .card-number {
+  right: auto;
+  left: 0.1em;
+}
+
+.solution-card.is-dark .card-number {
+  color: #ffffff;
+  opacity: calc(0.035 + var(--card-progress) * 0.055);
+}
+
+.solution-card.is-light .card-number {
+  color: #0f172a;
+  opacity: calc(0.03 + var(--card-progress) * 0.05);
+}
+
+/* --- Accent bloom ----------------------------------------------------- */
+
+.card-glow {
+  position: absolute;
+  bottom: -3rem;
+  right: -3rem;
+  width: 16rem;
+  height: 16rem;
+  border-radius: 9999px;
+  filter: blur(48px);
+  background: var(--accent);
+  pointer-events: none;
+  opacity: calc(0.08 + var(--card-active) * 0.14);
+  transition: opacity 0.4s ease;
+}
+
+.solution-card.is-reversed .card-glow {
+  right: auto;
+  left: -3rem;
+}
+
+.solution-card:hover .card-glow {
+  opacity: 0.3;
+}
+
+/* --- Body layout (alternating composition) ---------------------------- */
+
+.card-body {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  align-items: center;
+  height: 100%;
+}
+
+@media (min-width: 640px) {
+  .card-body {
+    grid-template-columns: 1.35fr 1fr;
+  }
+
+  .solution-card.is-reversed .card-content {
+    order: 2;
+  }
+
+  .solution-card.is-reversed .card-visual-slot {
+    order: 1;
+  }
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.card-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 1rem;
+  color: #fff;
+  box-shadow: 0 10px 20px -8px rgba(0, 0, 0, 0.5);
+  transform: translateZ(0) scale(1) rotate(0deg);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.solution-card:hover .card-icon {
+  transform: translateZ(20px) scale(1.08) rotate(2deg);
+}
+
+.card-category {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.85rem;
+  border-radius: 9999px;
+  border-width: 1px;
+  border-style: solid;
+  white-space: nowrap;
+}
+
+/* --- Staggered text reveal, driven by the same scroll variable -------- */
+
+.reveal {
+  --d: 0;
+  --r: clamp(0, calc((var(--card-progress) - var(--d)) / 0.3), 1);
+  opacity: var(--r);
+  transform: translateY(calc((1 - var(--r)) * 22px));
+  will-change: transform, opacity;
+}
+
+/* Title emerges from behind a mask rather than simply fading. */
+.card-title-mask {
+  overflow: hidden;
+  transform: none;
+}
+
+.card-title {
+  font-family: 'Sora', sans-serif;
+  font-weight: 800;
+  font-size: 1.35rem;
+  line-height: 1.2;
+  transform: translateY(calc((1 - var(--r)) * 100%));
+  transition: color 0.3s ease;
+}
+
+.solution-card.is-dark .card-title {
+  color: #fff;
+}
+
+.solution-card.is-light .card-title {
+  color: #0f172a;
+}
+
+.solution-card:hover .card-title {
+  background: linear-gradient(90deg, currentColor, var(--accent), currentColor);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.card-desc {
+  font-size: 0.8rem;
+  font-weight: 500;
+  line-height: 1.6;
+}
+
+.solution-card.is-dark .card-desc {
+  color: #94a3b8;
+}
+
+.solution-card.is-light .card-desc {
+  color: #475569;
+}
+
+.card-foot {
+  margin-top: auto;
+  padding-top: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  border-top: 1px solid;
+}
+
+.solution-card.is-dark .card-foot {
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.solution-card.is-light .card-foot {
+  border-color: rgba(148, 163, 184, 0.35);
+}
+
+.card-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.solution-card.is-dark .card-status {
+  color: #94a3b8;
+}
+
+.solution-card.is-light .card-status {
+  color: #475569;
+}
+
+.card-status-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 9999px;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+  animation: cardStatusPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes cardStatusPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+.card-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.25rem;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #fff;
+  box-shadow: 0 10px 20px -8px rgba(0, 0, 0, 0.45);
+  transition: transform 0.2s ease;
+}
+
+.solution-card:hover .card-cta {
+  transform: scale(1.05);
+}
+
+.card-cta:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.card-cta-arrow {
+  transition: transform 0.2s ease;
+}
+
+.solution-card:hover .card-cta-arrow {
+  transform: translateX(4px);
+}
+
+/* --- Visual parallax -------------------------------------------------- */
+
+.card-visual-slot {
+  min-width: 0;
+}
+
+.card-visual-inner {
+  transform:
+    translate3d(0, calc((1 - var(--card-progress)) * 56px), 0)
+    scale(calc(1.09 - var(--card-progress) * 0.09));
+  filter:
+    blur(calc((1 - var(--card-progress)) * 7px))
+    brightness(calc(0.82 + var(--card-progress) * 0.18));
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, filter;
+}
+
+.solution-card:hover .card-visual-inner {
+  transform:
+    translate3d(0, calc((1 - var(--card-progress)) * 56px - 6px), 0)
+    scale(calc(1.13 - var(--card-progress) * 0.09));
+}
+
+.card-visual-glow {
+  opacity: calc(0.15 + var(--card-active) * 0.25);
+  transition: opacity 0.4s ease;
+}
+
+/* --- Corner arrow + pointer indicator --------------------------------- */
+
+.card-arrow {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 3;
+  color: var(--accent);
+  opacity: 0;
+  transform: translate(-6px, 6px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+}
+
+.solution-card.is-reversed .card-arrow {
+  right: auto;
+  left: 1.5rem;
+}
+
+.solution-card:hover .card-arrow {
+  opacity: 0.85;
+  transform: translate(0, 0);
+}
+
+/* Small local "EXPLORE" chip that trails the pointer inside the card --
+   deliberately scoped to the card instead of a global custom cursor. */
+.card-pointer-label {
+  position: absolute;
+  z-index: 4;
+  top: 0;
+  left: 0;
+  translate: calc(var(--px) + 16px) calc(var(--py) - 10px);
+  padding: 0.25rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  color: #fff;
+  background: var(--accent);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.solution-card:hover .card-pointer-label {
+  opacity: 0.95;
+}
+
+/* --- Unified-ecosystem connector line --------------------------------- */
+
+.portal-connector {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .portal-connector {
+    display: block;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 1px;
+    transform: translateX(-50%);
+    background: linear-gradient(
+      180deg,
+      transparent,
+      rgba(99, 102, 241, 0.28) 12%,
+      rgba(168, 85, 247, 0.28) 50%,
+      rgba(99, 102, 241, 0.28) 88%,
+      transparent
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+}
+
+/* --- Reduced motion --------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .solution-card,
+  .solution-card:hover {
+    transform: none !important;
+    opacity: 1 !important;
+    transition: none !important;
+  }
+
+  .solution-card::before {
+    background: var(--accent);
+    opacity: 0.35;
+  }
+
+  .card-number,
+  .reveal,
+  .card-title,
+  .card-visual-inner,
+  .solution-card:hover .card-visual-inner,
+  .card-icon,
+  .solution-card:hover .card-icon {
+    transform: none !important;
+    opacity: 1;
+    filter: none !important;
+    transition: none !important;
+  }
+
+  .card-number {
+    opacity: 0.06;
+  }
+
+  .card-status-dot,
+  .card-pointer-label {
+    animation: none !important;
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------------------- */
+/* 3D brand logo + floating portal artwork                                */
+/* ---------------------------------------------------------------------- */
+
+.navbar-logo-wrap {
+  position: relative;
+  width: 3.25rem;
+  height: 3.25rem;
+  flex: 0 0 3.25rem;
+  display: grid;
+  place-items: center;
+  perspective: 900px;
+  transform-style: preserve-3d;
+  isolation: isolate;
+}
+
+.navbar-logo-3d {
+  position: relative;
+  z-index: 3;
+  width: 2.85rem;
+  height: 2.85rem;
+  border-radius: 0.9rem;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  border: 1px solid rgba(120, 190, 255, 0.5);
+  box-shadow:
+    0 10px 22px rgba(0, 0, 0, 0.45),
+    0 0 12px rgba(61, 145, 255, 0.72),
+    0 0 28px rgba(61, 145, 255, 0.58),
+    0 0 48px rgba(61, 145, 255, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.42);
+  animation: navbarLogoBounce 3.2s ease-in-out infinite;
+}
+
+.navbar-logo-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: translateZ(16px) scale(1.03);
+  filter: saturate(1.08) brightness(1.04) contrast(1.03);
+}
+
+.navbar-logo-glow {
+  position: absolute;
+  z-index: 0;
+  width: 2.65rem;
+  height: 2.65rem;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(75, 170, 255, 0.68), rgba(99, 102, 241, 0.16) 45%, transparent 72%);
+  filter: blur(9px);
+  animation: navbarLogoGlow 2.4s ease-in-out infinite;
+  box-shadow:
+    0 0 18px rgba(78, 174, 255, 0.55),
+    0 0 42px rgba(78, 174, 255, 0.36);
+}
+
+.navbar-logo-ring {
+  position: absolute;
+  z-index: 1;
+  border-radius: 9999px;
+  border: 1px solid rgba(96, 185, 255, 0.42);
+  pointer-events: none;
+  transform: rotateX(68deg) rotateZ(0deg);
+}
+
+.navbar-logo-ring-a {
+  width: 3.35rem;
+  height: 1rem;
+  animation: navbarLogoRing 4.5s linear infinite;
+}
+
+.navbar-logo-ring-b {
+  width: 3rem;
+  height: 0.72rem;
+  opacity: 0.55;
+  transform: rotateX(68deg) rotateZ(55deg);
+  animation: navbarLogoRingReverse 5.5s linear infinite;
+}
+
+.navbar-logo-wrap:hover .navbar-logo-3d {
+  animation-play-state: paused;
+  transform: translateY(-3px) rotateX(-7deg) rotateY(9deg) scale(1.06);
+}
+
+@keyframes navbarLogoBounce {
+  0%, 100% {
+    transform: translate3d(0, 1px, 0) rotateX(-2deg) rotateY(2deg) rotateZ(-1deg);
+  }
+  25% {
+    transform: translate3d(-1px, -5px, 12px) rotateX(4deg) rotateY(-5deg) rotateZ(1deg);
+  }
+  50% {
+    transform: translate3d(1px, -1px, 18px) rotateX(-3deg) rotateY(6deg) rotateZ(0deg);
+  }
+  75% {
+    transform: translate3d(0, -4px, 10px) rotateX(5deg) rotateY(-3deg) rotateZ(-1deg);
+  }
+}
+
+@keyframes navbarLogoGlow {
+  0%, 100% { opacity: 0.55; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.18); }
+}
+
+@keyframes navbarLogoRing {
+  from { transform: rotateX(68deg) rotateZ(0deg) scale(0.94); }
+  to { transform: rotateX(68deg) rotateZ(360deg) scale(1.04); }
+}
+
+@keyframes navbarLogoRingReverse {
+  from { transform: rotateX(68deg) rotateZ(360deg) scale(1.04); }
+  to { transform: rotateX(68deg) rotateZ(0deg) scale(0.94); }
+}
+
+/* Continuous 3D "bouncing" motion for every portal visual. The scroll
+   parallax remains on .card-visual-inner, while this outer shell floats
+   independently so the two transforms do not fight each other. */
+.card-visual-float {
+  transform-style: preserve-3d;
+  animation: portalVisualFloat 4.6s ease-in-out infinite;
+  will-change: transform, filter;
+  filter: drop-shadow(0 18px 24px rgba(0, 0, 0, 0.22));
+}
+
+.card-visual-float::after {
+  content: '';
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  bottom: -0.55rem;
+  height: 1.1rem;
+  border-radius: 50%;
+  background: var(--accent);
+  filter: blur(16px);
+  opacity: 0.22;
+  transform: scaleX(0.8);
+  animation: portalVisualShadow 4.6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.card-visual-inner {
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+
+.card-visual-image {
+  transform: translateZ(14px) scale(1.025) rotateX(1deg) rotateY(-1deg);
+  transform-origin: center;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), filter 0.45s ease;
+  backface-visibility: hidden;
+}
+
+.card-visual-depth {
+  position: absolute;
+  z-index: 1;
+  inset: 5%;
+  border-radius: 1.3rem;
+  border: 1px solid rgba(150, 215, 255, 0.22);
+  box-shadow:
+    inset 0 0 18px rgba(95, 175, 255, 0.12),
+    0 0 24px rgba(76, 160, 255, 0.1);
+  transform: translateZ(22px);
+  pointer-events: none;
+}
+
+.card-visual-shine {
+  position: absolute;
+  z-index: 2;
+  top: -30%;
+  left: -55%;
+  width: 38%;
+  height: 160%;
+  background: linear-gradient(
+    100deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.04) 35%,
+    rgba(255, 255, 255, 0.28) 50%,
+    rgba(255, 255, 255, 0.04) 65%,
+    transparent 100%
+  );
+  transform: translateZ(28px) rotate(12deg);
+  animation: portalVisualShine 5.2s ease-in-out infinite;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+.solution-card:hover .card-visual-float {
+  animation-duration: 2.8s;
+  filter: drop-shadow(0 22px 30px var(--card-shadow));
+}
+
+.solution-card:hover .card-visual-image {
+  transform: translateZ(28px) scale(1.07) rotateX(-2deg) rotateY(2deg);
+  filter: saturate(1.12) brightness(1.08);
+}
+
+@keyframes portalVisualFloat {
+  0%, 100% {
+    transform: translate3d(0, 4px, 0) rotateX(0.8deg) rotateY(-1deg);
+  }
+  25% {
+    transform: translate3d(-2px, -7px, 12px) rotateX(-2deg) rotateY(2deg);
+  }
+  50% {
+    transform: translate3d(2px, -2px, 18px) rotateX(2deg) rotateY(-2deg);
+  }
+  75% {
+    transform: translate3d(0, -6px, 9px) rotateX(-1.5deg) rotateY(1.5deg);
+  }
+}
+
+@keyframes portalVisualShadow {
+  0%, 100% { opacity: 0.16; transform: scaleX(0.72); }
+  50% { opacity: 0.32; transform: scaleX(1); }
+}
+
+@keyframes portalVisualShine {
+  0%, 62% { transform: translate3d(-180%, 0, 0) rotate(12deg); opacity: 0; }
+  68% { opacity: 0.9; }
+  82%, 100% { transform: translate3d(420%, 0, 0) rotate(12deg); opacity: 0; }
+}
+
+/* Keep the 3D effects comfortable on small screens. */
+@media (max-width: 639px) {
+  .navbar-logo-wrap {
+    width: 2.9rem;
+    height: 2.9rem;
+    flex-basis: 2.9rem;
+  }
+
+  .navbar-logo-3d {
+    width: 2.55rem;
+    height: 2.55rem;
+  }
+
+  .navbar-logo-ring-a { width: 3rem; }
+  .navbar-logo-ring-b { width: 2.7rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navbar-logo-3d,
+  .navbar-logo-glow,
+  .navbar-logo-ring,
+  .card-visual-float,
+  .card-visual-float::after,
+  .card-visual-shine {
+    animation: none !important;
+  }
+
+  .navbar-logo-3d {
+    transform: none !important;
+  }
+
+  .card-visual-image {
+    transform: translateZ(0) scale(1) !important;
+  }
+}
+
+
+
+/* Extra luminous aura around the navbar logo */
+.navbar-logo-wrap::before,
+.navbar-logo-wrap::after {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  width: 3.1rem;
+  height: 3.1rem;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.navbar-logo-wrap::before {
+  background: radial-gradient(
+    circle,
+    rgba(74, 178, 255, 0.48) 0%,
+    rgba(72, 130, 255, 0.22) 30%,
+    rgba(99, 102, 241, 0.1) 52%,
+    transparent 72%
+  );
+  filter: blur(7px);
+  animation: navbarLogoAura 2.1s ease-in-out infinite;
+}
+
+.navbar-logo-wrap::after {
+  border: 1px solid rgba(111, 203, 255, 0.32);
+  box-shadow:
+    0 0 10px rgba(84, 181, 255, 0.35),
+    inset 0 0 12px rgba(84, 181, 255, 0.18);
+  animation: navbarLogoPulse 2.8s ease-in-out infinite;
+}
+
+@keyframes navbarLogoAura {
+  0%, 100% {
+    opacity: 0.55;
+    transform: scale(0.78);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.24);
+  }
+}
+
+@keyframes navbarLogoPulse {
+  0%, 100% {
+    opacity: 0.35;
+    transform: scale(0.92);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.14);
+  }
+}
+
+.navbar-logo-wrap:hover::before {
+  animation-duration: 1.1s;
+}
+
+.navbar-logo-wrap:hover::after {
+  box-shadow:
+    0 0 16px rgba(84, 181, 255, 0.65),
+    0 0 32px rgba(84, 181, 255, 0.4),
+    inset 0 0 16px rgba(84, 181, 255, 0.24);
+}

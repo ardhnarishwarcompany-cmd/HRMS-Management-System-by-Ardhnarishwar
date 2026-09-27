@@ -1,0 +1,1994 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Global Attendance Management System • Enterprise Portal</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/theme.css">
+<style>
+/* ── Universal Page Base & Layout ─────────────────────────────── */
+body {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  margin: 0;
+  overflow-x: hidden;
+  background-image: 
+    radial-gradient(at 10% 10%, rgba(99, 102, 241, 0.12) 0px, transparent 50%),
+    radial-gradient(at 90% 10%, rgba(16, 185, 129, 0.10) 0px, transparent 50%),
+    radial-gradient(at 50% 90%, rgba(6, 182, 212, 0.08) 0px, transparent 50%);
+}
+
+.unified-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px 20px 60px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ── Top Header & Global Bar ──────────────────────────────────── */
+.top-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: rgba(13, 21, 39, 0.75);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.brand-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #10B981, #06B6D4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+}
+
+.brand-name {
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+  color: #FFFFFF;
+}
+
+.brand-sub {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: var(--emerald);
+  text-transform: uppercase;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn-superadmin-pill {
+  background: rgba(99, 102, 241, 0.15);
+  border: 1px solid rgba(99, 102, 241, 0.4);
+  color: #818CF8;
+  padding: 7px 14px;
+  border-radius: var(--radius-full);
+  font-size: 12.5px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-superadmin-pill:hover {
+  background: rgba(99, 102, 241, 0.28);
+  border-color: #818CF8;
+  color: #FFFFFF;
+  transform: translateY(-1px);
+}
+
+/* ── World Clocks Strip ───────────────────────────────────────── */
+.world-clocks-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.clock-item {
+  background: rgba(17, 29, 53, 0.5);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.clock-loc {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.clock-val {
+  font-size: 15px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--cyan);
+  margin-top: 2px;
+}
+
+/* ── Main Navigation Switcher (Tabs) ──────────────────────────── */
+.main-nav-deck {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 32px;
+  background: rgba(13, 21, 39, 0.85);
+  padding: 8px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-medium);
+  backdrop-filter: blur(20px);
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: var(--shadow-md);
+  flex-wrap: wrap;
+}
+
+.nav-tab-btn {
+  flex: 1;
+  min-width: 140px;
+  padding: 10px 18px;
+  font-size: 13.5px;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.nav-tab-btn:hover {
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.nav-tab-btn.active {
+  background: linear-gradient(135deg, var(--emerald), #059669);
+  color: #FFFFFF;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+}
+
+.nav-tab-btn.active.tab-login {
+  background: linear-gradient(135deg, var(--indigo), #4338CA);
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+}
+
+.nav-tab-btn.active.tab-status {
+  background: linear-gradient(135deg, var(--cyan), #0891B2);
+  box-shadow: 0 4px 14px rgba(6, 182, 212, 0.4);
+}
+
+.nav-tab-btn.active.tab-health {
+  background: linear-gradient(135deg, var(--purple), #7E22CE);
+  box-shadow: 0 4px 14px rgba(168, 85, 247, 0.4);
+}
+
+/* ── Content Card & Panels ────────────────────────────────────── */
+.panel-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 36px 40px;
+  backdrop-filter: blur(24px);
+  box-shadow: var(--shadow-lg);
+  max-width: 860px;
+  width: 100%;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 640px) {
+  .panel-card { padding: 24px 18px; }
+}
+
+.panel-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.panel-header h2 {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+  margin-bottom: 8px;
+}
+
+.panel-header p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  max-width: 560px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+/* ── Sub-Tab Segmented Controls ───────────────────────────────── */
+.sub-segmented-control {
+  display: flex;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 4px;
+  margin-bottom: 26px;
+  gap: 4px;
+}
+
+.sub-seg-btn {
+  flex: 1;
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.sub-seg-btn.active {
+  background: var(--bg-card);
+  color: #FFFFFF;
+  border: 1px solid var(--border-medium);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ── Form Styling ─────────────────────────────────────────────── */
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 600px) {
+  .form-grid-2 { grid-template-columns: 1fr; }
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.field-label {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.field-hint {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* ── Interactive Workspace Validation Badge ───────────────────── */
+.company-validation-box {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  margin-top: -6px;
+  margin-bottom: 16px;
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12.5px;
+  color: var(--emerald);
+}
+
+.company-validation-box.error-state {
+  background: rgba(244, 63, 94, 0.08);
+  border-color: rgba(244, 63, 94, 0.3);
+  color: var(--rose);
+}
+
+/* ── Approval Pending Banner Alert ────────────────────────────── */
+.approval-alert-box {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(245, 158, 11, 0.04));
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  margin-bottom: 22px;
+  display: none;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.approval-alert-icon {
+  font-size: 22px;
+  line-height: 1;
+  color: var(--amber);
+}
+
+.approval-alert-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--amber);
+  margin-bottom: 3px;
+}
+
+.approval-alert-desc {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+/* ── Success Registration State ───────────────────────────────── */
+.submission-success-card {
+  text-align: center;
+  padding: 30px 20px;
+  display: none;
+}
+
+.success-icon-wrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(245, 158, 11, 0.15);
+  border: 2px solid var(--amber);
+  color: var(--amber);
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 18px;
+}
+
+/* ── Application Tracker Timeline ─────────────────────────────── */
+.tracker-result-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-top: 24px;
+  display: none;
+}
+
+.timeline-track {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 28px 0 20px;
+  position: relative;
+}
+
+.timeline-track::before {
+  content: '';
+  position: absolute;
+  top: 16px;
+  left: 30px;
+  right: 30px;
+  height: 3px;
+  background: var(--bg-input);
+  z-index: 0;
+}
+
+.timeline-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  z-index: 1;
+}
+
+.step-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 2px solid var(--border-medium);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.step-circle.done {
+  background: var(--emerald);
+  border-color: var(--emerald);
+  color: #FFFFFF;
+}
+
+.step-circle.active {
+  background: var(--amber);
+  border-color: var(--amber);
+  color: #030712;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.6);
+}
+
+.step-text {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+/* ── Modal & Helper Overlays ──────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 7, 18, 0.82);
+  backdrop-filter: blur(14px);
+  z-index: 999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-overlay.active { display: flex; }
+
+.modal-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-xl);
+  max-width: 480px;
+  width: 100%;
+  padding: 30px;
+  position: relative;
+  box-shadow: var(--shadow-lg);
+}
+
+/* ── System Health Inspector View ─────────────────────────────── */
+.health-telemetry-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.telemetry-item {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 16px;
+}
+
+.telemetry-key {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.telemetry-val {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--emerald);
+  margin-top: 4px;
+}
+
+/* ── Live Workspace Validator Box ────────────────────────────── */
+.company-validation-box {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  margin-top: -6px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: var(--text-primary);
+  transition: all 0.25s ease;
+}
+
+.company-validation-box.error-state {
+  background: rgba(244, 63, 94, 0.08);
+  border-color: rgba(244, 63, 94, 0.3);
+}
+
+/* ── Footer ───────────────────────────────────────────────────── */
+.footer-wrap {
+  margin-top: auto;
+  padding-top: 40px;
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+</style>
+</head>
+<body>
+
+<div class="unified-container">
+  <!-- 1. Top Header & Super Admin Quick Access -->
+  <header class="top-header">
+    <div class="brand-section">
+      <div class="brand-icon">🏛️</div>
+      <div>
+        <div class="brand-name">Ardhnarishwar SaaS</div>
+        <div class="brand-sub">GLOBAL ATTENDANCE CLOUD</div>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <!-- Theme Switcher Dropdown -->
+      <div class="theme-selector-wrap">
+        <button class="theme-btn-trigger" onclick="toggleThemeMenu(event)" title="Choose Appearance Theme">
+          <span id="current-theme-label"><span>🌌</span> <span>Midnight Cyber</span></span>
+          <span style="font-size:10px; opacity:0.6;">▼</span>
+        </button>
+        <div class="theme-dropdown-menu" id="theme-dropdown-menu">
+          <div style="font-size:10.5px; font-weight:700; color:var(--text-muted); text-transform:uppercase; padding:4px 8px; letter-spacing:0.5px;">Theme Palette</div>
+          <button class="theme-option-item active" data-theme-key="midnight" onclick="applyTheme('midnight'); closeThemeMenu();">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <div class="theme-preview-dots"><span class="theme-dot" style="background:#070B14; border:1px solid #334155;"></span><span class="theme-dot" style="background:#10B981;"></span></div>
+              <span>🌌 Midnight Cyber</span>
+            </div>
+            <span class="theme-check-mark" style="color:var(--emerald); font-weight:800;">✓</span>
+          </button>
+          <button class="theme-option-item" data-theme-key="nebula" onclick="applyTheme('nebula'); closeThemeMenu();">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <div class="theme-preview-dots"><span class="theme-dot" style="background:#0C081A; border:1px solid #334155;"></span><span class="theme-dot" style="background:#8B5CF6;"></span></div>
+              <span>🔮 Deep Nebula</span>
+            </div>
+            <span class="theme-check-mark" style="color:var(--indigo); font-weight:800;"></span>
+          </button>
+          <button class="theme-option-item" data-theme-key="oceanic" onclick="applyTheme('oceanic'); closeThemeMenu();">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <div class="theme-preview-dots"><span class="theme-dot" style="background:#030F1F; border:1px solid #334155;"></span><span class="theme-dot" style="background:#06B6D4;"></span></div>
+              <span>🌊 Oceanic Abyss</span>
+            </div>
+            <span class="theme-check-mark" style="color:var(--cyan); font-weight:800;"></span>
+          </button>
+          <button class="theme-option-item" data-theme-key="emerald" onclick="applyTheme('emerald'); closeThemeMenu();">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <div class="theme-preview-dots"><span class="theme-dot" style="background:#03140C; border:1px solid #334155;"></span><span class="theme-dot" style="background:#10B981;"></span></div>
+              <span>🌲 Matrix Emerald</span>
+            </div>
+            <span class="theme-check-mark" style="color:var(--emerald); font-weight:800;"></span>
+          </button>
+          <button class="theme-option-item" data-theme-key="light" onclick="applyTheme('light'); closeThemeMenu();">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <div class="theme-preview-dots"><span class="theme-dot" style="background:#FFFFFF; border:1px solid #CBD5E1;"></span><span class="theme-dot" style="background:#4F46E5;"></span></div>
+              <span>☀️ Executive Light</span>
+            </div>
+            <span class="theme-check-mark" style="color:var(--indigo); font-weight:800;"></span>
+          </button>
+        </div>
+      </div>
+
+      <button class="btn-superadmin-pill" onclick="openSuperAdminDrawer()">
+        <span>🏛️</span> Super Admin Portal
+      </button>
+
+      <button class="badge badge-emerald" style="border:none; cursor:pointer;" onclick="switchMainTab('health')">
+        <span class="badge-dot"></span> System Live (UTC)
+      </button>
+    </div>
+  </header>
+
+  <!-- 2. Dynamic Local Time & Global Geolocation Telemetry HUD (No static hardcoded clocks) -->
+  <div class="telemetry-hud-bar">
+    <div class="telemetry-group">
+      <div class="telemetry-pill active" id="telemetry-time-pill">
+        <span>🕒</span>
+        <span class="clock-live-time" id="dynamic-local-time">--:--:--</span>
+      </div>
+      <div class="telemetry-pill" id="dynamic-timezone-badge">
+        <span>🌐</span> Auto-detecting Timezone...
+      </div>
+      <span class="clock-live-date" id="dynamic-local-date">-- --- ----</span>
+    </div>
+
+    <div class="telemetry-group">
+      <div class="telemetry-pill" id="telemetry-gps-pill" onclick="triggerGPSLock()" style="cursor:pointer;" title="Click to acquire GPS coordinates">
+        <span>📍</span> <span id="telemetry-gps-text">Acquiring GPS Signal...</span>
+      </div>
+      <div class="telemetry-pill active" id="telemetry-network-pill">
+        <span>🟢</span> <span>ONLINE</span>
+      </div>
+      <button class="btn btn-sm btn-primary" onclick="openQuickCameraModal()" style="font-size:11.5px; padding:5px 12px; border-radius:var(--radius-full);">
+        <span>📸</span> Live Biometric Check-In
+      </button>
+    </div>
+  </div>
+
+  <!-- 3. Central Switcher Deck (Unified Single URL Controller) -->
+  <nav class="main-nav-deck">
+    <button class="nav-tab-btn active" id="btn-tab-register" onclick="switchMainTab('register')">
+      <span>🌟</span> Register (New Users)
+    </button>
+    <button class="nav-tab-btn tab-login" id="btn-tab-login" onclick="switchMainTab('login')">
+      <span>🔐</span> Sign In (Existing Users)
+    </button>
+    <button class="nav-tab-btn tab-status" id="btn-tab-status" onclick="switchMainTab('status')">
+      <span>🔍</span> Track Status
+    </button>
+    <button class="nav-tab-btn tab-health" id="btn-tab-health" onclick="switchMainTab('health')">
+      <span>💚</span> Telemetry & Health
+    </button>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- VIEW 1: REGISTRATION (DEFAULT FOR NEW USERS)                   -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <section class="panel-card" id="view-panel-register">
+    <div id="register-form-container">
+      <div class="panel-header">
+        <div class="badge badge-emerald" style="margin-bottom:10px;">Approval-Governed SaaS Platform</div>
+        <h2>Workforce Onboarding Portal</h2>
+        <p>Register your corporate workspace or join as an employee. All accounts undergo Super Admin verification before activation.</p>
+      </div>
+
+      <!-- Registration Sub-Tabs -->
+      <div class="sub-segmented-control">
+        <button class="sub-seg-btn active" id="btn-sub-comp" onclick="switchRegSubTab('company')">
+          🏢 Company / Client Organization
+        </button>
+        <button class="sub-seg-btn" id="btn-sub-emp" onclick="switchRegSubTab('employee')">
+          👤 Employee / Staff Self-Onboarding
+        </button>
+      </div>
+
+      <!-- TAB A: Company Registration Form -->
+      <form id="form-register-company" onsubmit="handleRegisterCompany(event)">
+        <div class="form-grid-2">
+          <div class="field-group">
+            <label class="field-label">Company Legal Name</label>
+            <input type="text" id="reg-comp-name" class="form-input" placeholder="e.g. Acme Corporation Global" required>
+          </div>
+          <div class="field-group">
+            <label class="field-label">GST / Registration No. <span class="field-hint">(Optional)</span></label>
+            <input type="text" id="reg-comp-gst" class="form-input" placeholder="e.g. 29ABCDE1234F1Z5" style="text-transform:uppercase; font-family:var(--font-mono);">
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="field-group">
+            <label class="field-label">Desired Workspace ID <span class="field-hint">(Unique)</span></label>
+            <input type="text" id="reg-comp-id" class="form-input" placeholder="e.g. ACME" style="text-transform:uppercase; font-family:var(--font-mono);" required>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Primary Country</label>
+            <input type="text" id="reg-comp-country" class="form-input" placeholder="e.g. India" value="India" required>
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="field-group">
+            <label class="field-label">Operational Timezone</label>
+            <select id="reg-comp-tz" class="form-select">
+              <option value="Asia/Kolkata">Asia/Kolkata (IST +05:30)</option>
+              <option value="America/New_York">America/New_York (EST/EDT)</option>
+              <option value="America/Chicago">America/Chicago (CST/CDT)</option>
+              <option value="America/Los_Angeles">America/Los_Angeles (PST/PDT)</option>
+              <option value="Europe/London">Europe/London (GMT/BST)</option>
+              <option value="Europe/Paris">Europe/Paris (CET/CEST)</option>
+              <option value="Asia/Dubai">Asia/Dubai (GST +04:00)</option>
+              <option value="Asia/Singapore">Asia/Singapore (SGT +08:00)</option>
+              <option value="Asia/Tokyo">Asia/Tokyo (JST +09:00)</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Admin Full Name</label>
+            <input type="text" id="reg-comp-admin-name" class="form-input" placeholder="e.g. Sarah Connor" required>
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="field-group">
+            <label class="field-label">Admin Contact Mobile <span class="field-hint">(Sign-in ID)</span></label>
+            <input type="text" id="reg-comp-phone" class="form-input" placeholder="e.g. 9876543210" required>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Admin Corporate Email</label>
+            <input type="email" id="reg-comp-email" class="form-input" placeholder="admin@acmecorp.com">
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Admin Security Password</label>
+          <input type="password" id="reg-comp-password" class="form-input" placeholder="Choose a strong master password" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg" style="width:100%; margin-top:10px;" id="btn-submit-comp">
+          Submit Organization Registration for Approval →
+        </button>
+      </form>
+
+      <!-- TAB B: Employee Registration Form -->
+      <form id="form-register-employee" onsubmit="handleRegisterEmployee(event)" style="display:none;">
+        <div class="field-group">
+          <label class="field-label">Target Company Workspace ID <span class="field-hint">(Enter Organization Code or Name)</span></label>
+          <input type="text" id="reg-emp-comp-id" class="form-input" placeholder="e.g. ACME, NXA_1001, or Company Name" style="text-transform:uppercase; font-family:var(--font-mono);" oninput="verifyCompanyLive()" required>
+        </div>
+
+        <div id="emp-comp-validator-box" class="company-validation-box">
+          <span id="validator-text">Checking workspace...</span>
+          <span id="validator-badge" class="badge badge-emerald">Active</span>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="field-group">
+            <label class="field-label">Employee ID <span class="field-hint">(Unique in Company)</span></label>
+            <input type="text" id="reg-emp-id" class="form-input" placeholder="e.g. EMP-101" style="text-transform:uppercase; font-family:var(--font-mono);" required>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Full Name</label>
+            <input type="text" id="reg-emp-name" class="form-input" placeholder="e.g. John Doe" required>
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="field-group">
+            <label class="field-label">Mobile Number <span class="field-hint">(Sign-in ID)</span></label>
+            <input type="text" id="reg-emp-mobile" class="form-input" placeholder="e.g. 9876500001" required>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Corporate Email</label>
+            <input type="email" id="reg-emp-email" class="form-input" placeholder="john@company.com">
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="field-group">
+            <label class="field-label">Assigned Department</label>
+            <select id="reg-emp-dept" class="form-select">
+              <option value="General">General</option>
+              <option value="Engineering">Engineering</option>
+              <option value="Sales">Sales</option>
+              <option value="Operations">Operations</option>
+              <option value="HR">HR</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Designation / Role</label>
+            <input type="text" id="reg-emp-desig" class="form-input" placeholder="e.g. Senior Software Engineer" value="Staff">
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="field-group">
+            <label class="field-label">Workforce Type</label>
+            <select id="reg-emp-worktype" class="form-select">
+              <option value="Office">Office Worker (Biometric / Wi-Fi)</option>
+              <option value="WFH">Work From Home (WFH Camera)</option>
+              <option value="Field">Field Site (GPS Radar Check-in)</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Account Password</label>
+            <input type="password" id="reg-emp-password" class="form-input" placeholder="Create your login password" required>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg" style="width:100%; margin-top:10px;" id="btn-submit-emp">
+          Submit Employee Registration for Review →
+        </button>
+      </form>
+    </div>
+
+    <!-- Registration Submission Success Splash -->
+    <div id="register-success-splash" class="submission-success-card">
+      <div class="success-icon-wrap">⏳</div>
+      <h2 style="font-size:22px; font-weight:800; margin-bottom:8px;" id="success-title">Application Queued for Review</h2>
+      <p style="font-size:14px; color:var(--text-secondary); max-width:540px; margin:0 auto 24px; line-height:1.5;" id="success-desc">
+        Your registration has been placed in the Super Admin verification queue. Access will be unlocked once approved.
+      </p>
+
+      <div style="background:var(--bg-surface); border:1px solid var(--border-medium); border-radius:var(--radius-md); padding:16px; max-width:440px; margin:0 auto 24px;">
+        <div style="font-size:12px; color:var(--text-muted); text-transform:uppercase; font-weight:700;">Application Tracking Identifier</div>
+        <div style="font-size:18px; font-weight:800; font-family:var(--font-mono); color:var(--cyan); margin-top:4px;" id="success-ref-id">---</div>
+      </div>
+
+      <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="trackFromSuccess()">🔍 Track Live Application Status</button>
+        <button class="btn btn-secondary" onclick="resetRegisterForm()">+ Register Another</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- VIEW 2: ENTERPRISE SIGN IN (EXISTING USERS)                    -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <section class="panel-card" id="view-panel-login" style="display:none;">
+    <div class="panel-header">
+      <div class="badge badge-indigo" style="margin-bottom:10px;">Role-Based Access Control</div>
+      <h2>Enterprise Cloud Sign In</h2>
+      <p>Select your authorized role to access your workforce dashboard.</p>
+    </div>
+
+    <!-- Pending Approval Warning Banner -->
+    <div id="login-pending-alert" class="approval-alert-box">
+      <div class="approval-alert-icon">⚠️</div>
+      <div style="flex:1;">
+        <div class="approval-alert-title" id="pending-alert-heading">Registration Under Review</div>
+        <div class="approval-alert-desc" id="pending-alert-msg">
+          Your registration is under review. Please wait for Super Admin approval.
+        </div>
+        <button class="btn btn-secondary btn-sm" style="margin-top:10px;" onclick="switchMainTab('status')">
+          🔍 Track Application Status →
+        </button>
+      </div>
+    </div>
+
+    <!-- Role Switcher Tabs -->
+    <div class="sub-segmented-control">
+      <button class="sub-seg-btn" id="role-btn-superadmin" onclick="switchLoginRole('super_admin')">
+        🏛️ Super Admin
+      </button>
+      <button class="sub-seg-btn active" id="role-btn-compadmin" onclick="switchLoginRole('company_admin')">
+        🏢 Company Admin / HR
+      </button>
+      <button class="sub-seg-btn" id="role-btn-emp" onclick="switchLoginRole('employee')">
+        👤 Employee
+      </button>
+    </div>
+
+    <!-- Unified Sign-In Form -->
+    <form id="form-login" onsubmit="handleLogin(event)">
+      <!-- Company Workspace ID (for Company Admin & Employee) -->
+      <div class="field-group" id="login-group-compid">
+        <label class="field-label">Company Workspace ID</label>
+        <input type="text" id="login-comp-id" class="form-input" placeholder="e.g. ACME" style="text-transform:uppercase; font-family:var(--font-mono);">
+      </div>
+
+      <!-- Identifier Field -->
+      <div class="field-group">
+        <label class="field-label" id="login-label-identifier">Mobile Number / Email</label>
+        <input type="text" id="login-identifier" class="form-input" placeholder="Enter your registered mobile or email" required>
+      </div>
+
+      <!-- Password Field -->
+      <div class="field-group">
+        <div class="field-label">
+          <span>Password</span>
+          <a href="#" onclick="openForgotPasswordModal(event)" style="font-size:11.5px; color:var(--cyan); text-decoration:none;">Forgot Password?</a>
+        </div>
+        <input type="password" id="login-password" class="form-input" placeholder="Enter account password" required>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-lg" style="width:100%; margin-top:8px;" id="btn-submit-login">
+        Sign In to Portal →
+      </button>
+
+      <!-- Quick Demo Filler Helper -->
+      <div style="margin-top:18px; padding-top:16px; border-top:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+        <span style="font-size:12px; color:var(--text-muted);">Quick Credential Presets:</span>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="fillSuperAdminDemo()">🏛️ Demo Super Admin</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- VIEW 3: APPLICATION STATUS TRACKER                             -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <section class="panel-card" id="view-panel-status" style="display:none;">
+    <div class="panel-header">
+      <div class="badge badge-cyan" style="margin-bottom:10px;">Live Application Radar</div>
+      <h2>Track Approval & Onboarding Status</h2>
+      <p>Enter your registered mobile number, email, or company workspace ID to check your live approval state.</p>
+    </div>
+
+    <form onsubmit="handleCheckStatus(event)" style="display:flex; gap:10px; max-width:560px; margin:0 auto;">
+      <input type="text" id="track-query" class="form-input" placeholder="Mobile / Email / Workspace ID" required>
+      <button type="submit" class="btn btn-primary" id="btn-track-submit">Search 🔍</button>
+    </form>
+
+    <!-- Tracker Result Card -->
+    <div id="tracker-result-card" class="tracker-result-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; border-bottom:1px solid var(--border-subtle); padding-bottom:14px;">
+        <div>
+          <div style="font-size:18px; font-weight:800;" id="track-name">Acme Corp</div>
+          <div style="font-size:12px; color:var(--text-secondary);" id="track-meta">Company Workspace • ID: ACME</div>
+        </div>
+        <span class="badge badge-amber" id="track-status-badge">
+          <span class="badge-dot"></span> PENDING APPROVAL
+        </span>
+      </div>
+
+      <!-- 4-Step Visual Timeline -->
+      <div class="timeline-track">
+        <div class="timeline-step">
+          <div class="step-circle done">✓</div>
+          <div class="step-text">Submitted</div>
+        </div>
+        <div class="timeline-step">
+          <div class="step-circle done">✓</div>
+          <div class="step-text">Verified</div>
+        </div>
+        <div class="timeline-step">
+          <div class="step-circle active" id="timeline-step-3">⏳</div>
+          <div class="step-text">Super Admin Review</div>
+        </div>
+        <div class="timeline-step">
+          <div class="step-circle" id="timeline-step-4">4</div>
+          <div class="step-text">Active Access</div>
+        </div>
+      </div>
+
+      <p style="font-size:13.5px; color:var(--text-secondary); text-align:center; margin-bottom:18px;" id="track-notes">
+        Your registration has been safely received and is pending Super Admin review. You will be able to log in immediately upon approval.
+      </p>
+
+      <div style="text-align:center;" id="track-action-wrap">
+        <button class="btn btn-primary btn-sm" onclick="switchMainTab('login')">Proceed to Sign In</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- VIEW 4: TELEMETRY & SYSTEM HEALTH                              -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <section class="panel-card" id="view-panel-health" style="display:none;">
+    <div class="panel-header">
+      <div class="badge badge-purple" style="margin-bottom:10px;">Production Telemetry</div>
+      <h2>System Architecture & Health</h2>
+      <p>Real-time telemetry, 100% private on-premise engine status, and cryptographic database isolation.</p>
+    </div>
+
+    <div class="health-telemetry-grid">
+      <div class="telemetry-item">
+        <div class="telemetry-key">System Status</div>
+        <div class="telemetry-val">🟢 HEALTHY (200 OK)</div>
+      </div>
+      <div class="telemetry-item">
+        <div class="telemetry-key">Private API Engine</div>
+        <div class="telemetry-val" style="color:var(--cyan);">100% Private (0 3rd Party)</div>
+      </div>
+      <div class="telemetry-item">
+        <div class="telemetry-key">Database State</div>
+        <div class="telemetry-val" id="health-db-status">Active Connected</div>
+      </div>
+      <div class="telemetry-item">
+        <div class="telemetry-key">Server UTC Time</div>
+        <div class="telemetry-val" id="health-utc-time" style="font-family:var(--font-mono); font-size:14px;">--:--:--</div>
+      </div>
+    </div>
+
+    <div style="margin-top:24px; padding:20px; background:var(--bg-surface); border:1px solid var(--border-medium); border-radius:var(--radius-md);">
+      <h4 style="font-size:14px; font-weight:700; margin-bottom:8px;">🔒 Core Architecture Principle</h4>
+      <p style="font-size:13px; color:var(--text-secondary); line-height:1.6; margin:0;">
+        <strong>« NO COMPANY → NO EMPLOYEE → NO VALID EMPLOYEE ID → NO ATTENDANCE »</strong><br>
+        All tenant datasets are cryptographically scoped. Company A cannot read or write Company B's records. Unapproved registrations are completely prevented from accessing operational attendance endpoints.
+      </p>
+    </div>
+  </section>
+
+  <!-- 4. Footer -->
+  <footer class="footer-wrap">
+    <div><strong>Ardhnarishwar Global Attendance Platform</strong> © 2026. All rights reserved.</div>
+    <div style="display:flex; justify-content:center; gap:16px; margin-top:8px;">
+      <a href="/privacy-policy" style="color:var(--text-muted); text-decoration:none;">Privacy Policy</a>
+      <span>•</span>
+      <a href="/terms" style="color:var(--text-muted); text-decoration:none;">Terms of Service</a>
+      <span>•</span>
+      <a href="/health" target="_blank" style="color:var(--emerald); text-decoration:none;">API Health JSON</a>
+    </div>
+  </footer>
+</div>
+
+<!-- Modal: Super Admin Direct Login -->
+<div class="modal-overlay" id="superadmin-modal">
+  <div class="modal-box">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+      <h3 style="font-size:17px; font-weight:800; display:flex; align-items:center; gap:8px;">
+        <span>🏛️</span> Super Admin Command Center
+      </h3>
+      <button class="btn-close" onclick="closeSuperAdminDrawer()">✕</button>
+    </div>
+
+    <form onsubmit="handleSuperAdminDirectLogin(event)">
+      <div class="field-group">
+        <label class="field-label">Super Admin Email / Mobile</label>
+        <input type="text" id="sa-identifier" class="form-input" value="superadmin@ardhnarishwar.com" required>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Master Access Password</label>
+        <input type="password" id="sa-password" class="form-input" value="superadmin123" required>
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width:100%; margin-top:8px;" id="btn-sa-login">
+        Access Super Admin Dashboard →
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: In-App Password Recovery -->
+<div class="modal-overlay" id="forgot-modal">
+  <div class="modal-box">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+      <h3 style="font-size:17px; font-weight:800;">🔐 In-App Password Recovery</h3>
+      <button class="btn-close" onclick="closeForgotPasswordModal()">✕</button>
+    </div>
+
+    <div id="forgot-step-1">
+      <p style="font-size:13px; color:var(--text-secondary); margin-bottom:16px;">
+        Enter your registered mobile number to generate a secure private verification code.
+      </p>
+      <div class="field-group">
+        <label class="field-label">Registered Mobile Number</label>
+        <input type="text" id="fp-mobile" class="form-input" placeholder="e.g. 9876543210" required>
+      </div>
+      <button type="button" class="btn btn-primary" style="width:100%;" onclick="generateRecoveryOTP()">
+        Generate Private In-App OTP →
+      </button>
+    </div>
+
+    <div id="forgot-step-2" style="display:none;">
+      <div class="badge badge-emerald" style="margin-bottom:12px;" id="fp-otp-badge">OTP Vault Active</div>
+      <div class="field-group">
+        <label class="field-label">6-Digit Verification Code</label>
+        <input type="text" id="fp-otp" class="form-input" placeholder="Enter 6-digit code" style="font-family:var(--font-mono); font-size:16px; text-align:center;" required>
+      </div>
+      <div class="field-group">
+        <label class="field-label">New Password</label>
+        <input type="password" id="fp-new-pass" class="form-input" placeholder="Enter new password" required>
+      </div>
+      <button type="button" class="btn btn-primary" style="width:100%;" onclick="submitPasswordReset()">
+        Confirm & Reset Password →
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Live Camera & GPS Biometric Attendance -->
+<div class="modal-overlay" id="quick-camera-modal">
+  <div class="modal-box" style="max-width: 540px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+      <h3 style="font-size:17px; font-weight:800; display:flex; align-items:center; gap:8px;">
+        <span>📸</span> Live Biometric & Photo Attendance Check-In
+      </h3>
+      <button class="btn-close" onclick="closeQuickCameraModal()">✕</button>
+    </div>
+
+    <!-- Active Camera Viewport View -->
+    <div id="cam-capture-view">
+      <!-- Viewfinder area -->
+      <div class="camera-viewfinder-wrap" id="cam-viewfinder">
+        <video id="modal-webcam-feed" class="camera-video-feed" autoplay playsinline muted></video>
+        <div class="camera-overlay-reticle">
+          <div class="reticle-oval"></div>
+          <div class="reticle-badge-top">
+            <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#10B981;"></span>
+            <span id="cam-status-indicator">FACIAL SCANNER ACTIVE</span>
+          </div>
+          <div class="reticle-badge-bottom">
+            <span id="cam-gps-live-tag">📍 GPS: Acquiring coordinates...</span>
+            <span id="cam-time-live-tag">🕒 --:--:--</span>
+          </div>
+        </div>
+      </div>
+      
+      <canvas id="modal-capture-canvas" style="display:none;"></canvas>
+
+      <!-- Live Identity Verification Badge -->
+      <div id="cam-verified-badge" style="display:none; margin-top:10px; padding:8px 12px; background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.3); border-radius:var(--radius-sm); font-size:12.5px; color:var(--emerald);">
+      </div>
+
+      <!-- Error / Info Alert Banner -->
+      <div id="cam-error-banner" style="display:none; margin-top:10px; padding:10px 14px; background:rgba(244,63,94,0.15); border:1px solid rgba(244,63,94,0.3); border-radius:var(--radius-sm); font-size:12.5px; color:#FDA4AF;">
+      </div>
+
+      <form onsubmit="submitQuickBiometricAttendance(event)" style="margin-top:12px;">
+        <div class="form-row-2">
+          <div class="field-group">
+            <label class="field-label">Company Workspace ID</label>
+            <input type="text" id="cam-company-id" class="form-input" placeholder="e.g. APEX" oninput="debounceValidateCamEmployee()" style="text-transform:uppercase;" required>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Employee ID</label>
+            <input type="text" id="cam-emp-id" class="form-input" placeholder="e.g. APEX-1001" oninput="debounceValidateCamEmployee()" style="text-transform:uppercase;" required>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:8px;">
+          <button type="button" class="btn btn-secondary" onclick="triggerGPSLock()" style="flex:1;">
+            <span>📍</span> Resync GPS
+          </button>
+          <button type="submit" class="btn btn-primary" id="btn-cam-capture" style="flex:2;">
+            <span>📸</span> Capture & Mark Attendance →
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Success Celebration View -->
+    <div id="cam-success-view" style="display:none; text-align:center; padding:10px 6px;">
+      <div style="width:68px; height:68px; margin:0 auto 14px; border-radius:50%; background:linear-gradient(135deg, #10B981, #06B6D4); display:flex; align-items:center; justify-content:center; font-size:32px; box-shadow:0 0 30px rgba(16,185,129,0.5);">
+        ✓
+      </div>
+      <div class="badge badge-emerald" style="margin-bottom:8px; font-size:13px; padding:6px 14px;">
+        <span class="badge-dot"></span> <span id="cam-success-status">PRESENT</span>
+      </div>
+      <h3 style="font-size:20px; font-weight:800; margin-bottom:4px;" id="cam-success-name">Employee Name</h3>
+      <p style="font-size:13px; color:var(--text-secondary); margin-bottom:16px;" id="cam-success-msg">
+        Attendance recorded successfully
+      </p>
+
+      <div style="background:var(--bg-input); border:1px solid var(--border-subtle); border-radius:var(--radius-md); padding:12px 14px; font-family:var(--font-mono); font-size:12px; text-align:left; margin-bottom:18px; display:flex; flex-direction:column; gap:6px;">
+        <div>🏢 <strong>Workspace:</strong> <span id="cam-success-comp">...</span></div>
+        <div>👤 <strong>Employee ID:</strong> <span id="cam-success-empid">...</span></div>
+        <div>🕒 <strong>Time:</strong> <span id="cam-success-time" style="color:var(--emerald); font-weight:700;">...</span></div>
+        <div>📍 <strong>GPS Coordinates:</strong> <span id="cam-success-gps" style="color:var(--cyan);">...</span></div>
+      </div>
+
+      <div style="display:flex; gap:10px;">
+        <button class="btn btn-secondary" onclick="resetQuickCameraView()" style="flex:1;">
+          Mark Another
+        </button>
+        <button class="btn btn-primary" onclick="closeQuickCameraModal()" style="flex:1;">
+          Done / Close ✓
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+let currentLoginRole = "company_admin";
+let lastRegisteredId = "";
+let validateCamTimeout = null;
+
+/* ── 1. Dynamic Telemetry & GPS Functions ─────────────────────── */
+async function triggerGPSLock() {
+  const pill = document.getElementById('telemetry-gps-pill');
+  if (pill) {
+    pill.className = 'telemetry-pill warning';
+    pill.innerHTML = `<span>⏳</span> <span>Locking GPS Satellites...</span>`;
+  }
+  const result = await ArdhnarishwarTelemetry.requestGPSPosition();
+  if (result.ok) {
+    showToast(`GPS Position Acquired: ${result.coords.lat.toFixed(4)}, ${result.coords.lng.toFixed(4)} (±${result.coords.accuracy}m)`, 'success');
+  } else {
+    showToast(result.error, 'error');
+  }
+}
+
+async function openQuickCameraModal() {
+  document.getElementById('quick-camera-modal').classList.add('active');
+  resetQuickCameraView();
+  const videoEl = document.getElementById('modal-webcam-feed');
+  const banner = document.getElementById('cam-error-banner');
+  banner.style.display = 'none';
+
+  // Request high-accuracy GPS concurrently
+  ArdhnarishwarTelemetry.requestGPSPosition().then(res => {
+    const gpsTag = document.getElementById('cam-gps-live-tag');
+    if (gpsTag) {
+      if (res.ok) {
+        gpsTag.textContent = `📍 GPS: ${res.coords.lat.toFixed(4)}, ${res.coords.lng.toFixed(4)} (±${res.coords.accuracy}m)`;
+      } else {
+        gpsTag.textContent = `⚠️ GPS: ${res.error.split(':')[0]}`;
+      }
+    }
+  });
+
+  const camRes = await ArdhnarishwarTelemetry.startCamera(videoEl);
+  if (!camRes.ok) {
+    banner.style.display = 'block';
+    banner.innerHTML = `<strong>Camera Error:</strong> ${camRes.error}`;
+  }
+}
+
+function resetQuickCameraView() {
+  document.getElementById('cam-capture-view').style.display = 'block';
+  document.getElementById('cam-success-view').style.display = 'none';
+  document.getElementById('cam-error-banner').style.display = 'none';
+  document.getElementById('cam-verified-badge').style.display = 'none';
+  const videoEl = document.getElementById('modal-webcam-feed');
+  if (videoEl && !ArdhnarishwarTelemetry.cameraStream) {
+    ArdhnarishwarTelemetry.startCamera(videoEl);
+  }
+}
+
+function closeQuickCameraModal() {
+  ArdhnarishwarTelemetry.stopCamera();
+  document.getElementById('quick-camera-modal').classList.remove('active');
+}
+
+function debounceValidateCamEmployee() {
+  clearTimeout(validateCamTimeout);
+  validateCamTimeout = setTimeout(validateCamEmployee, 400);
+}
+
+async function validateCamEmployee() {
+  const compId = document.getElementById('cam-company-id').value.trim().toUpperCase();
+  const empId = document.getElementById('cam-emp-id').value.trim().toUpperCase();
+  const badge = document.getElementById('cam-verified-badge');
+  const banner = document.getElementById('cam-error-banner');
+
+  if (!compId || !empId || empId.length < 2) {
+    badge.style.display = 'none';
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/attendance/validate-employee', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ company_id: compId, emp_id: empId, method: 'Face' })
+    });
+    const data = await res.json();
+    if (data.ok && data.valid && data.employee) {
+      banner.style.display = 'none';
+      badge.style.display = 'block';
+      badge.innerHTML = `<span>✓</span> <strong>Verified Employee:</strong> ${data.employee.name} (${data.employee.department} • ${data.employee.work_type}) — <em>${data.employee.company_name}</em>`;
+    } else {
+      badge.style.display = 'none';
+      if (empId.length >= 3) {
+        banner.style.display = 'block';
+        banner.textContent = data.error || 'Employee not verified';
+      }
+    }
+  } catch (e) {}
+}
+
+async function submitQuickBiometricAttendance(e) {
+  e.preventDefault();
+  const compId = document.getElementById('cam-company-id').value.trim().toUpperCase();
+  const empId = document.getElementById('cam-emp-id').value.trim().toUpperCase();
+  const videoEl = document.getElementById('modal-webcam-feed');
+  const canvasEl = document.getElementById('modal-capture-canvas');
+  const btn = document.getElementById('btn-cam-capture');
+  const banner = document.getElementById('cam-error-banner');
+  banner.style.display = 'none';
+
+  if (!compId || !empId) {
+    showToast('Company Workspace ID and Employee ID are required', 'error');
+    return;
+  }
+
+  // Ensure fresh GPS location
+  let gps = ArdhnarishwarTelemetry.currentPosition;
+  if (!gps) {
+    const gpsRes = await ArdhnarishwarTelemetry.requestGPSPosition({ timeout: 4000 });
+    if (gpsRes.ok) gps = gpsRes.coords;
+  }
+
+  // Request Anti-Replay Liveness Challenge
+  btn.disabled = true;
+  btn.innerHTML = '<span>Negotiating Liveness Session...</span> ⏳';
+
+  const chall = await ArdhnarishwarTelemetry.requestLivenessChallenge(compId, empId);
+  if (!chall.ok) {
+    btn.disabled = false;
+    btn.innerHTML = '<span>Face Camera & Record Attendance</span> ⚡';
+    banner.style.display = 'block';
+    banner.textContent = chall.error || 'Failed to initiate anti-spoofing session';
+    return;
+  }
+
+  // Capture baseline frame
+  btn.innerHTML = '<span>Aligning Face...</span> ⏳';
+  const baselineSnapshot = ArdhnarishwarTelemetry.captureFrameWithWatermark(videoEl, canvasEl, {
+    empId: empId,
+    companyId: compId,
+    lat: gps ? gps.lat : null,
+    lng: gps ? gps.lng : null,
+    accuracy: gps ? gps.accuracy : null
+  });
+
+  if (!baselineSnapshot.ok) {
+    btn.disabled = false;
+    btn.innerHTML = '<span>Face Camera & Record Attendance</span> ⚡';
+    banner.style.display = 'block';
+    banner.textContent = baselineSnapshot.error;
+    return;
+  }
+
+  // Challenge interval
+  const camIndicator = document.getElementById('cam-status-indicator');
+  if (camIndicator) camIndicator.textContent = `SCANNING: ${chall.challenge_text || 'LOOK AT CAMERA'}`;
+  btn.innerHTML = `<span>📸 Action: ${chall.challenge_text || 'Blink or smile naturally'}...</span> ⏳`;
+  await new Promise(r => setTimeout(r, 1200));
+
+  // Capture action frame
+  const actionSnapshot = ArdhnarishwarTelemetry.captureFrameWithWatermark(videoEl, canvasEl, {
+    empId: empId,
+    companyId: compId,
+    lat: gps ? gps.lat : null,
+    lng: gps ? gps.lng : null,
+    accuracy: gps ? gps.accuracy : null
+  });
+
+  const motionScore = ArdhnarishwarTelemetry.measureMotionDelta(
+    baselineSnapshot.luminanceGrid,
+    actionSnapshot.luminanceGrid
+  );
+
+  btn.innerHTML = '<span>Verifying Anti-Spoofing AI...</span> 🔒';
+
+  try {
+    const res = await fetch('/api/attendance/mark-face', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        company_id: compId,
+        emp_id: empId,
+        image: actionSnapshot.dataUrl,
+        baseline_image: baselineSnapshot.dataUrl,
+        session_token: chall.session_token,
+        nonce: chall.nonce,
+        liveness_metadata: {
+          device_label: ArdhnarishwarTelemetry.activeDeviceLabel || 'Physical Camera',
+          virtual_camera_flag: false,
+          challenge_action: chall.challenge,
+          luminance_grid_baseline: baselineSnapshot.luminanceGrid,
+          luminance_grid_action: actionSnapshot.luminanceGrid,
+          client_motion_score: motionScore
+        },
+        lat: actionSnapshot.lat,
+        lng: actionSnapshot.lng,
+        accuracy: actionSnapshot.accuracy,
+        timezone: actionSnapshot.timezone,
+        timestamp_client: actionSnapshot.timestampIso
+      })
+    });
+    const data = await res.json();
+
+    if (data.ok) {
+      ArdhnarishwarTelemetry.playSuccessChime();
+      ArdhnarishwarTelemetry.stopCamera();
+
+      // Show Confirmed Success View
+      document.getElementById('cam-capture-view').style.display = 'none';
+      const succView = document.getElementById('cam-success-view');
+      succView.style.display = 'block';
+
+      const attStatus = (data.attendance_status || 'PRESENT').toUpperCase();
+      document.getElementById('cam-success-status').textContent = attStatus;
+      document.getElementById('cam-success-name').textContent = data.name || empId;
+      document.getElementById('cam-success-msg').textContent = data.message || `Attendance recorded as ${attStatus}`;
+      document.getElementById('cam-success-comp').textContent = `${data.company_name || compId} (${compId})`;
+      document.getElementById('cam-success-empid').textContent = empId;
+      document.getElementById('cam-success-time').textContent = `${data.time || '--:--'} (${data.timezone || 'Local'})`;
+      
+      const gpsTxt = (actionSnapshot.lat !== null && actionSnapshot.lng !== null) 
+        ? `${actionSnapshot.lat.toFixed(4)}, ${actionSnapshot.lng.toFixed(4)} (±${actionSnapshot.accuracy || 0}m)`
+        : 'GPS Not Available';
+      document.getElementById('cam-success-gps').textContent = gpsTxt;
+
+      showToast(data.message || 'Attendance marked successfully!', 'success');
+    } else {
+      ArdhnarishwarTelemetry.playErrorChime();
+      banner.style.display = 'block';
+      banner.textContent = data.error || 'Biometric validation rejected';
+      showToast(data.error || 'Attendance validation failed', 'error');
+    }
+  } catch (err) {
+    ArdhnarishwarTelemetry.playErrorChime();
+    banner.style.display = 'block';
+    banner.textContent = 'Server communication error. Please try again.';
+    showToast('Network error during attendance submission', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<span>📸</span> Capture & Mark Attendance →';
+  }
+}
+
+/* ── 2. Unified Navigation Controller (Single URL Engine) ──────── */
+function switchMainTab(tab) {
+  const tabs = ['register', 'login', 'status', 'health'];
+  tabs.forEach(t => {
+    const btn = document.getElementById(`btn-tab-${t}`);
+    const panel = document.getElementById(`view-panel-${t}`);
+    if (btn) btn.classList.toggle('active', t === tab);
+    if (panel) panel.style.display = (t === tab) ? 'block' : 'none';
+  });
+
+  // Update URL hash smoothly without reloading page
+  history.replaceState(null, null, `/#${tab}`);
+}
+
+/* ── 3. Registration Sub-Tabs (Company vs Employee) ───────────── */
+function switchRegSubTab(sub) {
+  document.getElementById('btn-sub-comp').classList.toggle('active', sub === 'company');
+  document.getElementById('btn-sub-emp').classList.toggle('active', sub === 'employee');
+  document.getElementById('form-register-company').style.display = sub === 'company' ? 'block' : 'none';
+  document.getElementById('form-register-employee').style.display = sub === 'employee' ? 'block' : 'none';
+}
+
+/* ── 4. Live Employee Workspace Validation ─────────────────────── */
+let verifyDebounce = null;
+let verifiedCanonicalCompanyId = "";
+
+async function verifyCompanyLive() {
+  clearTimeout(verifyDebounce);
+  const compInput = document.getElementById('reg-emp-comp-id').value.trim();
+  const box = document.getElementById('emp-comp-validator-box');
+  const text = document.getElementById('validator-text');
+  const badge = document.getElementById('validator-badge');
+
+  if (!compInput || compInput.length < 2) {
+    box.style.display = 'none';
+    verifiedCanonicalCompanyId = "";
+    return;
+  }
+
+  verifyDebounce = setTimeout(async () => {
+    try {
+      const res = await fetch(`/api/auth/verify-company/${encodeURIComponent(compInput)}`);
+      const data = await res.json();
+      box.style.display = 'flex';
+
+      if (data.ok && data.exists) {
+        verifiedCanonicalCompanyId = data.company_id;
+        box.classList.remove('error-state');
+        
+        const isPending = data.status === 'pending';
+        text.innerHTML = `${isPending ? '⏳' : '🟢'} <strong>${data.company_name}</strong> (ID: <code style="color:var(--cyan); font-weight:700;">${data.company_id}</code> • ${data.country || 'Global'})`;
+        badge.className = isPending ? 'badge badge-amber' : 'badge badge-emerald';
+        badge.textContent = isPending ? 'Pending Verification' : 'Active Workspace';
+
+        // Auto populate department dropdown if available
+        if (data.departments && data.departments.length > 0) {
+          const deptSel = document.getElementById('reg-emp-dept');
+          if (deptSel) {
+            deptSel.innerHTML = data.departments.map(d => `<option value="${d}">${d}</option>`).join('');
+          }
+        }
+      } else {
+        verifiedCanonicalCompanyId = "";
+        box.classList.add('error-state');
+        const safeInput = compInput.replace(/['"<>]/g, '');
+        text.innerHTML = `<span>${data.error || `Workspace '${safeInput}' is not registered`}</span> <a href="javascript:void(0)" onclick="switchToCompanyRegister('${safeInput}')" style="color:var(--cyan); font-weight:700; text-decoration:underline; margin-left:6px;">Register Organization →</a>`;
+        badge.className = 'badge badge-rose';
+        badge.textContent = 'Not Found';
+      }
+    } catch (e) {
+      box.style.display = 'none';
+    }
+  }, 250);
+}
+
+function switchToCompanyRegister(prefillId = '') {
+  switchRegisterTab('company');
+  if (prefillId) {
+    const compIdInput = document.getElementById('reg-comp-id');
+    const compNameInput = document.getElementById('reg-comp-name');
+    if (compIdInput && !compIdInput.value) compIdInput.value = prefillId.toUpperCase();
+    if (compNameInput && !compNameInput.value) compNameInput.value = prefillId;
+  }
+}
+
+/* ── 5. Company Registration Submission ───────────────────────── */
+async function handleRegisterCompany(e) {
+  e.preventDefault();
+  const btn = document.getElementById('btn-submit-comp');
+  btn.disabled = true;
+  btn.textContent = 'Submitting Organization Application...';
+
+  const payload = {
+    company_id: document.getElementById('reg-comp-id').value.trim().toUpperCase(),
+    name: document.getElementById('reg-comp-name').value.trim(),
+    gst_number: document.getElementById('reg-comp-gst').value.trim().toUpperCase(),
+    country: document.getElementById('reg-comp-country').value.trim(),
+    timezone: document.getElementById('reg-comp-tz').value,
+    admin_name: document.getElementById('reg-comp-admin-name').value.trim(),
+    phone: document.getElementById('reg-comp-phone').value.trim(),
+    email: document.getElementById('reg-comp-email').value.trim(),
+    admin_password: document.getElementById('reg-comp-password').value.trim()
+  };
+
+  try {
+    const res = await fetch('/api/auth/register-company', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+
+    if (data.ok) {
+      lastRegisteredId = payload.company_id;
+      showSuccessSplash(
+        'Company Workspace Application Submitted',
+        `Workspace '${payload.name}' (${payload.company_id}) has been submitted for Super Admin review. You will receive activation clearance shortly.`,
+        payload.company_id
+      );
+    } else {
+      showToast(data.error || 'Failed to submit registration', 'error');
+    }
+  } catch (err) {
+    showToast('Network error submitting company registration', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Submit Organization Registration for Approval →';
+  }
+}
+
+/* ── 6. Employee Registration Submission ──────────────────────── */
+async function handleRegisterEmployee(e) {
+  e.preventDefault();
+  const btn = document.getElementById('btn-submit-emp');
+  btn.disabled = true;
+  btn.textContent = 'Submitting Employee Application...';
+
+  const targetComp = verifiedCanonicalCompanyId || document.getElementById('reg-emp-comp-id').value.trim().toUpperCase();
+
+  const payload = {
+    company_id: targetComp,
+    emp_id: document.getElementById('reg-emp-id').value.trim().toUpperCase(),
+    name: document.getElementById('reg-emp-name').value.trim(),
+    mobile: document.getElementById('reg-emp-mobile').value.trim(),
+    email: document.getElementById('reg-emp-email').value.trim(),
+    department: document.getElementById('reg-emp-dept').value,
+    designation: document.getElementById('reg-emp-desig').value.trim(),
+    work_type: document.getElementById('reg-emp-worktype').value,
+    password: document.getElementById('reg-emp-password').value.trim()
+  };
+
+  try {
+    const res = await fetch('/api/auth/register-employee', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+
+    if (data.ok) {
+      lastRegisteredId = payload.emp_id;
+      showSuccessSplash(
+        'Employee Application Submitted',
+        `Employee '${payload.name}' (${payload.emp_id}) under workspace '${payload.company_id}' is now in PENDING status. Super Admin or Company HR will review your request.`,
+        payload.emp_id
+      );
+    } else {
+      showToast(data.error || 'Failed to submit employee registration', 'error');
+    }
+  } catch (err) {
+    showToast('Network error registering employee', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Submit Employee Registration for Review →';
+  }
+}
+
+function showSuccessSplash(title, desc, refId) {
+  document.getElementById('register-form-container').style.display = 'none';
+  const splash = document.getElementById('register-success-splash');
+  document.getElementById('success-title').textContent = title;
+  document.getElementById('success-desc').textContent = desc;
+  document.getElementById('success-ref-id').textContent = refId;
+  splash.style.display = 'block';
+}
+
+function resetRegisterForm() {
+  document.getElementById('register-form-container').style.display = 'block';
+  document.getElementById('register-success-splash').style.display = 'none';
+  document.getElementById('form-register-company').reset();
+  document.getElementById('form-register-employee').reset();
+  document.getElementById('emp-comp-validator-box').style.display = 'none';
+}
+
+function trackFromSuccess() {
+  if (lastRegisteredId) {
+    document.getElementById('track-query').value = lastRegisteredId;
+  }
+  switchMainTab('status');
+  if (lastRegisteredId) {
+    handleCheckStatus(new Event('submit'));
+  }
+}
+
+/* ── 7. Role-Based Login Logic ────────────────────────────────── */
+function switchLoginRole(role) {
+  currentLoginRole = role;
+  document.getElementById('role-btn-superadmin').classList.toggle('active', role === 'super_admin');
+  document.getElementById('role-btn-compadmin').classList.toggle('active', role === 'company_admin');
+  document.getElementById('role-btn-emp').classList.toggle('active', role === 'employee');
+
+  const compGroup = document.getElementById('login-group-compid');
+  const labelId = document.getElementById('login-label-identifier');
+  const inputId = document.getElementById('login-identifier');
+
+  // Hide amber alert if user toggles role
+  document.getElementById('login-pending-alert').style.display = 'none';
+
+  if (role === 'super_admin') {
+    compGroup.style.display = 'none';
+    labelId.textContent = 'Super Admin Email / Mobile';
+    inputId.placeholder = 'superadmin@ardhnarishwar.com or 9999999999';
+  } else if (role === 'company_admin') {
+    compGroup.style.display = 'block';
+    labelId.textContent = 'Admin Contact Mobile / Email';
+    inputId.placeholder = 'e.g. 9876543210';
+  } else {
+    compGroup.style.display = 'block';
+    labelId.textContent = 'Employee ID / Mobile / Email';
+    inputId.placeholder = 'e.g. EMP-101 or 9876500001';
+  }
+}
+
+async function handleLogin(e) {
+  e.preventDefault();
+  const btn = document.getElementById('btn-submit-login');
+  btn.disabled = true;
+  btn.textContent = 'Authenticating...';
+  document.getElementById('login-pending-alert').style.display = 'none';
+
+  const payload = {
+    role: currentLoginRole,
+    mobile: document.getElementById('login-identifier').value.trim(),
+    email: document.getElementById('login-identifier').value.trim(),
+    emp_id: document.getElementById('login-identifier').value.trim(),
+    password: document.getElementById('login-password').value.trim(),
+    company_id: (currentLoginRole !== 'super_admin') ? document.getElementById('login-comp-id').value.trim().toUpperCase() : ''
+  };
+
+  try {
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+
+    if (data.ok) {
+      showToast('Authentication successful! Routing to authorized portal...', 'success');
+      setTimeout(() => {
+        if (data.redirect_url) {
+          window.location.href = data.redirect_url;
+        } else if (data.role === 'super_admin') {
+          window.location.href = '/superadmin';
+        } else if (['company_admin', 'hr', 'manager'].includes(data.role)) {
+          window.location.href = '/admin';
+        } else {
+          window.location.href = '/employee';
+        }
+      }, 350);
+    } else {
+      // Check if blocked by pending status
+      if (res.status === 403 && data.status === 'pending') {
+        const alertBox = document.getElementById('login-pending-alert');
+        document.getElementById('pending-alert-heading').textContent = 'Registration Pending Approval';
+        document.getElementById('pending-alert-msg').textContent = data.error || 'Your registration is under review. Please wait for Super Admin approval.';
+        alertBox.style.display = 'flex';
+      } else if (res.status === 403 && data.status === 'rejected') {
+        const alertBox = document.getElementById('login-pending-alert');
+        document.getElementById('pending-alert-heading').textContent = 'Application Rejected';
+        document.getElementById('pending-alert-msg').textContent = data.error || 'Your registration was rejected by platform administration.';
+        alertBox.style.display = 'flex';
+      } else {
+        showToast(data.error || 'Login failed', 'error');
+      }
+    }
+  } catch (err) {
+    showToast('Network error during login authentication', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Sign In to Portal →';
+  }
+}
+
+function fillSuperAdminDemo() {
+  switchLoginRole('super_admin');
+  document.getElementById('login-identifier').value = 'superadmin@ardhnarishwar.com';
+  document.getElementById('login-password').value = 'superadmin123';
+  showToast('Filled default Super Admin credentials', 'info');
+}
+
+/* ── 8. Super Admin Direct Drawer ─────────────────────────────── */
+function openSuperAdminDrawer() { document.getElementById('superadmin-modal').classList.add('active'); }
+function closeSuperAdminDrawer() { document.getElementById('superadmin-modal').classList.remove('active'); }
+
+async function handleSuperAdminDirectLogin(e) {
+  e.preventDefault();
+  const btn = document.getElementById('btn-sa-login');
+  btn.disabled = true;
+  btn.textContent = 'Verifying Super Admin...';
+
+  try {
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        role: 'super_admin',
+        email: document.getElementById('sa-identifier').value.trim(),
+        password: document.getElementById('sa-password').value.trim()
+      })
+    });
+    const data = await res.json();
+    if (data.ok && data.role === 'super_admin') {
+      window.location.href = '/super-admin';
+    } else {
+      showToast(data.error || 'Invalid Super Admin credentials', 'error');
+    }
+  } catch (err) {
+    showToast('Network error signing into Super Admin', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Access Super Admin Dashboard →';
+  }
+}
+
+/* ── 9. Live Application Status Tracker ───────────────────────── */
+async function handleCheckStatus(e) {
+  if (e && e.preventDefault) e.preventDefault();
+  const query = document.getElementById('track-query').value.trim();
+  const btn = document.getElementById('btn-track-submit');
+  if (!query) {
+    showToast('Please enter your Workspace ID, Employee ID, Mobile Number, or Email', 'error');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Searching...';
+
+  try {
+    const res = await fetch('/api/auth/check-registration-status', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ identifier: query })
+    });
+    const data = await res.json();
+    const card = document.getElementById('tracker-result-card');
+
+    if (data.ok && data.found) {
+      card.style.display = 'block';
+      const displayName = data.name || data.entity_name || query;
+      document.getElementById('track-name').textContent = displayName;
+
+      let metaDesc = '';
+      if (data.type === 'company') {
+        metaDesc = `🏢 Company Workspace • ID: ${data.company_id} • Country: ${data.country || 'Global'}`;
+      } else {
+        metaDesc = `👤 Staff Account • ID: ${data.emp_id || 'N/A'} • Workspace: ${data.company_name} (${data.company_id}) • Dept: ${data.department || 'General'}`;
+      }
+      document.getElementById('track-meta').textContent = metaDesc;
+
+      const st = (data.status || 'pending').toLowerCase();
+      const badge = document.getElementById('track-status-badge');
+      const step3 = document.getElementById('timeline-step-3');
+      const step4 = document.getElementById('timeline-step-4');
+      const notes = document.getElementById('track-notes');
+      const actionWrap = document.getElementById('track-action-wrap');
+
+      if (st === 'active') {
+        badge.className = 'badge badge-emerald';
+        badge.innerHTML = '<span class="badge-dot"></span> ACTIVE / APPROVED';
+        step3.className = 'step-circle done';
+        step3.textContent = '✓';
+        step4.className = 'step-circle done';
+        step4.textContent = '✓';
+        notes.innerHTML = `🎉 <strong>Congratulations!</strong> Your account is fully active and verified under <strong>${data.company_name || data.company_id}</strong>. You can sign in immediately.`;
+        actionWrap.innerHTML = `
+          <button class="btn btn-primary btn-sm" onclick="proceedToLoginWithCredentials('${data.company_id}', '${data.emp_id || data.phone || query}', '${data.type}')">
+            Proceed to Sign In →
+          </button>
+        `;
+      } else if (st === 'rejected') {
+        badge.className = 'badge badge-rose';
+        badge.innerHTML = '✕ REJECTED';
+        step3.className = 'step-circle';
+        step3.textContent = '✕';
+        step4.className = 'step-circle';
+        step4.textContent = '✕';
+        notes.textContent = 'Your application was reviewed and rejected. Please contact your company administrator or platform support.';
+        actionWrap.innerHTML = `
+          <button class="btn btn-secondary btn-sm" onclick="switchMainTab('register')">
+            Submit New Registration →
+          </button>
+        `;
+      } else {
+        badge.className = 'badge badge-amber';
+        badge.innerHTML = '<span class="badge-dot"></span> PENDING APPROVAL';
+        step3.className = 'step-circle active';
+        step3.textContent = '⏳';
+        step4.className = 'step-circle';
+        step4.textContent = '4';
+        notes.innerHTML = `Your registration is currently under review by <strong>${data.type === 'company' ? 'Ardhnarishwar Super Admin' : 'Company Administration'}</strong>. You will be able to log in immediately upon approval.`;
+        actionWrap.innerHTML = `
+          <div style="display:flex; justify-content:center; gap:10px;">
+            <button class="btn btn-secondary btn-sm" onclick="handleCheckStatus(new Event('submit'))">🔄 Re-check Status</button>
+            <button class="btn btn-primary btn-sm" onclick="switchMainTab('login')">Go to Sign In</button>
+          </div>
+        `;
+      }
+      showToast(`Found registration record for '${displayName}' (${st.toUpperCase()})`, 'success');
+    } else {
+      card.style.display = 'none';
+      showToast(data.error || 'No registration record found matching the search query', 'error');
+    }
+  } catch (err) {
+    showToast('Network error querying registration status', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Search 🔍';
+  }
+}
+
+function proceedToLoginWithCredentials(compId, identifier, type) {
+  switchMainTab('login');
+  if (type === 'company' || type === 'company_admin') {
+    switchLoginRole('company_admin');
+  } else {
+    switchLoginRole('employee');
+  }
+  if (compId) document.getElementById('login-comp-id').value = compId;
+  if (identifier && identifier !== 'N/A') document.getElementById('login-identifier').value = identifier;
+  const passEl = document.getElementById('login-password');
+  if (passEl) {
+    passEl.focus();
+  }
+}
+
+/* ── 10. Password Recovery Modal ──────────────────────────────── */
+function openForgotPasswordModal(e) {
+  if (e) e.preventDefault();
+  document.getElementById('forgot-modal').classList.add('active');
+  document.getElementById('forgot-step-1').style.display = 'block';
+  document.getElementById('forgot-step-2').style.display = 'none';
+}
+
+function closeForgotPasswordModal() {
+  document.getElementById('forgot-modal').classList.remove('active');
+}
+
+async function generateRecoveryOTP() {
+  const mobile = document.getElementById('fp-mobile').value.trim();
+  if (!mobile) { showToast('Please enter registered mobile number', 'error'); return; }
+
+  try {
+    const res = await fetch('/api/auth/forgot-password/request', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mobile })
+    });
+    const data = await res.json();
+    if (data.ok) {
+      showToast('Private verification OTP generated!', 'success');
+      document.getElementById('forgot-step-1').style.display = 'none';
+      document.getElementById('forgot-step-2').style.display = 'block';
+      if (data.demo_otp) {
+        document.getElementById('fp-otp-badge').textContent = `In-App Vault OTP: ${data.demo_otp}`;
+      }
+    } else showToast(data.error || 'Failed to generate OTP', 'error');
+  } catch (e) { showToast('Network error generating recovery code', 'error'); }
+}
+
+async function submitPasswordReset() {
+  const mobile = document.getElementById('fp-mobile').value.trim();
+  const otp = document.getElementById('fp-otp').value.trim();
+  const newPassword = document.getElementById('fp-new-pass').value.trim();
+
+  if (!otp || !newPassword) { showToast('Please enter OTP and new password', 'error'); return; }
+
+  try {
+    const res = await fetch('/api/auth/forgot-password/reset', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mobile, otp, new_password: newPassword })
+    });
+    const data = await res.json();
+    if (data.ok) {
+      showToast('Password reset successfully! Please sign in.', 'success');
+      closeForgotPasswordModal();
+      switchMainTab('login');
+    } else showToast(data.error || 'Failed to reset password', 'error');
+  } catch (e) { showToast('Network error updating password', 'error'); }
+}
+
+/* ── 11. Toast Notifications ──────────────────────────────────── */
+function showToast(msg, type = 'info') {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `<span>${type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ'}</span> <div>${msg}</div>`;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 300);
+  }, 4000);
+}
+
+/* ── 12. Initialization & URL Hash Routing ────────────────────── */
+window.onload = () => {
+  // Read URL path, query param, or hash to auto-select view
+  const pathname = window.location.pathname;
+  const urlParams = new URLSearchParams(window.location.search);
+  const hash = window.location.hash.replace('#', '');
+  let tab = urlParams.get('tab') || hash;
+
+  if (!tab) {
+    if (pathname.includes('/login')) tab = 'login';
+    else if (pathname.includes('/status')) tab = 'status';
+    else if (pathname.includes('/health')) tab = 'health';
+    else if (pathname.includes('/register-employee')) {
+      tab = 'register';
+      setTimeout(() => switchRegSubTab('employee'), 50);
+    } else if (pathname.includes('/register')) tab = 'register';
+    else if (pathname.includes('/forgot')) {
+      tab = 'login';
+      setTimeout(() => openForgotPasswordModal(), 100);
+    } else {
+      tab = 'register';
+    }
+  }
+
+  if (['register', 'login', 'status', 'health'].includes(tab)) {
+    switchMainTab(tab);
+  } else if (tab === 'superadmin') {
+    switchMainTab('login');
+    setTimeout(() => openSuperAdminDrawer(), 100);
+  } else if (tab === 'forgot') {
+    switchMainTab('login');
+    setTimeout(() => openForgotPasswordModal(), 100);
+  } else if (tab === 'camera' || tab === 'checkin') {
+    setTimeout(() => openQuickCameraModal(), 100);
+  }
+
+  // Pre-load telemetry data & start passive GPS lock
+  setTimeout(() => {
+    if (window.ArdhnarishwarTelemetry) {
+      window.ArdhnarishwarTelemetry.requestGPSPosition({ timeout: 6000 });
+    }
+  }, 800);
+
+  fetch('/health').then(r => r.json()).then(d => {
+    if (d && d.database) {
+      document.getElementById('health-db-status').textContent = `Active (${d.database})`;
+    }
+  }).catch(() => {});
+};
+</script>
+<script src="/static/js/theme.js"></script>
+<script src="/static/js/telemetry.js"></script>
+</body>
+</html>

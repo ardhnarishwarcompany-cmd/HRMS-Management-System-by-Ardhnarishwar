@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register • Global Attendance Management System</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/theme.css">
+<style>
+.reg-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.reg-card {
+  width: 100%;
+  max-width: 640px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-xl);
+  padding: 36px 40px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(28px);
+  position: relative;
+  overflow: hidden;
+}
+
+.reg-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, var(--emerald), var(--cyan), var(--indigo));
+}
+
+.tab-nav {
+  display: flex;
+  align-items: center;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 4px;
+  margin-bottom: 24px;
+  gap: 4px;
+}
+
+.tab-nav-btn {
+  flex: 1;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.tab-nav-btn.active {
+  background: var(--bg-card);
+  color: #FFFFFF;
+  border: 1px solid var(--border-medium);
+  box-shadow: var(--shadow-sm);
+}
+
+.status-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.status-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 18px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.status-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+</style>
+</head>
+<body>
+<div class="reg-wrapper">
+  <!-- Brand Header -->
+  <div style="text-align:center; margin-bottom:24px;">
+    <a href="/" style="display:inline-flex; align-items:center; gap:12px; text-decoration:none; color:var(--text-primary); margin-bottom:12px;">
+      <div style="width:40px; height:40px; border-radius:12px; background:linear-gradient(135deg, var(--emerald), var(--indigo)); display:flex; align-items:center; justify-content:center; box-shadow:0 0 20px var(--glow-primary);">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24" height="24">
+          <circle cx="24" cy="24" r="18" fill="none" stroke="#FFFFFF" stroke-width="2.5"/>
+          <ellipse cx="24" cy="24" rx="9" ry="18" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-dasharray="2 1"/>
+          <line x1="6" y1="24" x2="42" y2="24" stroke="#FFFFFF" stroke-width="1.8"/>
+          <circle cx="24" cy="24" r="5.5" fill="#FFFFFF"/>
+          <path d="M24 20v4l3 2" fill="none" stroke="#070B14" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div style="text-align:left;">
+        <div style="font-size:17px; font-weight:800; letter-spacing:-0.3px;">Global Attendance Management System</div>
+        <div style="font-size:11px; color:var(--cyan); font-family:var(--font-mono); letter-spacing:0.5px;">ENTERPRISE ONBOARDING</div>
+      </div>
+    </a>
+    <h1 style="font-size:24px; font-weight:800; letter-spacing:-0.4px;">Join the Global Platform</h1>
+    <p style="font-size:13.5px; color:var(--text-secondary); max-width:440px; margin:0 auto;">
+      All client organizations and staff registrations are protected by verification and administrator approval.
+    </p>
+  </div>
+
+  <div class="reg-card">
+    <!-- Registration Tab Switcher -->
+    <div class="tab-nav">
+      <button class="tab-nav-btn active" id="btn-tab-company" onclick="switchRegTab('company')">
+        <span>🏢</span> Register Client / Org
+      </button>
+      <button class="tab-nav-btn" id="btn-tab-employee" onclick="switchRegTab('employee')">
+        <span>👥</span> Register as Employee
+      </button>
+      <button class="tab-nav-btn" id="btn-tab-status" onclick="switchRegTab('status')">
+        <span>🔍</span> Check Status
+      </button>
+    </div>
+
+    <!-- TAB 1: Organization / Client Self-Registration -->
+    <div id="tab-company-content">
+      <div style="margin-bottom:18px; border-bottom:1px solid var(--border-subtle); padding-bottom:12px;">
+        <span class="badge badge-cyan" style="margin-bottom:6px;"><span class="badge-dot"></span> Organization Onboarding</span>
+        <h2 style="font-size:16px; font-weight:700;">Create Client Workspace</h2>
+        <p style="font-size:12.5px; color:var(--text-secondary);">Super Admin will verify your credentials and activate your dedicated tenant workspace.</p>
+      </div>
+
+      <form onsubmit="handleRegisterCompany(event)" style="display:flex; flex-direction:column; gap:14px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="form-group">
+            <label class="form-label">Workspace Identifier (Unique)</label>
+            <input type="text" id="rc-id" class="form-input" placeholder="e.g. ACME" style="text-transform:uppercase; font-family:var(--font-mono);" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Company Legal Name</label>
+            <input type="text" id="rc-name" class="form-input" placeholder="e.g. Acme Corporation" required>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="form-group">
+            <label class="form-label">Headquarters Country</label>
+            <input type="text" id="rc-country" class="form-input" placeholder="e.g. India" value="India" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Primary Timezone</label>
+            <select id="rc-tz" class="form-select">
+              <option value="Asia/Kolkata">Asia/Kolkata (IST +05:30)</option>
+              <option value="America/New_York">America/New_York (EST/EDT)</option>
+              <option value="America/Chicago">America/Chicago (CST/CDT)</option>
+              <option value="America/Los_Angeles">America/Los_Angeles (PST/PDT)</option>
+              <option value="Europe/London">Europe/London (GMT/BST)</option>
+              <option value="Europe/Paris">Europe/Paris (CET/CEST)</option>
+              <option value="Asia/Dubai">Asia/Dubai (GST +04:00)</option>
+              <option value="Asia/Singapore">Asia/Singapore (SGT +08:00)</option>
+              <option value="Asia/Tokyo">Asia/Tokyo (JST +09:00)</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="form-group">
+            <label class="form-label">Administrator Full Name</label>
+            <input type="text" id="rc-admin-name" class="form-input" placeholder="e.g. John Doe" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Corporate Email Address</label>
+            <input type="email" id="rc-email" class="form-input" placeholder="admin@acme.com" required>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="form-group">
+            <label class="form-label">Contact Phone / Mobile</label>
+            <input type="text" id="rc-phone" class="form-input" placeholder="e.g. 9876543210" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Admin Sign-in Password</label>
+            <input type="password" id="rc-pass" class="form-input" placeholder="Minimum 6 characters" required>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg" id="btn-submit-company" style="margin-top:6px;">
+          <span>Submit Workspace for Super Admin Approval</span> →
+        </button>
+      </form>
+    </div>
+
+    <!-- TAB 2: Employee Self-Registration -->
+    <div id="tab-employee-content" style="display:none;">
+      <div style="margin-bottom:18px; border-bottom:1px solid var(--border-subtle); padding-bottom:12px;">
+        <span class="badge badge-indigo" style="margin-bottom:6px;"><span class="badge-dot"></span> Staff Enrollment</span>
+        <h2 style="font-size:16px; font-weight:700;">Employee Account Registration</h2>
+        <p style="font-size:12.5px; color:var(--text-secondary);">Your application will be submitted for approval by your Company Administrator.</p>
+      </div>
+
+      <form onsubmit="handleRegisterEmployee(event)" style="display:flex; flex-direction:column; gap:14px;">
+        <div style="display:grid; grid-template-columns:1.2fr 1fr; gap:12px;">
+          <div class="form-group">
+            <label class="form-label">Company Workspace ID</label>
+            <div style="display:flex; gap:6px;">
+              <input type="text" id="re-comp-id" class="form-input" placeholder="e.g. ACME" style="text-transform:uppercase; font-family:var(--font-mono);" onblur="verifyCompanyId()" required>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="verifyCompanyId()">Verify</button>
+            </div>
+            <div id="comp-verify-badge" style="font-size:11.5px; margin-top:4px;"></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Employee ID (Allocated / Requested)</label>
+            <input type="text" id="re-emp-id" class="form-input" placeholder="e.g. EMP-101" style="text-transform:uppercase; font-family:var(--font-mono);" required>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="form-group">
+            <label class="form-label">Full Legal Name</label>
+            <input type="text" id="re-name" class="form-input" placeholder="e.g. Sarah Jenkins" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Mobile Number</label>
+            <input type="text" id="re-mobile" class="form-input" placeholder="e.g. 9876500001" required>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="form-group">
+            <label class="form-label">Corporate / Personal Email</label>
+            <input type="email" id="re-email" class="form-input" placeholder="sarah@company.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Workforce Type</label>
+            <select id="re-worktype" class="form-select">
+              <option value="Office">Office Worker</option>
+              <option value="WFH">Work From Home (WFH)</option>
+              <option value="Field">Field / Client Site</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="form-group">
+            <label class="form-label">Department</label>
+            <input type="text" id="re-dept" class="form-input" placeholder="e.g. Engineering" value="General">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Designation / Role</label>
+            <input type="text" id="re-desig" class="form-input" placeholder="e.g. Software Engineer" value="Staff">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Account Password</label>
+          <input type="password" id="re-pass" class="form-input" placeholder="Create your secure login password" required>
+        </div>
+
+        <button type="submit" class="btn btn-emerald btn-lg" id="btn-submit-employee" style="margin-top:6px;">
+          <span>Submit Employee Registration for Approval</span> →
+        </button>
+      </form>
+    </div>
+
+    <!-- TAB 3: Application Status Tracker -->
+    <div id="tab-status-content" style="display:none;">
+      <div style="margin-bottom:18px; border-bottom:1px solid var(--border-subtle); padding-bottom:12px;">
+        <span class="badge badge-amber" style="margin-bottom:6px;"><span class="badge-dot"></span> Live Verification Tracker</span>
+        <h2 style="font-size:16px; font-weight:700;">Check Registration Status</h2>
+        <p style="font-size:12.5px; color:var(--text-secondary);">Enter your registered mobile or email to track your onboarding review status.</p>
+      </div>
+
+      <form onsubmit="handleCheckStatus(event)" style="display:flex; flex-direction:column; gap:14px;">
+        <div class="form-group">
+          <label class="form-label">Registered Mobile Number / Email</label>
+          <input type="text" id="status-id" class="form-input" placeholder="e.g. 9876543210 or name@company.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Company Workspace ID (Optional for Clients)</label>
+          <input type="text" id="status-comp" class="form-input" placeholder="e.g. ACME" style="text-transform:uppercase; font-family:var(--font-mono);">
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg" id="btn-check-status">
+          <span>Search Application Status</span> 🔍
+        </button>
+      </form>
+
+      <!-- Results Display -->
+      <div id="status-result-box" style="display:none; margin-top:20px;"></div>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; align-items:center; font-size:12.5px; color:var(--text-muted); margin-top:24px; border-top:1px solid var(--border-subtle); padding-top:14px;">
+      <a href="/login" style="color:var(--text-muted); text-decoration:none;">← Already registered? Sign In</a>
+      <a href="/forgot-password" style="color:var(--cyan); text-decoration:none;">Forgot Password?</a>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+function switchRegTab(tab) {
+  document.getElementById('tab-company-content').style.display = tab === 'company' ? 'block' : 'none';
+  document.getElementById('tab-employee-content').style.display = tab === 'employee' ? 'block' : 'none';
+  document.getElementById('tab-status-content').style.display = tab === 'status' ? 'block' : 'none';
+
+  document.getElementById('btn-tab-company').classList.toggle('active', tab === 'company');
+  document.getElementById('btn-tab-employee').classList.toggle('active', tab === 'employee');
+  document.getElementById('btn-tab-status').classList.toggle('active', tab === 'status');
+}
+
+async function verifyCompanyId() {
+  const cid = document.getElementById('re-comp-id').value.trim().toUpperCase();
+  const badge = document.getElementById('comp-verify-badge');
+  if (!cid) {
+    badge.textContent = '';
+    return;
+  }
+  badge.innerHTML = '<span style="color:var(--text-muted);">Verifying workspace...</span>';
+  try {
+    const res = await fetch(`/api/auth/verify-company/${cid}`);
+    const data = await res.json();
+    if (data.ok && data.exists) {
+      badge.innerHTML = `<span style="color:var(--emerald);">✓ Verified: <strong>${data.company_name}</strong> (${data.country})</span>`;
+    } else {
+      badge.innerHTML = `<span style="color:var(--rose);">✕ ${data.error || 'Workspace not found'}</span>`;
+    }
+  } catch (e) {
+    badge.innerHTML = '<span style="color:var(--rose);">Error verifying workspace</span>';
+  }
+}
+
+async function handleRegisterCompany(e) {
+  e.preventDefault();
+  const btn = document.getElementById('btn-submit-company');
+  btn.disabled = true;
+  btn.textContent = 'Submitting Application...';
+
+  const payload = {
+    company_id: document.getElementById('rc-id').value.trim().toUpperCase(),
+    name: document.getElementById('rc-name').value.trim(),
+    country: document.getElementById('rc-country').value.trim(),
+    timezone: document.getElementById('rc-tz').value,
+    admin_name: document.getElementById('rc-admin-name').value.trim(),
+    email: document.getElementById('rc-email').value.trim(),
+    phone: document.getElementById('rc-phone').value.trim(),
+    admin_password: document.getElementById('rc-pass').value.trim()
+  };
+
+  try {
+    const res = await fetch('/api/auth/register-company', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (data.ok) {
+      showToast(data.message, 'success');
+      alert(`🎉 Application Submitted Successfully!\n\nWorkspace '${payload.company_id}' has been registered in PENDING status.\nArdhnarishwar Super Admin will review and activate your account.`);
+      switchRegTab('status');
+      document.getElementById('status-id').value = payload.phone;
+      document.getElementById('status-comp').value = payload.company_id;
+      handleCheckStatus(new Event('submit'));
+    } else {
+      showToast(data.error || 'Registration failed', 'error');
+    }
+  } catch (err) {
+    showToast('Network error during registration', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Submit Workspace for Super Admin Approval →';
+  }
+}
+
+async function handleRegisterEmployee(e) {
+  e.preventDefault();
+  const btn = document.getElementById('btn-submit-employee');
+  btn.disabled = true;
+  btn.textContent = 'Submitting Registration...';
+
+  const payload = {
+    company_id: document.getElementById('re-comp-id').value.trim().toUpperCase(),
+    emp_id: document.getElementById('re-emp-id').value.trim().toUpperCase(),
+    name: document.getElementById('re-name').value.trim(),
+    mobile: document.getElementById('re-mobile').value.trim(),
+    email: document.getElementById('re-email').value.trim(),
+    work_type: document.getElementById('re-worktype').value,
+    department: document.getElementById('re-dept').value.trim(),
+    designation: document.getElementById('re-desig').value.trim(),
+    password: document.getElementById('re-pass').value.trim()
+  };
+
+  try {
+    const res = await fetch('/api/auth/register-employee', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (data.ok) {
+      showToast(data.message, 'success');
+      alert(`🎉 Employee Registration Submitted!\n\nYour account has been submitted in PENDING status.\nYour Company Administrator must approve your account before you can sign in.`);
+      switchRegTab('status');
+      document.getElementById('status-id').value = payload.mobile;
+      document.getElementById('status-comp').value = payload.company_id;
+      handleCheckStatus(new Event('submit'));
+    } else {
+      showToast(data.error || 'Registration failed', 'error');
+    }
+  } catch (err) {
+    showToast('Network error during employee registration', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Submit Employee Registration for Approval →';
+  }
+}
+
+async function handleCheckStatus(e) {
+  if (e) e.preventDefault();
+  const btn = document.getElementById('btn-check-status');
+  const resBox = document.getElementById('status-result-box');
+  const identifier = document.getElementById('status-id').value.trim();
+  const company_id = document.getElementById('status-comp').value.trim().toUpperCase();
+
+  btn.disabled = true;
+  btn.textContent = 'Searching...';
+
+  try {
+    const res = await fetch('/api/auth/check-registration-status', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ identifier, company_id })
+    });
+    const data = await res.json();
+    resBox.style.display = 'block';
+
+    if (data.ok && data.found) {
+      const st = data.status || 'pending';
+      const badgeClass = st === 'active' ? 'badge-emerald' : st === 'pending' ? 'badge-amber' : 'badge-rose';
+      const isApproved = st === 'active';
+
+      resBox.innerHTML = `
+        <div style="background:var(--bg-surface); border:1px solid var(--border-medium); border-radius:var(--radius-lg); padding:20px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+            <strong style="font-size:15px; color:var(--text-primary);">${data.name || data.entity_name}</strong>
+            <span class="badge ${badgeClass}"><span class="badge-dot"></span> ${st.toUpperCase()}</span>
+          </div>
+          <div style="font-size:13px; color:var(--text-secondary); display:flex; flex-direction:column; gap:6px; margin-bottom:16px;">
+            <div>Organization: <strong style="color:var(--text-primary);">${data.company_name || data.company_id}</strong></div>
+            <div>Account Type: <strong>${data.type === 'company' ? 'Client Organization' : 'Employee / Staff'}</strong></div>
+            ${data.emp_id ? `<div>Employee ID: <strong style="font-family:var(--font-mono); color:var(--cyan);">${data.emp_id}</strong></div>` : ''}
+            <div style="font-size:11.5px; color:var(--text-muted); margin-top:4px;">Submitted on: ${data.created_at ? data.created_at.slice(0, 19).replace('T', ' ') : 'Recent'}</div>
+          </div>
+
+          <div style="border-top:1px solid var(--border-subtle); padding-top:12px;">
+            ${isApproved ? `
+              <div style="color:var(--emerald); font-size:13px; font-weight:600; margin-bottom:10px;">✓ Congratulations! Your account has been verified and approved.</div>
+              <a href="/login" class="btn btn-primary" style="display:block; text-align:center; text-decoration:none;">Proceed to Sign In →</a>
+            ` : st === 'pending' ? `
+              <div style="color:var(--amber); font-size:13px; line-height:1.5;">⏳ Your registration application is currently undergoing verification by the Administrator. Please check back shortly.</div>
+            ` : `
+              <div style="color:var(--rose); font-size:13px;">✕ Your registration request was not approved. Please reach out to your administrator for assistance.</div>
+            `}
+          </div>
+        </div>
+      `;
+    } else {
+      resBox.innerHTML = `
+        <div style="background:rgba(244, 63, 94, 0.1); border:1px solid rgba(244, 63, 94, 0.3); border-radius:var(--radius-md); padding:16px; text-align:center;">
+          <div style="font-size:24px; margin-bottom:6px;">🔍</div>
+          <div style="color:var(--rose); font-weight:700; font-size:14px; margin-bottom:4px;">No Application Found</div>
+          <div style="font-size:12.5px; color:var(--text-secondary);">${data.error || 'Please double-check your mobile number or email.'}</div>
+        </div>
+      `;
+    }
+  } catch (err) {
+    showToast('Network error searching status', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Search Application Status 🔍';
+  }
+}
+
+function showToast(msg, type = 'info') {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `<span>${type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ'}</span> <div>${msg}</div>`;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 300);
+  }, 4000);
+}
+
+// Auto-switch tab based on URL param
+window.onload = () => {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('tab') === 'employee') switchRegTab('employee');
+  else if (params.get('tab') === 'status') switchRegTab('status');
+};
+</script>
+</body>
+</html>

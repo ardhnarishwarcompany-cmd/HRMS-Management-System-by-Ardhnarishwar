@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPS Field Radar • Global Attendance Management System</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/theme.css">
+<style>
+.clockin-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.clockin-card {
+  width: 100%;
+  max-width: 520px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-xl);
+  padding: 32px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(28px);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.hud-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 14px;
+}
+
+.hud-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hud-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--amber), #D97706);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+}
+
+/* Radar Display Viewport */
+.radar-viewport {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  background: radial-gradient(circle, #0D1A2D 0%, #060B14 100%);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.8);
+}
+
+.radar-sweep {
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  border: 1px dashed rgba(6, 182, 212, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.radar-sweep::before {
+  content: '';
+  position: absolute;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  border: 1px solid rgba(6, 182, 212, 0.2);
+}
+
+.radar-beam {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, rgba(6, 182, 212, 0.4) 0deg, transparent 60deg, transparent 360deg);
+  animation: rotateRadar 3s linear infinite;
+}
+
+@keyframes rotateRadar {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.radar-blip {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--emerald);
+  box-shadow: 0 0 14px var(--emerald);
+  animation: pulseBlip 1.5s infinite ease-in-out;
+}
+
+@keyframes pulseBlip {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.6); opacity: 0.6; }
+}
+
+.hud-telemetry {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+}
+
+.telemetry-item { display: flex; flex-direction: column; }
+.telemetry-label { color: var(--text-muted); font-size: 10px; text-transform: uppercase; }
+.telemetry-val { color: var(--cyan); font-weight: 600; }
+
+.mode-segmented {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  background: var(--bg-input);
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+}
+
+.mode-btn {
+  padding: 10px;
+  border-radius: var(--radius-xs);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.mode-btn.active-in {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.4);
+  color: var(--emerald);
+}
+
+.mode-btn.active-out {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.4);
+  color: var(--amber);
+}
+</style>
+</head>
+<body>
+<div class="clockin-container">
+  <div class="clockin-card">
+    <div class="hud-top">
+      <div class="hud-title">
+        <div class="hud-icon">🚗</div>
+        <div>
+          <h1 style="font-size:18px; font-weight:800; letter-spacing:-0.3px;">Satellite GPS Field Radar</h1>
+          <p style="font-size:12px; color:var(--text-muted); font-family:var(--font-mono);">FIELD & CLIENT MEETING TELEMETRY</p>
+        </div>
+      </div>
+      <div class="badge badge-amber">
+        <span class="badge-dot"></span> <span id="comp-id">COMPANY</span>
+      </div>
+    </div>
+
+    <!-- Live Telemetry Deck -->
+    <div class="hud-telemetry">
+      <div class="telemetry-item">
+        <span class="telemetry-label">Coordinates</span>
+        <span class="telemetry-val" id="tele-coords">Acquiring...</span>
+      </div>
+      <div class="telemetry-item">
+        <span class="telemetry-label">Accuracy</span>
+        <span class="telemetry-val" id="tele-accuracy">±--m</span>
+      </div>
+      <div class="telemetry-item">
+        <span class="telemetry-label">Satellite Signal</span>
+        <span class="telemetry-val" style="color:var(--emerald);" id="tele-signal">Scanning</span>
+      </div>
+    </div>
+
+    <!-- Radar Graphic Visualizer -->
+    <div class="radar-viewport">
+      <div class="radar-sweep">
+        <div class="radar-beam"></div>
+      </div>
+      <div class="radar-blip" id="radar-blip" style="display:none;"></div>
+      <div id="radar-text" style="position:relative; z-index:5; font-size:12.5px; font-family:var(--font-mono); color:var(--text-secondary); text-align:center;">
+        Triangulating Satellite Ephemeris...
+      </div>
+    </div>
+
+    <div class="mode-segmented">
+      <button class="mode-btn active-in" id="btn-mode-in" onclick="setMode('IN')">🟢 Check-IN</button>
+      <button class="mode-btn" id="btn-mode-out" onclick="setMode('OUT')">🔴 Check-OUT</button>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Client Name / Site Location (Optional)</label>
+      <input type="text" id="client-name" class="form-input" placeholder="e.g. Apex Industries Corporate HQ">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Field Notes / Activity Purpose</label>
+      <textarea id="notes" class="form-textarea" rows="2" placeholder="e.g. Technical integration review"></textarea>
+    </div>
+
+    <button class="btn btn-primary btn-lg" id="btn-submit" onclick="submitFieldAttendance()">
+      <span>Log Field Check-IN</span> →
+    </button>
+
+    <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--text-muted); margin-top:4px;">
+      <a href="/employee" style="color:var(--text-muted); text-decoration:none;">← Return to Portal</a>
+      <span onclick="acquireGPS()" style="color:var(--cyan); cursor:pointer; text-decoration:underline;">🔄 Resync Radar</span>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+let currentMode = "IN";
+let userLat = null;
+let userLng = null;
+let userAccuracy = 0;
+let currentCompanyId = "";
+let currentEmpId = "";
+
+function playSuccessSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(783.99, ctx.currentTime + 0.15);
+    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.4);
+  } catch (e) {}
+}
+
+function setMode(mode) {
+  currentMode = mode;
+  const btnIn = document.getElementById('btn-mode-in');
+  const btnOut = document.getElementById('btn-mode-out');
+  const submitBtn = document.getElementById('btn-submit');
+
+  if (mode === 'IN') {
+    btnIn.className = 'mode-btn active-in';
+    btnOut.className = 'mode-btn';
+    submitBtn.innerHTML = '<span>Log Field Check-IN</span> →';
+    submitBtn.className = 'btn btn-primary btn-lg';
+  } else {
+    btnOut.className = 'mode-btn active-out';
+    btnIn.className = 'mode-btn';
+    submitBtn.innerHTML = '<span>Log Field Check-OUT</span> →';
+    submitBtn.className = 'btn btn-danger btn-lg';
+  }
+}
+
+function acquireGPS() {
+  const coordsLabel = document.getElementById('tele-coords');
+  const accLabel = document.getElementById('tele-accuracy');
+  const sigLabel = document.getElementById('tele-signal');
+  const blip = document.getElementById('radar-blip');
+  const radarText = document.getElementById('radar-text');
+
+  if (!navigator.geolocation) {
+    sigLabel.textContent = 'Unsupported';
+    return;
+  }
+
+  radarText.textContent = 'Triangulating Satellite Ephemeris...';
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      userLat = pos.coords.latitude;
+      userLng = pos.coords.longitude;
+      userAccuracy = Math.round(pos.coords.accuracy);
+
+      coordsLabel.textContent = `${userLat.toFixed(4)}, ${userLng.toFixed(4)}`;
+      accLabel.textContent = `±${userAccuracy}m`;
+      sigLabel.textContent = 'HIGH ACCURACY';
+      sigLabel.style.color = 'var(--emerald)';
+
+      blip.style.display = 'block';
+      radarText.innerHTML = `🛰️ GPS LOCKED: <strong style="color:var(--emerald);">${userLat.toFixed(4)}°, ${userLng.toFixed(4)}°</strong>`;
+      showToast('GPS Satellite Coordinates Triangulated', 'success');
+    },
+    (err) => {
+      sigLabel.textContent = 'DENIED';
+      sigLabel.style.color = 'var(--rose)';
+      radarText.textContent = '⚠️ Location Access Denied / Blocked';
+      showToast('Please enable browser GPS permission', 'error');
+    },
+    { enableHighAccuracy: true, timeout: 10000 }
+  );
+}
+
+async function initPage() {
+  acquireGPS();
+  try {
+    const res = await fetch('/api/me');
+    const data = await res.json();
+    if (data.ok && data.user) {
+      currentCompanyId = data.user.company_id || "";
+      currentEmpId = data.user.emp_id || "";
+      document.getElementById('comp-id').textContent = currentCompanyId;
+    }
+  } catch (err) {}
+}
+
+async function submitFieldAttendance() {
+  const clientName = document.getElementById('client-name').value.trim();
+  const notes = document.getElementById('notes').value.trim();
+
+  if (userLat === null || userLng === null) {
+    showToast('GPS lock required. Please allow browser location access.', 'error');
+    acquireGPS();
+    return;
+  }
+
+  const btn = document.getElementById('btn-submit');
+  btn.innerHTML = '<span>Transmitting Geolocation Packet...</span>';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch('/api/attendance/mark-field', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        company_id: currentCompanyId,
+        emp_id: currentEmpId,
+        lat: userLat,
+        lng: userLng,
+        accuracy: userAccuracy,
+        check_type: currentMode,
+        client_name: clientName,
+        notes: notes
+      })
+    });
+    const data = await res.json();
+
+    if (data.ok) {
+      playSuccessSound();
+      showToast(data.message, 'success');
+      btn.innerHTML = '<span>Field Check-in Confirmed ✓</span>';
+      setTimeout(() => { window.location.href = '/employee'; }, 1800);
+    } else {
+      showToast(data.error || 'Failed to record field attendance', 'error');
+      btn.disabled = false;
+      setMode(currentMode);
+    }
+  } catch (err) {
+    showToast('Server telemetry communication failure', 'error');
+    btn.disabled = false;
+    setMode(currentMode);
+  }
+}
+
+function showToast(msg, type = 'info') {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `<span>${type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ'}</span> <div>${msg}</div>`;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 300);
+  }, 4000);
+}
+
+window.onload = initPage;
+</script>
+<script src="/static/js/theme.js"></script>
+<script src="/static/js/telemetry.js"></script>
+</body>
+</html>

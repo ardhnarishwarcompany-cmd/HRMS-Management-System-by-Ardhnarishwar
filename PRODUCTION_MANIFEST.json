@@ -1,0 +1,22 @@
+{
+  "release": "Ardhnarishwar HRMS VPS Production 18SEP2026",
+  "backend": "https://ardhnarishwar-hrms-backend.recruweb.com",
+  "portals": {
+    "admin": "https://ardhnarishwar-admin.hrms.recruweb.com",
+    "client": "https://ardhnarishwar-client.hrms.recruweb.com",
+    "hr": "https://ardhnarishwar-hr.hrms.recruweb.com",
+    "it": "https://ardhnarishwar-it.hrms.recruweb.com",
+    "sales": "https://ardhnarishwar-sales.hrms.recruweb.com",
+    "employee": "https://ardhnarishwar-employee.hrms.recruweb.com",
+    "evs": "https://ardhnarishwar-emp-verification.hrms.recruweb.com"
+  },
+  "native_services": {
+    "ai_robo": "https://ardhnarishwar-hrms-backend.recruweb.com/api/hr-robo/",
+    "smart_attendance": "https://ardhnarishwar-hrms-backend.recruweb.com/api/smart-attendance/"
+  },
+  "database": "u471298916_hrms_db",
+  "db_host": "127.0.0.1",
+  "vps_ip": "200.141.14.25",
+  "production_checks": "PASS",
+  "notes": "Use VPS_DEPLOYMENT.md. Do not expose backend/.env."
+}

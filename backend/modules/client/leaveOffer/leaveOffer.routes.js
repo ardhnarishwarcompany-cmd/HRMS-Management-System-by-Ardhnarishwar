@@ -1,0 +1,12 @@
+import express from "express";
+import { clientUnifiedAuthMiddleware } from "../../../middleware/clientUnifiedAuth.middleware.js";
+import { createLeave,listLeaves,decideLeave,listOfferTemplates,listOfferLetters,generateClientOffer,downloadClientOffer } from "./leaveOffer.controller.js";
+const router=express.Router();
+router.get("/leaves",clientUnifiedAuthMiddleware,listLeaves);
+router.get("/offers/templates",clientUnifiedAuthMiddleware,listOfferTemplates);
+router.get("/offers",clientUnifiedAuthMiddleware,listOfferLetters);
+router.get("/offers/:id/pdf",clientUnifiedAuthMiddleware,downloadClientOffer);
+router.post("/leaves",clientUnifiedAuthMiddleware,createLeave);
+router.patch("/leaves/:id",clientUnifiedAuthMiddleware,decideLeave);
+router.post("/offers/generate",clientUnifiedAuthMiddleware,generateClientOffer);
+export default router;

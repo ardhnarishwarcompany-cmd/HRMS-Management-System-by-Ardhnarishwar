@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>In-App Verification Code • Global Attendance Management System</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/theme.css">
+<style>
+.clockin-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.clockin-card {
+  width: 100%;
+  max-width: 460px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-xl);
+  padding: 34px;
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(24px);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.clockin-header {
+  text-align: center;
+}
+
+.clockin-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--indigo), var(--cyan));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  margin-bottom: 12px;
+  box-shadow: 0 0 24px var(--glow-indigo);
+}
+
+.clockin-header h1 {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  margin-bottom: 4px;
+}
+
+.clockin-header p {
+  font-size: 13.5px;
+  color: var(--text-secondary);
+}
+
+.otp-box {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin: 12px 0;
+}
+
+.otp-digit {
+  width: 48px;
+  height: 56px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  color: #FFFFFF;
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 700;
+  text-align: center;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.otp-digit:focus {
+  border-color: var(--indigo);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+  background: var(--bg-surface);
+}
+
+.emp-badge-bar {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+}
+</style>
+</head>
+<body>
+<div class="clockin-container">
+  <div class="clockin-card">
+    <div class="clockin-header">
+      <div class="clockin-icon">🔢</div>
+      <h1>In-App Verification Code</h1>
+      <p>Secure 2-factor private authentication code</p>
+    </div>
+
+    <div class="emp-badge-bar">
+      <div>
+        <strong id="emp-name" style="color:var(--text-primary);">Employee</strong>
+        <span style="font-family:var(--font-mono); color:var(--cyan); margin-left:6px;" id="emp-id">(EMP)</span>
+      </div>
+      <div class="badge badge-indigo">
+        <span class="badge-dot"></span> <span id="comp-id">COMPANY</span>
+      </div>
+    </div>
+
+    <!-- Step 1: Send / Generate Code -->
+    <div id="step-send">
+      <p style="font-size:13px; color:var(--text-muted); text-align:center; margin-bottom:16px;">
+        Click below to dispatch an authentication code to your private in-app notification vault.
+      </p>
+      <button class="btn btn-indigo btn-lg" style="width:100%;" id="btn-request-code" onclick="requestCode()">
+        Dispatch Verification Code →
+      </button>
+    </div>
+
+    <!-- Step 2: Enter & Verify Code -->
+    <div id="step-verify" style="display:none; flex-direction:column; gap:16px;">
+      <div class="otp-box">
+        <input type="text" maxlength="1" class="otp-digit" id="d1" oninput="nextInput(this, 'd2')">
+        <input type="text" maxlength="1" class="otp-digit" id="d2" oninput="nextInput(this, 'd3')">
+        <input type="text" maxlength="1" class="otp-digit" id="d3" oninput="nextInput(this, 'd4')">
+        <input type="text" maxlength="1" class="otp-digit" id="d4" oninput="nextInput(this, 'd5')">
+        <input type="text" maxlength="1" class="otp-digit" id="d5" oninput="nextInput(this, 'd6')">
+        <input type="text" maxlength="1" class="otp-digit" id="d6" oninput="autoSubmitIfComplete()">
+      </div>
+
+      <button class="btn btn-primary btn-lg" id="btn-verify" style="width:100%;" onclick="verifyOTP()">
+        Verify Code & Mark Attendance →
+      </button>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; font-size:12.5px;">
+        <span onclick="fetchInAppPrivateCode()" style="color:var(--cyan); cursor:pointer; font-weight:600; text-decoration:underline;">
+          🔑 Retrieve In-App Code
+        </span>
+        <span onclick="requestCode()" style="color:var(--text-muted); cursor:pointer; text-decoration:underline;">
+          Resend Code
+        </span>
+      </div>
+    </div>
+
+    <a href="/employee" style="text-align:center; color:var(--text-muted); font-size:13px; text-decoration:none; margin-top:4px;">
+      ← Return to Employee Dashboard
+    </a>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+let currentCompanyId = "";
+let currentEmpId = "";
+
+async function initPage() {
+  try {
+    const res = await fetch('/api/me');
+    const data = await res.json();
+    if (data.ok && data.user) {
+      currentCompanyId = data.user.company_id || "";
+      currentEmpId = data.user.emp_id || "";
+      document.getElementById('emp-name').textContent = data.user.name;
+      document.getElementById('emp-id').textContent = `(${currentEmpId})`;
+      document.getElementById('comp-id').textContent = currentCompanyId;
+    }
+  } catch (err) {}
+}
+
+async function requestCode() {
+  const btn = document.getElementById('btn-request-code');
+  btn.textContent = 'Generating Private Code...';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch('/api/attendance/otp-send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ company_id: currentCompanyId, emp_id: currentEmpId })
+    });
+    const data = await res.json();
+    if (data.ok) {
+      document.getElementById('step-send').style.display = 'none';
+      const verifyStep = document.getElementById('step-verify');
+      verifyStep.style.display = 'flex';
+      showToast(data.message, 'success');
+      document.getElementById('d1').focus();
+    } else {
+      showToast(data.error || 'Failed to generate code', 'error');
+      btn.disabled = false;
+      btn.textContent = 'Dispatch Verification Code →';
+    }
+  } catch (err) {
+    showToast('Server communication failure', 'error');
+    btn.disabled = false;
+    btn.textContent = 'Dispatch Verification Code →';
+  }
+}
+
+function nextInput(current, nextId) {
+  if (current.value.length === 1 && nextId) {
+    document.getElementById(nextId).focus();
+  }
+}
+
+function autoSubmitIfComplete() {
+  const code = getEnteredCode();
+  if (code.length === 6) {
+    verifyOTP();
+  }
+}
+
+function getEnteredCode() {
+  let s = '';
+  for (let i = 1; i <= 6; i++) {
+    s += document.getElementById(`d${i}`).value.trim();
+  }
+  return s;
+}
+
+async function fetchInAppPrivateCode() {
+  try {
+    const res = await fetch('/api/attendance/my-active-otp');
+    const data = await res.json();
+    if (data.ok && data.otp_code) {
+      const code = data.otp_code;
+      for (let i = 1; i <= 6; i++) {
+        document.getElementById(`d${i}`).value = code[i-1] || '';
+      }
+      showToast(`Private In-App Code: ${code} (Expires in ${data.expires_in_seconds}s)`, 'success');
+    } else {
+      showToast(data.error || 'No active code in private vault', 'error');
+    }
+  } catch (err) {
+    showToast('Failed to retrieve code from private vault', 'error');
+  }
+}
+
+async function verifyOTP() {
+  const code = getEnteredCode();
+  if (code.length !== 6) {
+    showToast('Please enter all 6 digits of your verification code', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('btn-verify');
+  btn.textContent = 'Verifying...';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch('/api/attendance/otp-verify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        company_id: currentCompanyId,
+        emp_id: currentEmpId,
+        otp: code
+      })
+    });
+    const data = await res.json();
+
+    if (data.ok) {
+      showToast(data.message, 'success');
+      btn.textContent = 'Verified ✓';
+      setTimeout(() => { window.location.href = '/employee'; }, 2000);
+    } else {
+      showToast(data.error || 'Code verification failed', 'error');
+      btn.disabled = false;
+      btn.textContent = 'Verify Code & Mark Attendance →';
+    }
+  } catch (err) {
+    showToast('Network error verifying code', 'error');
+    btn.disabled = false;
+    btn.textContent = 'Verify Code & Mark Attendance →';
+  }
+}
+
+function showToast(msg, type = 'info') {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `<span>${type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ'}</span> <div>${msg}</div>`;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 300);
+  }, 4000);
+}
+
+window.onload = initPage;
+</script>
+<script src="/static/js/theme.js"></script>
+<script src="/static/js/telemetry.js"></script>
+</body>
+</html>

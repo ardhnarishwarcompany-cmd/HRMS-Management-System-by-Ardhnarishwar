@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Face AI Biometric Attendance • Global Attendance Management System</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/theme.css">
+<style>
+.clockin-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.clockin-card {
+  width: 100%;
+  max-width: 520px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-xl);
+  padding: 32px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(28px);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.hud-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 14px;
+}
+
+.hud-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hud-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--emerald), var(--cyan));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  box-shadow: 0 0 20px var(--glow-primary);
+}
+
+.camera-box {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4/3;
+  background: #000000;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.9);
+}
+
+.camera-box video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* AI HUD Laser Scan Line */
+.hud-laser {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--emerald), var(--cyan), transparent);
+  box-shadow: 0 0 16px var(--emerald), 0 0 30px var(--cyan);
+  display: none;
+  animation: scanLaser 2.2s infinite ease-in-out;
+  z-index: 5;
+}
+
+@keyframes scanLaser {
+  0% { top: 0%; opacity: 0.2; }
+  50% { top: 96%; opacity: 1; }
+  100% { top: 0%; opacity: 0.2; }
+}
+
+/* AI Targeting Frame Reticle */
+.hud-target {
+  position: absolute;
+  inset: 12%;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: var(--radius-md);
+  pointer-events: none;
+  display: none;
+  z-index: 4;
+}
+
+.hud-target::before {
+  content: '';
+  position: absolute;
+  top: -2px; left: -2px; width: 18px; height: 18px;
+  border-top: 3px solid var(--emerald); border-left: 3px solid var(--emerald);
+}
+.hud-target::after {
+  content: '';
+  position: absolute;
+  bottom: -2px; right: -2px; width: 18px; height: 18px;
+  border-bottom: 3px solid var(--emerald); border-right: 3px solid var(--emerald);
+}
+
+.hud-telemetry {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+}
+
+.telemetry-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.telemetry-label { color: var(--text-muted); font-size: 10px; text-transform: uppercase; }
+.telemetry-val { color: var(--cyan); font-weight: 600; }
+
+.camera-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.85);
+  gap: 12px;
+  color: var(--text-muted);
+  z-index: 10;
+}
+
+.checkin-tab-nav {
+  display: flex;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+}
+
+.checkin-tab-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.checkin-tab-btn.active {
+  background: var(--emerald);
+  color: #000;
+}
+</style>
+</head>
+<body>
+<div class="clockin-container">
+  <div class="clockin-card">
+    <div class="hud-top">
+      <div class="hud-title">
+        <div class="hud-icon">📷</div>
+        <div>
+          <h1 style="font-size:18px; font-weight:800; letter-spacing:-0.3px;">Authorized Attendance Engine</h1>
+          <p style="font-size:12px; color:var(--text-muted); font-family:var(--font-mono);">MULTI-FACTOR BIOMETRIC & OFFLINE VAULT</p>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+        <div class="badge badge-emerald">
+          <span class="badge-dot"></span> <span id="comp-id">COMPANY</span>
+        </div>
+        <div id="telemetry-network-pill" class="telemetry-pill active" style="font-size:10px; padding:2px 6px;">
+          <span>🟢</span> <span>ONLINE</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mode Selector Tabs -->
+    <div class="checkin-tab-nav">
+      <button class="checkin-tab-btn active" id="tab-btn-face" onclick="switchCheckInMode('face')">📷 Biometric Face AI</button>
+      <button class="checkin-tab-btn" id="tab-btn-code" onclick="switchCheckInMode('code')">🔢 Dynamic Code / QR</button>
+    </div>
+
+    <!-- Live Telemetry Stream -->
+    <div class="hud-telemetry">
+      <div class="telemetry-item">
+        <span class="telemetry-label">Employee ID</span>
+        <span class="telemetry-val" id="emp-id">EMP-000</span>
+      </div>
+      <div class="telemetry-item">
+        <span class="telemetry-label">Engine Mode</span>
+        <span class="telemetry-val" style="color:var(--emerald);" id="active-mode-label">Biometric Vision</span>
+      </div>
+      <div class="telemetry-item">
+        <span class="telemetry-label">Spatial Radius</span>
+        <span class="telemetry-val" id="geofence-status">Syncing GPS</span>
+      </div>
+    </div>
+
+    <!-- Manual ID Input fallback if needed -->
+    <div id="manual-id-box" style="display:none; background:var(--bg-input); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); padding:10px; margin-top:2px;">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+        <div>
+          <label style="font-size:10px; color:var(--text-muted); text-transform:uppercase;">Workspace ID</label>
+          <input type="text" id="manual-comp-id" class="form-input" style="font-size:12px; text-transform:uppercase; padding:6px 10px;" placeholder="e.g. APEX">
+        </div>
+        <div>
+          <label style="font-size:10px; color:var(--text-muted); text-transform:uppercase;">Employee ID</label>
+          <input type="text" id="manual-emp-id" class="form-input" style="font-size:12px; text-transform:uppercase; padding:6px 10px;" placeholder="e.g. EMP-101">
+        </div>
+      </div>
+    </div>
+
+    <!-- Camera Viewport with AI HUD Layers (For Face Mode) -->
+    <div class="camera-box" id="camera-viewport-box">
+      <video id="cam-video" autoplay playsinline muted></video>
+      <div class="hud-laser" id="hud-laser"></div>
+      <div class="hud-target" id="hud-target"></div>
+      
+      <!-- Interactive Anti-Spoofing & Liveness Challenge Banner -->
+      <div id="liveness-challenge-banner" style="display:none; position:absolute; top:12px; left:12px; right:12px; background:rgba(7,11,20,0.92); border:1px solid var(--emerald); border-radius:var(--radius-sm); padding:10px 14px; z-index:20; backdrop-filter:blur(10px); box-shadow:0 4px 20px rgba(0,0,0,0.6);">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span id="challenge-icon" style="font-size:20px;">🛡️</span>
+            <div>
+              <div style="font-size:10px; text-transform:uppercase; color:var(--emerald); font-weight:800; letter-spacing:1px;" id="challenge-status-title">ACTIVE LIVENESS DETECTION</div>
+              <div style="font-size:13px; font-weight:700; color:#FFFFFF;" id="challenge-action-text">Center face inside reticle</div>
+            </div>
+          </div>
+          <div id="challenge-timer-badge" class="badge badge-neutral" style="font-family:var(--font-mono); font-size:11px;">60s</div>
+        </div>
+      </div>
+
+      <!-- Spoofing / Virtual Camera Rejection Alert Overlay -->
+      <div id="spoofing-alert-overlay" style="display:none; position:absolute; inset:0; background:rgba(185,28,28,0.95); z-index:30; flex-direction:column; align-items:center; justify-content:center; padding:24px; text-align:center; color:#FFF; backdrop-filter:blur(14px);">
+        <div style="font-size:42px; margin-bottom:8px;">🚫</div>
+        <h3 style="font-size:16px; font-weight:800; margin-bottom:6px;">Presentation Attack Rejected</h3>
+        <p style="font-size:12.5px; max-width:320px; margin-bottom:14px; line-height:1.4; color:rgba(255,255,255,0.9);" id="spoofing-alert-msg">Virtual camera driver or screen replay detected. Physical camera hardware is strictly required.</p>
+        <button class="btn btn-secondary btn-sm" onclick="resetFaceLivenessHUD()" style="background:#FFF; color:#000; font-weight:700;">Try Again with Physical Camera</button>
+      </div>
+
+      <div class="camera-overlay" id="cam-overlay">
+        <span style="font-size:36px;">📷</span>
+        <span style="font-size:13px;">Click below to engage AI Vision Camera</span>
+      </div>
+    </div>
+
+    <!-- Dynamic Code / In-App OTP Input Box (For Code Mode) -->
+    <div id="code-input-box" style="display:none; background:var(--bg-input); border:1px solid var(--border-subtle); border-radius:var(--radius-md); padding:20px; text-align:center;">
+      <span style="font-size:32px; display:block; margin-bottom:8px;">🔑</span>
+      <h3 style="font-size:15px; margin-bottom:6px;">Enter Dynamic Office Token or In-App OTP</h3>
+      <p style="font-size:12px; color:var(--text-muted); margin-bottom:14px;">Scan the rotating token displayed at your office terminal, or enter your 6-digit In-App OTP code.</p>
+      <input type="text" id="dynamic-code-input" class="form-input" style="font-size:20px; font-weight:800; letter-spacing:4px; text-align:center; max-width:240px; margin:0 auto 10px;" placeholder="000000" maxlength="6">
+      <button class="btn btn-secondary btn-sm" onclick="fetchMyActiveOTP()" style="margin-top:4px;">
+        🔍 Check My In-App Private OTP
+      </button>
+    </div>
+
+    <!-- Success Confirmation Box -->
+    <div id="face-success-box" style="display:none; text-align:center; padding:16px; background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3); border-radius:var(--radius-md);">
+      <div style="font-size:28px; margin-bottom:6px;">🎉</div>
+      <div class="badge badge-emerald" style="margin-bottom:6px;" id="face-success-status">PRESENT</div>
+      <h3 style="font-size:16px; font-weight:800;" id="face-success-name">Employee</h3>
+      <p style="font-size:12.5px; color:var(--text-secondary); margin:0;" id="face-success-msg">Attendance recorded successfully</p>
+    </div>
+
+    <!-- Offline Queued Notice Box -->
+    <div id="offline-queue-badge" style="display:none; align-items:center; justify-content:center; gap:8px; padding:10px; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.3); border-radius:var(--radius-sm); font-size:12px; color:#FBBF24;">
+      📦 <strong>0</strong> Offline Check-ins Queued Locally
+    </div>
+
+    <button class="btn btn-primary btn-lg" id="btn-action" onclick="handleCheckInAction()">
+      <span>Engage Camera Stream</span> →
+    </button>
+
+    <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--text-muted); margin-top:4px;">
+      <a href="/employee" style="color:var(--text-muted); text-decoration:none;">← Return to Portal</a>
+      <span style="font-family:var(--font-mono);">ZERO 3RD PARTY LEAK</span>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toast-container"></div>
+
+<script src="/static/js/theme.js"></script>
+<script src="/static/js/telemetry.js"></script>
+<script>
+let stream = null;
+let currentCompanyId = "";
+let currentEmpId = "";
+let currentMode = "face"; // 'face' or 'code'
+let userLat = null;
+let userLng = null;
+let userAccuracy = null;
+
+async function initPage() {
+  try {
+    const res = await fetch('/api/me');
+    const data = await res.json();
+    if (data.ok && data.user) {
+      currentCompanyId = data.user.company_id || "";
+      currentEmpId = data.user.emp_id || "";
+      document.getElementById('emp-id').textContent = currentEmpId || 'EMP-000';
+      document.getElementById('comp-id').textContent = currentCompanyId || 'COMPANY';
+    } else {
+      document.getElementById('manual-id-box').style.display = 'block';
+    }
+  } catch (err) {
+    document.getElementById('manual-id-box').style.display = 'block';
+  }
+
+  if (window.ArdhnarishwarTelemetry) {
+    ArdhnarishwarTelemetry.requestGPSPosition().then(res => {
+      if (res.ok) {
+        userLat = res.coords.lat;
+        userLng = res.coords.lng;
+        userAccuracy = res.coords.accuracy;
+        document.getElementById('geofence-status').textContent = `±${res.coords.accuracy}m Locked`;
+        document.getElementById('geofence-status').style.color = 'var(--emerald)';
+      } else {
+        document.getElementById('geofence-status').textContent = 'Standard GPS';
+      }
+    });
+  }
+
+  // Safety release on unload
+  window.addEventListener('beforeunload', () => {
+    if (window.ArdhnarishwarTelemetry) ArdhnarishwarTelemetry.stopCamera();
+  });
+}
+
+function switchCheckInMode(mode) {
+  currentMode = mode;
+  document.getElementById('tab-btn-face').className = `checkin-tab-btn ${mode === 'face' ? 'active' : ''}`;
+  document.getElementById('tab-btn-code').className = `checkin-tab-btn ${mode === 'code' ? 'active' : ''}`;
+
+  const camBox = document.getElementById('camera-viewport-box');
+  const codeBox = document.getElementById('code-input-box');
+  const btn = document.getElementById('btn-action');
+  const modeLabel = document.getElementById('active-mode-label');
+
+  if (mode === 'face') {
+    camBox.style.display = 'block';
+    codeBox.style.display = 'none';
+    modeLabel.textContent = 'Biometric Vision';
+    btn.innerHTML = stream ? '<span>Scan & Record Attendance</span> ⚡' : '<span>Engage Camera Stream</span> →';
+  } else {
+    camBox.style.display = 'none';
+    codeBox.style.display = 'block';
+    modeLabel.textContent = 'Dynamic Token';
+    btn.innerHTML = '<span>Verify Code & Check-In</span> ⚡';
+    if (stream && window.ArdhnarishwarTelemetry) {
+      ArdhnarishwarTelemetry.stopCamera(document.getElementById('cam-video'));
+      stream = null;
+    }
+  }
+}
+
+async function fetchMyActiveOTP() {
+  try {
+    const res = await fetch('/api/attendance/my-active-otp');
+    const data = await res.json();
+    if (data.ok && data.otp_code) {
+      document.getElementById('dynamic-code-input').value = data.otp_code;
+      showToast(`In-App OTP retrieved: ${data.otp_code} (Valid for ${data.expires_in_seconds}s)`, 'success');
+    } else {
+      showToast(data.error || 'No active OTP request found for your account. Please request OTP first.', 'error');
+    }
+  } catch (e) {
+    showToast('Failed to retrieve active OTP', 'error');
+  }
+}
+
+async function handleCheckInAction() {
+  if (currentMode === 'face') {
+    await startOrCaptureFace();
+  } else {
+    await submitCodeCheckIn();
+  }
+}
+
+async function submitCodeCheckIn() {
+  const code = document.getElementById('dynamic-code-input').value.trim();
+  if (!code) {
+    showToast('Please enter the 6-digit dynamic code or OTP', 'error');
+    return;
+  }
+
+  // Resolve IDs
+  resolveActiveIds();
+  const btn = document.getElementById('btn-action');
+  btn.disabled = true;
+  btn.innerHTML = '<span>Verifying Token...</span> ⏳';
+
+  const payload = {
+    company_id: currentCompanyId,
+    emp_id: currentEmpId,
+    method: 'Code',
+    code: code,
+    lat: userLat,
+    lng: userLng,
+    accuracy: userAccuracy
+  };
+
+  const result = await ArdhnarishwarTelemetry.executeCheckIn(payload);
+  btn.disabled = false;
+  btn.innerHTML = '<span>Verify Code & Check-In</span> ⚡';
+
+  handleCheckInResponse(result);
+}
+
+let currentLivenessSession = null;
+let livenessTimerInterval = null;
+
+function resetFaceLivenessHUD() {
+  const alertEl = document.getElementById('spoofing-alert-overlay');
+  if (alertEl) alertEl.style.display = 'none';
+  const bannerEl = document.getElementById('liveness-challenge-banner');
+  if (bannerEl) bannerEl.style.display = 'none';
+  if (livenessTimerInterval) clearInterval(livenessTimerInterval);
+  const btn = document.getElementById('btn-action');
+  if (btn) {
+    btn.disabled = false;
+    btn.innerHTML = '<span>Engage Camera Stream</span> →';
+  }
+  if (stream && window.ArdhnarishwarTelemetry) {
+    ArdhnarishwarTelemetry.stopCamera(document.getElementById('cam-video'));
+    stream = null;
+  }
+  const overlay = document.getElementById('cam-overlay');
+  if (overlay) overlay.style.display = 'flex';
+  const laser = document.getElementById('hud-laser');
+  if (laser) laser.style.display = 'none';
+  const target = document.getElementById('hud-target');
+  if (target) target.style.display = 'none';
+}
+
+function startLivenessTimer(seconds) {
+  if (livenessTimerInterval) clearInterval(livenessTimerInterval);
+  let rem = seconds;
+  const badge = document.getElementById('challenge-timer-badge');
+  if (badge) badge.textContent = `${rem}s`;
+  livenessTimerInterval = setInterval(() => {
+    rem--;
+    if (rem <= 0) {
+      clearInterval(livenessTimerInterval);
+      if (badge) {
+        badge.textContent = 'EXPIRED';
+        badge.className = 'badge badge-rose';
+      }
+      showToast('Liveness challenge expired. Please click below to refresh.', 'error');
+      currentLivenessSession = null;
+      const btn = document.getElementById('btn-action');
+      if (btn) btn.innerHTML = '<span>Refresh Liveness Challenge</span> 🔄';
+    } else {
+      if (badge) badge.textContent = `${rem}s`;
+    }
+  }, 1000);
+}
+
+async function startOrCaptureFace() {
+  const btn = document.getElementById('btn-action');
+  const video = document.getElementById('cam-video');
+  const overlay = document.getElementById('cam-overlay');
+  const laser = document.getElementById('hud-laser');
+  const target = document.getElementById('hud-target');
+  const challengeBanner = document.getElementById('liveness-challenge-banner');
+  const challengeText = document.getElementById('challenge-action-text');
+  const challengeTitle = document.getElementById('challenge-status-title');
+  const challengeIcon = document.getElementById('challenge-icon');
+  const spoofAlert = document.getElementById('spoofing-alert-overlay');
+
+  resolveActiveIds();
+
+  // Stage 1: Engage Camera & Request Hardware Verification
+  if (!stream) {
+    try {
+      const camRes = await ArdhnarishwarTelemetry.startCamera(video);
+      if (!camRes.ok) {
+        if (camRes.isVirtual) {
+          spoofAlert.style.display = 'flex';
+          document.getElementById('spoofing-alert-msg').textContent = camRes.error;
+        } else {
+          showToast(camRes.error, 'error');
+        }
+        return;
+      }
+
+      stream = camRes.stream;
+      overlay.style.display = 'none';
+      laser.style.display = 'block';
+      target.style.display = 'block';
+
+      // Obtain Cryptographic Challenge Session from Backend
+      challengeBanner.style.display = 'block';
+      challengeTitle.textContent = 'FETCHING CHALLENGE...';
+      challengeText.textContent = 'Negotiating Anti-Replay Session...';
+
+      const challRes = await ArdhnarishwarTelemetry.requestLivenessChallenge(currentCompanyId, currentEmpId);
+      if (!challRes.ok) {
+        showToast(challRes.error || 'Failed to initialize liveness session', 'error');
+        challengeBanner.style.display = 'none';
+        return;
+      }
+
+      currentLivenessSession = challRes;
+      startLivenessTimer(challRes.expires_in || 60);
+
+      // Present challenge to user
+      const icons = { 'BLINK': '👁️', 'SMILE': '😊', 'TURN_LEFT': '👈', 'TURN_RIGHT': '👉' };
+      challengeIcon.textContent = icons[challRes.challenge] || '🛡️';
+      challengeTitle.textContent = 'ACTION CHALLENGE REQUIRED';
+      challengeText.textContent = challRes.challenge_text || 'Center face in reticle';
+      btn.innerHTML = `<span>Verify Liveness: ${challRes.challenge}</span> ⚡`;
+      showToast(`Active Challenge: ${challRes.challenge_text}`, 'info');
+      return;
+    } catch (e) {
+      showToast('Camera access blocked: ' + e.message, 'error');
+      return;
+    }
+  }
+
+  // If challenge expired, refresh session
+  if (!currentLivenessSession) {
+    const challRes = await ArdhnarishwarTelemetry.requestLivenessChallenge(currentCompanyId, currentEmpId);
+    if (challRes.ok) {
+      currentLivenessSession = challRes;
+      startLivenessTimer(challRes.expires_in || 60);
+      const icons = { 'BLINK': '👁️', 'SMILE': '😊', 'TURN_LEFT': '👈', 'TURN_RIGHT': '👉' };
+      challengeIcon.textContent = icons[challRes.challenge] || '🛡️';
+      challengeTitle.textContent = 'ACTION CHALLENGE REQUIRED';
+      challengeText.textContent = challRes.challenge_text || 'Center face in reticle';
+      btn.innerHTML = `<span>Verify Liveness: ${challRes.challenge}</span> ⚡`;
+      showToast('Fresh challenge generated.', 'info');
+    }
+    return;
+  }
+
+  // Stage 2: Capture Baseline Frame
+  challengeTitle.textContent = 'LIVENESS ANALYSIS IN PROGRESS';
+  challengeText.textContent = 'Capturing baseline alignment...';
+  btn.disabled = true;
+  btn.innerHTML = '<span>Capturing Baseline...</span> ⏳';
+
+  const baselineSnapshot = ArdhnarishwarTelemetry.captureFrameWithWatermark(video, null, {
+    empId: currentEmpId || 'EMP',
+    companyId: currentCompanyId || 'WORKSPACE',
+    lat: userLat,
+    lng: userLng,
+    accuracy: userAccuracy
+  });
+
+  if (!baselineSnapshot.ok) {
+    btn.disabled = false;
+    btn.innerHTML = `<span>Verify Liveness: ${currentLivenessSession.challenge}</span> ⚡`;
+    showToast(baselineSnapshot.error || 'Failed to capture frame', 'error');
+    return;
+  }
+
+  // Stage 3: Prompt and monitor active challenge motion interval (1.2 seconds)
+  challengeText.textContent = `NOW: ${currentLivenessSession.challenge_text}!`;
+  btn.innerHTML = `<span>Perform Action: ${currentLivenessSession.challenge}...</span> ⏳`;
+
+  await new Promise(resolve => setTimeout(resolve, 1200));
+
+  // Stage 4: Capture Action Frame
+  const actionSnapshot = ArdhnarishwarTelemetry.captureFrameWithWatermark(video, null, {
+    empId: currentEmpId || 'EMP',
+    companyId: currentCompanyId || 'WORKSPACE',
+    lat: userLat,
+    lng: userLng,
+    accuracy: userAccuracy
+  });
+
+  if (!actionSnapshot.ok) {
+    btn.disabled = false;
+    btn.innerHTML = `<span>Verify Liveness: ${currentLivenessSession.challenge}</span> ⚡`;
+    showToast(actionSnapshot.error || 'Failed to capture action frame', 'error');
+    return;
+  }
+
+  const motionScore = ArdhnarishwarTelemetry.measureMotionDelta(
+    baselineSnapshot.luminanceGrid,
+    actionSnapshot.luminanceGrid
+  );
+
+  btn.innerHTML = '<span>Verifying Anti-Spoofing & Biometrics...</span> 🔒';
+
+  // Stage 5: Submit Multi-Factor Biometric & Anti-Spoofing Payload
+  const payload = {
+    company_id: currentCompanyId,
+    emp_id: currentEmpId,
+    method: 'Face',
+    image: actionSnapshot.dataUrl,
+    baseline_image: baselineSnapshot.dataUrl,
+    session_token: currentLivenessSession.session_token,
+    nonce: currentLivenessSession.nonce,
+    liveness_metadata: {
+      device_label: ArdhnarishwarTelemetry.activeDeviceLabel || 'Physical Camera',
+      virtual_camera_flag: false,
+      challenge_action: currentLivenessSession.challenge,
+      luminance_grid_baseline: baselineSnapshot.luminanceGrid,
+      luminance_grid_action: actionSnapshot.luminanceGrid,
+      client_motion_score: motionScore
+    },
+    lat: userLat,
+    lng: userLng,
+    accuracy: userAccuracy,
+    timezone: actionSnapshot.timezone,
+    timestamp: actionSnapshot.timestampIso
+  };
+
+  const result = await ArdhnarishwarTelemetry.executeCheckIn(payload);
+  btn.disabled = false;
+
+  if (!result.ok && (result.code === 'SPOOFING_DETECTED' || result.code === 'LIVENESS_SESSION_INVALID')) {
+    spoofAlert.style.display = 'flex';
+    document.getElementById('spoofing-alert-msg').textContent = result.error;
+    btn.innerHTML = '<span>Liveness Failed - Try Again</span> ⚠️';
+    return;
+  }
+
+  btn.innerHTML = '<span>Scan & Record Attendance</span> ⚡';
+  handleCheckInResponse(result);
+}
+
+function resolveActiveIds() {
+  if (!currentCompanyId) {
+    const manualComp = document.getElementById('manual-comp-id');
+    if (manualComp && manualComp.value.trim()) currentCompanyId = manualComp.value.trim().toUpperCase();
+  }
+  if (!currentEmpId) {
+    const manualEmp = document.getElementById('manual-emp-id');
+    if (manualEmp && manualEmp.value.trim()) currentEmpId = manualEmp.value.trim().toUpperCase();
+  }
+}
+
+function handleCheckInResponse(result) {
+  const btn = document.getElementById('btn-action');
+  const laser = document.getElementById('hud-laser');
+  const target = document.getElementById('hud-target');
+
+  if (result.ok) {
+    if (result.offline) {
+      showToast(result.message, 'info');
+      const succBox = document.getElementById('face-success-box');
+      if (succBox) {
+        succBox.style.display = 'block';
+        document.getElementById('face-success-status').textContent = 'OFFLINE QUEUED';
+        document.getElementById('face-success-status').className = 'badge badge-amber';
+        document.getElementById('face-success-name').textContent = `${currentEmpId}`;
+        document.getElementById('face-success-msg').textContent = 'Recorded locally in offline vault. Will sync automatically when connection restores.';
+      }
+    } else {
+      showToast(result.message, 'success');
+      laser.style.display = 'none';
+      target.style.display = 'none';
+      btn.innerHTML = '<span>Attendance Confirmed ✓</span>';
+      btn.className = 'btn btn-secondary btn-lg';
+
+      const succBox = document.getElementById('face-success-box');
+      if (succBox) {
+        succBox.style.display = 'block';
+        document.getElementById('face-success-status').textContent = (result.attendance_status || 'PRESENT').toUpperCase();
+        document.getElementById('face-success-status').className = 'badge badge-emerald';
+        document.getElementById('face-success-name').textContent = `${result.name || currentEmpId} (${currentEmpId})`;
+        document.getElementById('face-success-msg').textContent = result.message;
+      }
+
+      if (window.ArdhnarishwarTelemetry) {
+        ArdhnarishwarTelemetry.stopCamera(document.getElementById('cam-video'));
+        stream = null;
+      }
+
+      setTimeout(() => { window.location.href = '/employee'; }, 2200);
+    }
+  } else {
+    showToast(result.error || 'Check-in validation rejected', 'error');
+  }
+}
+
+function showToast(msg, type = 'info') {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `<span>${type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ'}</span> <div>${msg}</div>`;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 300);
+  }, 4000);
+}
+
+window.onload = initPage;
+</script>
+</body>
+</html>

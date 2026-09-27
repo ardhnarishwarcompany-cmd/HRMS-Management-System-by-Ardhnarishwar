@@ -1,0 +1,16 @@
+Recruweb HRMS Portal Fix Patch - 2026-09-09
+
+Changes:
+1. IT Daily Work submission/admin visibility: added live IT Daily Work mirror section in Admin Work & EOD.
+2. Code Review Status: added Admin Code Review Status section and sidebar route.
+3. Work Policy: IT portal now accepts the HR work-policy feed and falls back to the super-admin work-policy feed when the primary route is missing.
+4. SOP / deliverable downloads: added authenticated download handling and normalized upload paths to avoid malformed /uploads/uploads URLs.
+5. Shift timings: Admin Automated Attendance now reads/saves real shift settings through the existing attendance service instead of hard-coded dummy settings/data.
+6. Target progress: IT target update sends both camelCase and snake_case values, applies the returned/updated value immediately, and refreshes the list.
+7. Emergency/SOS button: removed the actual EmergencyButton from the IT HR navigation.
+8. Admin sidebar/routes: added IT Daily Work and Code Review Status entries.
+
+Important:
+- These uploads contain frontend/admin and IT portal code only. The backend source was not included in the supplied files.
+- A literal "File missing on server" response can only be fully eliminated if the corresponding backend upload file exists and the backend download route resolves it. The frontend patch now authenticates downloads and normalizes paths, but it cannot recreate a file that is physically absent from the backend server.
+- The container could not complete npm dependency installation, so a fresh production Vite build could not be executed here. Existing dist folders are retained; run `npm install`/`npm ci` followed by `npm run build` in each portal before deployment.

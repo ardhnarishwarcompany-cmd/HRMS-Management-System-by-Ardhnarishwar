@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register Company Workspace • Global Attendance Management System</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/theme.css">
+<style>
+.register-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.register-card {
+  width: 100%;
+  max-width: 680px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-xl);
+  padding: 36px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(28px);
+}
+
+.register-header {
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 16px;
+}
+
+.register-header h1 {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+}
+
+.register-header p {
+  font-size: 13.5px;
+  color: var(--text-secondary);
+}
+
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 600px) {
+  .form-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+<body>
+<div class="register-container">
+  <div class="register-card">
+    <div class="register-header">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+        <span class="badge badge-emerald"><span class="badge-dot"></span> Self-Service Onboarding</span>
+        <a href="/login" style="font-size:12.5px; color:var(--text-muted); text-decoration:none;">Already registered? Sign In</a>
+      </div>
+      <h1>Provision Client Company Workspace</h1>
+      <p>Register your organization on the Global Attendance Management System</p>
+    </div>
+
+    <form id="reg-form" onsubmit="handleRegister(event)" style="display:flex; flex-direction:column; gap:16px;">
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label class="form-label">Workspace Code / ID (Unique)</label>
+          <input type="text" id="comp-id" class="form-input" placeholder="e.g. ACME" style="text-transform:uppercase; font-family:var(--font-mono);" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Company Legal Name</label>
+          <input type="text" id="comp-name" class="form-input" placeholder="e.g. Acme Technologies Inc." required>
+        </div>
+      </div>
+
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label class="form-label">Corporate Email</label>
+          <input type="email" id="comp-email" class="form-input" placeholder="contact@acme.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Admin Contact Phone</label>
+          <input type="text" id="comp-phone" class="form-input" placeholder="e.g. 9876543210" required>
+        </div>
+      </div>
+
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label class="form-label">Operating Country</label>
+          <input type="text" id="comp-country" class="form-input" value="India" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Primary HQ Timezone</label>
+          <select id="comp-tz" class="form-select">
+            <option value="Asia/Kolkata">Asia/Kolkata (IST +05:30)</option>
+            <option value="America/New_York">America/New_York (EST/EDT)</option>
+            <option value="America/Chicago">America/Chicago (CST/CDT)</option>
+            <option value="America/Los_Angeles">America/Los_Angeles (PST/PDT)</option>
+            <option value="Europe/London">Europe/London (GMT/BST)</option>
+            <option value="Europe/Paris">Europe/Paris (CET/CEST)</option>
+            <option value="Asia/Dubai">Asia/Dubai (GST +04:00)</option>
+            <option value="Asia/Singapore">Asia/Singapore (SGT +08:00)</option>
+            <option value="Asia/Tokyo">Asia/Tokyo (JST +09:00)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label class="form-label">Administrator Full Name</label>
+          <input type="text" id="admin-name" class="form-input" placeholder="e.g. Robert Smith" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Administrator Password</label>
+          <input type="password" id="admin-pass" class="form-input" placeholder="Secure account password" required>
+        </div>
+      </div>
+
+      <div style="font-size:12px; color:var(--text-muted); line-height:1.5; margin-top:4px;">
+        By submitting registration, you agree to our <a href="/terms" style="color:var(--cyan);">Terms of Service</a> and <a href="/privacy-policy" style="color:var(--cyan);">Privacy Policy</a>. Account activation is subject to review by Ardhnarishwar Super Admin.
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-lg" id="btn-submit" style="margin-top:6px;">
+        <span>Submit Company for Verification</span> →
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+async function handleRegister(e) {
+  e.preventDefault();
+  const btn = document.getElementById('btn-submit');
+  btn.disabled = true;
+  btn.innerHTML = '<span>Transmitting Registration Data...</span>';
+
+  const payload = {
+    company_id: document.getElementById('comp-id').value.trim().toUpperCase(),
+    name: document.getElementById('comp-name').value.trim(),
+    email: document.getElementById('comp-email').value.trim(),
+    phone: document.getElementById('comp-phone').value.trim(),
+    country: document.getElementById('comp-country').value.trim(),
+    timezone: document.getElementById('comp-tz').value,
+    admin_name: document.getElementById('admin-name').value.trim(),
+    admin_password: document.getElementById('admin-pass').value.trim()
+  };
+
+  try {
+    const res = await fetch('/api/auth/register-company', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+
+    if (data.ok) {
+      showToast(data.message, 'success');
+      btn.innerHTML = '<span>Application Submitted Successfully ✓</span>';
+      setTimeout(() => {
+        alert("Registration Submitted!\nYour company workspace is currently under review by Ardhnarishwar Global Super Admin. You can sign in once activated.");
+        window.location.href = '/login';
+      }, 1500);
+    } else {
+      showToast(data.error || 'Registration failed', 'error');
+      btn.disabled = false;
+      btn.innerHTML = '<span>Submit Company for Verification</span> →';
+    }
+  } catch (err) {
+    showToast('Network communication error', 'error');
+    btn.disabled = false;
+    btn.innerHTML = '<span>Submit Company for Verification</span> →';
+  }
+}
+
+function showToast(msg, type = 'info') {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `<span>${type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ'}</span> <div>${msg}</div>`;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 300);
+  }, 4000);
+}
+</script>
+</body>
+</html>

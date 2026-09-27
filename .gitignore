@@ -1,0 +1,85 @@
+﻿node_modules/
+dist/
+build/
+
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+.env
+.env.*
+!.env.example
+
+*.log
+logs/
+uploads/
+
+*.zip
+*.mp4
+
+*.db
+*.sqlite
+*.sqlite3
+
+*.bak*
+*.backup*
+*.before-*
+*.swp
+
+backend/integrations/ai-robotics/storage/resumes/
+backend/scripts/_*.pdf
+
+
+*-backup
+
+# Local test/probe artifacts
+backend/_*.txt
+backend/_*.json
+backend/_*.mjs
+backend/_*.ps1
+backend/_*.err.txt
+backend/client-smoke-out.txt
+backend/crosscheck-out.txt
+backend/smoke-results.json
+backend/fk_dump.json
+backend/memory
+backend/{ 
+backend/integrations/ai-robotics/=16
+backend/integrations/ai-robotics/sages code mein kahan hain
+scripts/_portmap.ps1
+
+# Local uploaded/request artifacts
+backend/req.file
+"systemctl cat robotics.service"
+"systemctl show robotics.service -p ExecStart --value"
+"systemctl show robotics.service -p ExecStart -p WorkingDirectory -p Environment"
+
+# Backup copies
+*-backup
+
+# Separate repository
+AI-Robotics-Frontend/
+
+# Local-only generated/test artifacts
+/backend/scripts/_*
+/backend/_boot_report.txt
+/backend/_build_report.txt
+/backend/_sa.txt
+/backend/client-smoke-out.txt
+/backend/crosscheck-out.txt
+/backend/smoke-results.json
+/backend/fk_dump.json
+/backend/memory
+/backend/{
+/backend/integrations/ai-robotics/=16
+/backend/integrations/ai-robotics/sages code mein kahan hain
+/scripts/_portmap.ps1
+
+# Accidental local shell artifact files
+/ystemctl cat robotics.service
+/ystemctl show robotics.service -p ExecStart --value
+/ystemctl show robotics.service -p ExecStart -p WorkingDirectory -p Environment
+
+# Local backup copies
+**/*-backup

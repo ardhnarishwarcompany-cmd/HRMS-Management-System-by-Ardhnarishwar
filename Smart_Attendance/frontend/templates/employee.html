@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Employee Portal • Global Attendance Management System</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/theme.css">
+<style>
+.employee-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 32px 28px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Profile Welcome Banner */
+.welcome-card {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(22, 36, 65, 0.8) 100%);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-xl);
+  padding: 28px 32px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.welcome-card::before {
+  content: '';
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, var(--glow-primary), transparent 70%);
+  pointer-events: none;
+}
+
+.profile-main {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.avatar-box {
+  width: 68px;
+  height: 68px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, var(--emerald), var(--indigo));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  box-shadow: 0 0 20px var(--glow-primary);
+  flex-shrink: 0;
+}
+
+.profile-info h2 {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+  margin-bottom: 4px;
+}
+
+.profile-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  flex-wrap: wrap;
+}
+
+/* Today's Status Banner Card */
+.today-status-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-lg);
+  padding: 22px 28px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 18px;
+  backdrop-filter: blur(20px);
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.today-status-card.marked-present {
+  border-color: rgba(16, 185, 129, 0.4);
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(6, 182, 212, 0.05) 100%);
+}
+
+.today-status-card.not-marked {
+  border-color: rgba(245, 158, 11, 0.4);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(239, 68, 68, 0.04) 100%);
+}
+
+.status-indicator-box {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.status-large-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  flex-shrink: 0;
+}
+
+/* Analytics & Pie Chart Grid */
+.analytics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+@media (max-width: 900px) {
+  .analytics-grid { grid-template-columns: 1fr; }
+}
+
+.chart-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(16px);
+}
+
+.pie-chart-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 12px 0;
+}
+
+.donut-canvas-box {
+  position: relative;
+  width: 170px;
+  height: 170px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.donut-canvas-box canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.donut-center-text {
+  text-align: center;
+  z-index: 2;
+}
+
+.donut-rate {
+  font-size: 24px;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  color: var(--emerald);
+}
+
+.donut-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.chart-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 170px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12.5px;
+  gap: 12px;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 6px;
+}
+
+.kpi-tiles-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.kpi-tile {
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.kpi-tile-num {
+  font-size: 26px;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+  margin-top: 4px;
+}
+
+.kpi-tile-label {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+/* Method Selection Deck */
+.section-title {
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.methods-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 18px;
+  margin-bottom: 28px;
+}
+
+.method-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  backdrop-filter: blur(16px);
+  text-decoration: none;
+  color: var(--text-primary);
+  transition: all 0.25s ease;
+}
+
+.method-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-medium);
+  box-shadow: var(--shadow-md);
+}
+
+.method-icon-box {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  margin-bottom: 14px;
+}
+
+.icon-face { background: rgba(16, 185, 129, 0.15); color: var(--emerald); border: 1px solid rgba(16, 185, 129, 0.3); }
+.icon-otp { background: rgba(99, 102, 241, 0.15); color: var(--indigo); border: 1px solid rgba(99, 102, 241, 0.3); }
+.icon-wifi { background: rgba(6, 182, 212, 0.15); color: var(--cyan); border: 1px solid rgba(6, 182, 212, 0.3); }
+.icon-field { background: rgba(245, 158, 11, 0.15); color: var(--amber); border: 1px solid rgba(245, 158, 11, 0.3); }
+
+.method-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+.method-card p { font-size: 12.5px; color: var(--text-secondary); line-height: 1.45; margin-bottom: 16px; }
+.method-action-link { font-size: 12.5px; font-weight: 700; color: var(--cyan); display: flex; align-items: center; gap: 6px; }
+</style>
+</head>
+<body>
+<div class="employee-layout">
+  <!-- Top Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-brand">
+      <div class="brand-icon" style="background:transparent; border:none; display:flex; align-items:center; justify-content:center;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="32" height="32">
+          <defs>
+            <linearGradient id="empBrandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#10B981"/>
+              <stop offset="100%" stop-color="#6366F1"/>
+            </linearGradient>
+          </defs>
+          <circle cx="24" cy="24" r="18" fill="none" stroke="url(#empBrandGrad)" stroke-width="2.5"/>
+          <ellipse cx="24" cy="24" rx="9" ry="18" fill="none" stroke="url(#empBrandGrad)" stroke-width="1.8" stroke-dasharray="2 1"/>
+          <line x1="6" y1="24" x2="42" y2="24" stroke="url(#empBrandGrad)" stroke-width="1.8"/>
+          <circle cx="24" cy="24" r="5.5" fill="#10B981"/>
+          <path d="M24 20v4l3 2" fill="none" stroke="#070B14" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="34" cy="14" r="3.5" fill="#06B6D4"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-title" id="nav-emp-name">Global Attendance Management System</div>
+        <div class="brand-sub">EMPLOYEE PORTAL • <span id="nav-company-id">...</span></div>
+      </div>
+    </div>
+
+    <div style="display:flex; align-items:center; gap:14px;">
+      <!-- Theme Switcher -->
+      <div class="theme-selector-wrap">
+        <button class="theme-btn-trigger" onclick="toggleThemeMenu(event)" title="Choose Appearance Theme">
+          <span id="current-theme-label"><span>🌌</span> <span>Midnight Cyber</span></span>
+          <span style="font-size:10px; opacity:0.6;">▼</span>
+        </button>
+        <div class="theme-dropdown-menu" id="theme-dropdown-menu">
+          <div style="font-size:10.5px; font-weight:700; color:var(--text-muted); text-transform:uppercase; padding:4px 8px; letter-spacing:0.5px;">Theme Palette</div>
+          <button class="theme-option-item active" data-theme-key="midnight" onclick="applyTheme('midnight'); closeThemeMenu();">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <div class="theme-preview-dots"><span class="theme-dot" style="background:#070B14; border:1px solid #334155;"></span><span class="theme-dot" style="background:#10B981;"></span></div>
+              <span>🌌 Midnight Cyber</span>
+            </div>
+            <span class="theme-check-mark" style="color:var(--emerald); font-weight:800;">✓</span>
+          </button>
+          <button class="theme-option-item" data-theme-key="nebula" onclick="applyTheme('nebula'); closeThemeMenu();">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <div class="theme-preview-dots"><span class="theme-dot" style="background:#0C081A; border:1px solid #334155;"></span><span class="theme-dot" style="background:#8B5CF6;"></span></div>
+              <span>🔮 Deep Nebula</span>
+            </div>
+            <span class="theme-check-mark" style="color:var(--indigo); font-weight:800;"></span>
+          </button>
+          <button class="theme-option-item" data-theme-key="oceanic" onclick="applyTheme('oceanic'); closeThemeMenu();">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <div class="theme-preview-dots"><span class="theme-dot" style="background:#030F1F; border:1px solid #334155;"></span><span class="theme-dot" style="background:#06B6D4;"></span></div>
+              <span>🌊 Oceanic Abyss</span>
+            </div>
+            <span class="theme-check-mark" style="color:var(--cyan); font-weight:800;"></span>
+          </button>
+          <button class="theme-option-item" data-theme-key="emerald" onclick="applyTheme('emerald'); closeThemeMenu();">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <div class="theme-preview-dots"><span class="theme-dot" style="background:#03140C; border:1px solid #334155;"></span><span class="theme-dot" style="background:#10B981;"></span></div>
+              <span>🌲 Matrix Emerald</span>
+            </div>
+            <span class="theme-check-mark" style="color:var(--emerald); font-weight:800;"></span>
+          </button>
+          <button class="theme-option-item" data-theme-key="light" onclick="applyTheme('light'); closeThemeMenu();">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <div class="theme-preview-dots"><span class="theme-dot" style="background:#FFFFFF; border:1px solid #CBD5E1;"></span><span class="theme-dot" style="background:#4F46E5;"></span></div>
+              <span>☀️ Executive Light</span>
+            </div>
+            <span class="theme-check-mark" style="color:var(--indigo); font-weight:800;"></span>
+          </button>
+        </div>
+      </div>
+
+      <div class="tz-clock-badge" style="background:var(--bg-surface); border:1px solid var(--border-medium); padding:6px 14px; border-radius:var(--radius-full); font-size:12.5px; font-family:var(--font-mono); color:var(--emerald); display:flex; align-items:center; gap:8px;">
+        <span>🕒</span> <span id="clock-time">--:--:--</span> (<span id="clock-tz">UTC</span>)
+      </div>
+      <button class="btn btn-secondary btn-sm" onclick="openNotificationsModal()">🔔 In-App Vault</button>
+      <button class="btn btn-danger btn-sm" onclick="doLogout()">Sign Out</button>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="main-content">
+    <!-- Profile Welcome Banner -->
+    <div class="welcome-card">
+      <div class="profile-main">
+        <div class="avatar-box">👤</div>
+        <div class="profile-info">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px;">
+            <h2 id="card-emp-name">Welcome Back</h2>
+            <span class="badge badge-emerald" id="badge-status"><span class="badge-dot"></span> ACTIVE</span>
+          </div>
+          <div class="profile-meta">
+            <span>ID: <strong style="font-family:var(--font-mono); color:var(--cyan);" id="card-emp-id">EMP-000</strong></span>
+            <span>•</span>
+            <span id="card-dept">Department: General</span>
+            <span>•</span>
+            <span id="card-desig">Designation: Staff</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:10px; align-items:center;">
+        <button class="btn btn-secondary btn-sm" onclick="openCorrectionModal()">✏️ Request Correction</button>
+        <button class="btn btn-primary btn-sm" onclick="openLeaveModal()">📅 Apply for Leave</button>
+      </div>
+    </div>
+
+    <!-- 🟢 TODAY'S LIVE ATTENDANCE STATUS CARD -->
+    <div class="today-status-card not-marked" id="today-status-card">
+      <div class="status-indicator-box">
+        <div class="status-large-icon" id="today-status-icon" style="background:rgba(245,158,11,0.15); color:var(--amber);">⏳</div>
+        <div>
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+            <span style="font-size:12px; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Today's Attendance Status</span>
+            <span class="badge badge-amber" id="today-status-badge">NOT MARKED YET</span>
+          </div>
+          <h3 style="font-size:17px; font-weight:800; margin:0;" id="today-status-headline">You haven't checked in for today</h3>
+          <p style="font-size:12.5px; color:var(--text-secondary); margin:4px 0 0;" id="today-status-detail">Use Face AI or Dynamic Code to record your arrival time.</p>
+        </div>
+      </div>
+      <div id="today-status-action">
+        <a href="/employee/face" class="btn btn-primary btn-md">
+          <span>Clock In Now ⚡</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- 📊 ATTENDANCE ANALYTICS & PIE CHART DECK -->
+    <div class="analytics-grid">
+      <!-- 1. Interactive Pie / Donut Chart -->
+      <div class="chart-card">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+          <h3 style="font-size:15px; font-weight:800;">📊 Attendance Breakdown</h3>
+          <span class="badge badge-neutral" id="total-days-badge">0 Days</span>
+        </div>
+
+        <div class="pie-chart-wrap">
+          <div class="donut-canvas-box">
+            <canvas id="attendance-donut-canvas" width="170" height="170"></canvas>
+            <div class="donut-center-text">
+              <div class="donut-rate" id="chart-punctuality-val">100%</div>
+              <div class="donut-label">Punctuality</div>
+            </div>
+          </div>
+
+          <div class="chart-legend" id="chart-legend-box">
+            <div class="legend-item">
+              <span><span class="legend-dot" style="background:#10B981;"></span> Present</span>
+              <strong id="leg-present-cnt">0</strong>
+            </div>
+            <div class="legend-item">
+              <span><span class="legend-dot" style="background:#F59E0B;"></span> Late Arrival</span>
+              <strong id="leg-late-cnt">0</strong>
+            </div>
+            <div class="legend-item">
+              <span><span class="legend-dot" style="background:#F97316;"></span> Half Day</span>
+              <strong id="leg-half-cnt">0</strong>
+            </div>
+            <div class="legend-item">
+              <span><span class="legend-dot" style="background:#06B6D4;"></span> Remote / WFH</span>
+              <strong id="leg-wfh-cnt">0</strong>
+            </div>
+            <div class="legend-item">
+              <span><span class="legend-dot" style="background:#8B5CF6;"></span> Field Radar</span>
+              <strong id="leg-field-cnt">0</strong>
+            </div>
+            <div class="legend-item">
+              <span><span class="legend-dot" style="background:#6366F1;"></span> Leaves Taken</span>
+              <strong id="leg-leaves-cnt">0</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. KPI Metrics Tiles -->
+      <div class="kpi-tiles-grid">
+        <div class="kpi-tile">
+          <span class="kpi-tile-label">Total Punches</span>
+          <div class="kpi-tile-num" id="kpi-total-punches">0</div>
+          <span style="font-size:11px; color:var(--text-muted); margin-top:4px;">Recorded this period</span>
+        </div>
+        <div class="kpi-tile">
+          <span class="kpi-tile-label">On-Time Score</span>
+          <div class="kpi-tile-num" style="color:var(--emerald);" id="kpi-punctuality">100%</div>
+          <span style="font-size:11px; color:var(--text-muted); margin-top:4px;">Punctuality rate</span>
+        </div>
+        <div class="kpi-tile">
+          <span class="kpi-tile-label">Late Incidents</span>
+          <div class="kpi-tile-num" style="color:var(--amber);" id="kpi-late-count">0</div>
+          <span style="font-size:11px; color:var(--text-muted); margin-top:4px;">Past shift grace</span>
+        </div>
+        <div class="kpi-tile">
+          <span class="kpi-tile-label">Approved Leaves</span>
+          <div class="kpi-tile-num" style="color:var(--indigo);" id="kpi-leaves-count">0</div>
+          <span style="font-size:11px; color:var(--text-muted); margin-top:4px;">Approved leave days</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Attendance Methods Selection -->
+    <div class="section-title">
+      <span>🚀 Authorize Attendance Check-IN</span>
+      <span style="font-size:12.5px; font-weight:500; color:var(--text-muted);">Choose your authorized clock-in method</span>
+    </div>
+
+    <div class="methods-grid">
+      <!-- Method 1: Face AI -->
+      <a href="/employee/face" class="method-card">
+        <div>
+          <div class="method-icon-box icon-face">📷</div>
+          <h3>Neural Biometric Face AI</h3>
+          <p>Local OpenCV facial landmark recognition with instant enrollment and reticle targeting HUD.</p>
+        </div>
+        <div class="method-action-link">Launch Camera Scan →</div>
+      </a>
+
+      <!-- Method 2: OTP In-App -->
+      <a href="/employee/otp" class="method-card">
+        <div>
+          <div class="method-icon-box icon-otp">🔢</div>
+          <h3>In-App Dynamic Code</h3>
+          <p>Rotating 6-digit cryptographic security tokens and in-app private 2FA codes.</p>
+        </div>
+        <div class="method-action-link">Verify In-App Code →</div>
+      </a>
+
+      <!-- Method 3: Wi-Fi -->
+      <a href="/employee/wifi" class="method-card">
+        <div>
+          <div class="method-icon-box icon-wifi">📶</div>
+          <h3>Corporate Office Wi-Fi</h3>
+          <p>Verified check-in when connected to your authorized corporate office network.</p>
+        </div>
+        <div class="method-action-link">Check Network Status →</div>
+      </a>
+
+      <!-- Method 4: Field GPS -->
+      <a href="/employee/field" class="method-card">
+        <div>
+          <div class="method-icon-box icon-field">🚗</div>
+          <h3>Field & Remote GPS</h3>
+          <p>Real-time satellite GPS coordinates for on-site meetings and client visits.</p>
+        </div>
+        <div class="method-action-link">Log Field Check-IN →</div>
+      </a>
+    </div>
+
+    <!-- Personal Attendance History & My Leaves -->
+    <div class="card" style="margin-bottom:24px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:18px;">
+        <h3 style="font-size:16px; font-weight:700;">📜 My Recent Attendance Logs</h3>
+        <button class="btn btn-secondary btn-sm" onclick="loadMyHistory()">🔄 Refresh Logs</button>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Method</th>
+              <th>Status</th>
+              <th>Location / Details</th>
+            </tr>
+          </thead>
+          <tbody id="history-table-body">
+            <tr><td colspan="5"><div class="empty-state"><div class="empty-icon">📜</div><div class="empty-title">Loading Attendance History...</div></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- My Leave Applications -->
+    <div class="card">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:18px;">
+        <h3 style="font-size:16px; font-weight:700;">📅 My Leave Applications</h3>
+        <button class="btn btn-secondary btn-sm" onclick="loadMyLeaves()">🔄 Refresh Leaves</button>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Leave ID</th>
+              <th>Type</th>
+              <th>Duration</th>
+              <th>Reason</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="my-leaves-body">
+            <tr><td colspan="5"><div class="empty-state"><div class="empty-icon">📅</div><div class="empty-title">No Leave Applications</div></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Modal: Request Attendance Correction -->
+<div class="modal-overlay" id="correction-modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title">Request Attendance Correction</h3>
+      <button class="btn-close" onclick="closeCorrectionModal()">✕</button>
+    </div>
+    <form onsubmit="handleRequestCorrection(event)" style="display:flex; flex-direction:column; gap:14px;">
+      <div class="form-group">
+        <label class="form-label">Attendance Date</label>
+        <input type="date" id="corr-date" class="form-input" required>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+        <div class="form-group">
+          <label class="form-label">Requested Time</label>
+          <input type="time" id="corr-time" class="form-input" value="09:30" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Punch Type</label>
+          <select id="corr-type" class="form-select">
+            <option value="IN">Check-IN</option>
+            <option value="OUT">Check-OUT</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Reason / Explanation</label>
+        <textarea id="corr-reason" class="form-textarea" rows="3" placeholder="e.g. Forgot to punch out due to client emergency" required></textarea>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:8px;">
+        <button type="button" class="btn btn-secondary" onclick="closeCorrectionModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="btn-submit-corr">Submit Correction →</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: Apply for Leave -->
+<div class="modal-overlay" id="leave-modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title">Apply for Leave</h3>
+      <button class="btn-close" onclick="closeLeaveModal()">✕</button>
+    </div>
+    <form onsubmit="handleApplyLeave(event)" style="display:flex; flex-direction:column; gap:14px;">
+      <div class="form-group">
+        <label class="form-label">Leave Category</label>
+        <select id="leave-type" class="form-select">
+          <option value="Casual">Casual Leave (CL)</option>
+          <option value="Sick">Sick Leave (SL)</option>
+          <option value="Earned">Earned / Paid Leave (EL)</option>
+          <option value="Unpaid">Leave Without Pay (LWP)</option>
+        </select>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+        <div class="form-group">
+          <label class="form-label">Start Date</label>
+          <input type="date" id="leave-start" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">End Date</label>
+          <input type="date" id="leave-end" class="form-input" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Reason</label>
+        <textarea id="leave-reason" class="form-textarea" rows="2" placeholder="e.g. Personal family engagement" required></textarea>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:8px;">
+        <button type="button" class="btn btn-secondary" onclick="closeLeaveModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="btn-submit-leave">Apply for Leave →</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: In-App Notifications -->
+<div class="modal-overlay" id="notifications-modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title">🔔 In-App Private Notifications</h3>
+      <button class="btn-close" onclick="closeNotificationsModal()">✕</button>
+    </div>
+    <div id="notifications-list" style="display:flex; flex-direction:column; gap:12px;">
+      <div class="empty-state">
+        <div class="empty-icon">🔔</div>
+        <div class="empty-title">No Notifications</div>
+        <div class="empty-desc">Your private verification codes and alerts will appear here.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toast-container"></div>
+
+<script src="/static/js/theme.js"></script>
+<script src="/static/js/telemetry.js"></script>
+<script>
+let currentCompanyTimezone = "UTC";
+
+async function initEmployeePortal() {
+  try {
+    const res = await fetch('/api/me');
+    const data = await res.json();
+    if (data.ok && data.user) {
+      const u = data.user;
+      document.getElementById('nav-emp-name').textContent = u.name;
+      document.getElementById('nav-company-id').textContent = u.company_id || 'COMPANY';
+      document.getElementById('card-emp-name').textContent = u.name;
+      document.getElementById('card-emp-id').textContent = u.emp_id || 'EMP-101';
+      document.getElementById('card-dept').textContent = `Department: ${u.department || 'General'}`;
+      document.getElementById('card-desig').textContent = `Designation: ${u.designation || 'Staff'}`;
+
+      if (data.company) {
+        currentCompanyTimezone = data.company.timezone || 'Asia/Kolkata';
+        document.getElementById('clock-tz').textContent = currentCompanyTimezone;
+      }
+    }
+  } catch (err) {}
+
+  startLiveClock();
+  await Promise.all([loadMyHistory(), loadMyLeaves(), loadNotifications()]);
+}
+
+function startLiveClock() {
+  setInterval(() => {
+    try {
+      const now = new Date();
+      document.getElementById('clock-time').textContent = now.toLocaleTimeString('en-US', { timeZone: currentCompanyTimezone, hour12: false });
+    } catch (e) {}
+  }, 1000);
+}
+
+async function loadMyHistory() {
+  try {
+    const res = await fetch('/api/attendance/my-history');
+    const data = await res.json();
+    const tbody = document.getElementById('history-table-body');
+    const rows = data.rows || data.logs || [];
+
+    // 1. Update Today's Live Status Card
+    updateTodayStatusCard(data.today, data.today_date);
+
+    // 2. Render Pie/Donut Chart & KPI Tiles
+    renderAttendanceDonut(data.stats || {});
+
+    // 3. Render Logs Table
+    if (rows && rows.length > 0) {
+      tbody.innerHTML = rows.map(r => {
+        const st = r.status || 'Present';
+        const badgeClass = st === 'Present' ? 'badge-emerald' : st === 'Late' ? 'badge-amber' : st === 'Half Day' ? 'badge-rose' : 'badge-cyan';
+        const locationText = r.location ? `📍 GPS: ${r.location.lat ? r.location.lat.toFixed(3) : ''}, ${r.location.lng ? r.location.lng.toFixed(3) : ''}` : (r.ip ? `📶 IP: ${r.ip}` : 'Verified');
+
+        return `
+          <tr>
+            <td style="font-family:var(--font-mono); font-size:12.5px;">${r.date}</td>
+            <td style="font-family:var(--font-mono); font-size:12.5px; font-weight:700; color:var(--text-primary);">${r.time}</td>
+            <td><span class="badge badge-neutral">${r.method || 'Face'}</span></td>
+            <td><span class="badge ${badgeClass}"><span class="badge-dot"></span> ${st}</span></td>
+            <td style="font-size:12px; color:var(--text-secondary);">${locationText}</td>
+          </tr>
+        `;
+      }).join('');
+    } else {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="5">
+            <div class="empty-state">
+              <div class="empty-icon">📜</div>
+              <div class="empty-title">No Attendance Records Yet</div>
+              <div class="empty-desc">Your attendance records and timestamps will appear here once marked.</div>
+            </div>
+          </td>
+        </tr>
+      `;
+    }
+  } catch (err) {
+    console.error('Error loading history:', err);
+  }
+}
+
+function updateTodayStatusCard(today, todayDate) {
+  const card = document.getElementById('today-status-card');
+  const icon = document.getElementById('today-status-icon');
+  const badge = document.getElementById('today-status-badge');
+  const headline = document.getElementById('today-status-headline');
+  const detail = document.getElementById('today-status-detail');
+  const actionWrap = document.getElementById('today-status-action');
+
+  if (today) {
+    card.className = 'today-status-card marked-present';
+    const st = today.status || 'Present';
+    const isLate = st === 'Late';
+    const isHalf = st === 'Half Day';
+
+    icon.textContent = '✓';
+    icon.style.background = isLate ? 'rgba(245,158,11,0.15)' : 'rgba(16,185,129,0.15)';
+    icon.style.color = isLate ? 'var(--amber)' : 'var(--emerald)';
+
+    badge.className = isLate ? 'badge badge-amber' : isHalf ? 'badge badge-rose' : 'badge badge-emerald';
+    badge.innerHTML = `<span class="badge-dot"></span> ${st.toUpperCase()}`;
+
+    headline.textContent = `Punched In at ${today.time} (${today.date})`;
+    
+    let meta = `Method: <strong>${today.method || 'Face AI'}</strong>`;
+    if (today.location && today.location.lat) {
+      meta += ` • 📍 GPS: ${today.location.lat.toFixed(4)}, ${today.location.lng.toFixed(4)}`;
+    } else if (today.ip) {
+      meta += ` • 📶 IP: ${today.ip}`;
+    }
+    if (today.is_offline_sync) meta += ` • 📦 Offline Synced`;
+    detail.innerHTML = meta;
+
+    actionWrap.innerHTML = `
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span style="font-size:12px; font-weight:700; color:var(--emerald);">✓ Clocked In Today</span>
+        <button class="btn btn-secondary btn-sm" onclick="loadMyHistory()">🔄 Refresh</button>
+      </div>
+    `;
+  } else {
+    card.className = 'today-status-card not-marked';
+    icon.textContent = '⏳';
+    icon.style.background = 'rgba(245,158,11,0.15)';
+    icon.style.color = 'var(--amber)';
+
+    badge.className = 'badge badge-amber';
+    badge.textContent = 'NOT MARKED YET';
+
+    headline.textContent = `You haven't checked in for today (${todayDate || 'Today'})`;
+    detail.textContent = 'Please mark your attendance using Face AI, Dynamic Token, or Office Wi-Fi.';
+
+    actionWrap.innerHTML = `
+      <a href="/employee/face" class="btn btn-primary btn-md">
+        <span>Clock In Now ⚡</span>
+      </a>
+    `;
+  }
+}
+
+function renderAttendanceDonut(stats) {
+  const present = stats.present || 0;
+  const late = stats.late || 0;
+  const half = stats.half_day || 0;
+  const wfh = stats.wfh || 0;
+  const field = stats.field || 0;
+  const leaves = stats.leaves || 0;
+  const total = stats.total || 0;
+  const punctuality = stats.punctuality_rate !== undefined ? stats.punctuality_rate : 100.0;
+
+  // Update Legend & KPIs
+  document.getElementById('leg-present-cnt').textContent = present;
+  document.getElementById('leg-late-cnt').textContent = late;
+  document.getElementById('leg-half-cnt').textContent = half;
+  document.getElementById('leg-wfh-cnt').textContent = wfh;
+  document.getElementById('leg-field-cnt').textContent = field;
+  document.getElementById('leg-leaves-cnt').textContent = leaves;
+  document.getElementById('total-days-badge').textContent = `${total} Days Recorded`;
+
+  document.getElementById('kpi-total-punches').textContent = total;
+  document.getElementById('kpi-punctuality').textContent = `${punctuality}%`;
+  document.getElementById('kpi-late-count').textContent = late;
+  document.getElementById('kpi-leaves-count').textContent = leaves;
+  document.getElementById('chart-punctuality-val').textContent = `${punctuality}%`;
+
+  // Draw Canvas Donut Chart
+  const canvas = document.getElementById('attendance-donut-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = 170 * dpr;
+  canvas.height = 170 * dpr;
+  ctx.scale(dpr, dpr);
+
+  ctx.clearRect(0, 0, 170, 170);
+
+  const centerX = 85;
+  const centerY = 85;
+  const radius = 68;
+  const lineWidth = 16;
+
+  const dataset = [
+    { val: present, color: '#10B981' },
+    { val: late, color: '#F59E0B' },
+    { val: half, color: '#F97316' },
+    { val: wfh, color: '#06B6D4' },
+    { val: field, color: '#8B5CF6' },
+    { val: leaves, color: '#6366F1' }
+  ];
+
+  const sum = dataset.reduce((acc, d) => acc + d.val, 0);
+
+  if (sum === 0) {
+    // Empty state gray circle
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+    ctx.lineWidth = lineWidth;
+    ctx.stroke();
+    return;
+  }
+
+  let startAngle = -Math.PI / 2;
+
+  dataset.forEach(item => {
+    if (item.val <= 0) return;
+    const sliceAngle = (item.val / sum) * (2 * Math.PI);
+    const endAngle = startAngle + sliceAngle;
+
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+    ctx.strokeStyle = item.color;
+    ctx.lineWidth = lineWidth;
+    ctx.lineCap = 'round';
+    ctx.stroke();
+
+    startAngle = endAngle;
+  });
+}
+
+async function loadMyLeaves() {
+  try {
+    const res = await fetch('/api/leaves/my-leaves');
+    const data = await res.json();
+    const tbody = document.getElementById('my-leaves-body');
+    if (data.ok && data.leaves) {
+      if (data.leaves.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">📅</div><div class="empty-title">No Leave Applications</div><div class="empty-desc">Apply for leaves using the button above.</div></div></td></tr>`;
+        return;
+      }
+      tbody.innerHTML = data.leaves.map(l => `
+        <tr>
+          <td><strong style="font-family:var(--font-mono); color:var(--cyan);">${l.leave_id}</strong></td>
+          <td><span class="badge badge-indigo">${l.leave_type}</span></td>
+          <td style="font-family:var(--font-mono); font-size:12px;">${l.start_date} to ${l.end_date}</td>
+          <td style="font-size:12.5px; color:var(--text-secondary);">${l.reason}</td>
+          <td><span class="badge ${l.status === 'approved' ? 'badge-emerald' : l.status === 'rejected' ? 'badge-rose' : 'badge-amber'}">${l.status.toUpperCase()}</span></td>
+        </tr>
+      `).join('');
+    }
+  } catch (e) {}
+}
+
+function openCorrectionModal() { document.getElementById('correction-modal').classList.add('active'); }
+function closeCorrectionModal() { document.getElementById('correction-modal').classList.remove('active'); }
+function openLeaveModal() { document.getElementById('leave-modal').classList.add('active'); }
+function closeLeaveModal() { document.getElementById('leave-modal').classList.remove('active'); }
+
+async function handleRequestCorrection(e) {
+  e.preventDefault();
+  const btn = document.getElementById('btn-submit-corr');
+  btn.disabled = true;
+  try {
+    const res = await fetch('/api/attendance/request-correction', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        date: document.getElementById('corr-date').value,
+        requested_time: document.getElementById('corr-time').value,
+        check_type: document.getElementById('corr-type').value,
+        reason: document.getElementById('corr-reason').value.trim()
+      })
+    });
+    const data = await res.json();
+    if (data.ok) {
+      showToast(data.message, 'success');
+      closeCorrectionModal();
+      await loadMyHistory();
+    } else showToast(data.error, 'error');
+  } catch (e) { showToast('Error submitting correction', 'error'); }
+  finally { btn.disabled = false; }
+}
+
+async function handleApplyLeave(e) {
+  e.preventDefault();
+  const btn = document.getElementById('btn-submit-leave');
+  btn.disabled = true;
+  try {
+    const res = await fetch('/api/leaves/apply', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        leave_type: document.getElementById('leave-type').value,
+        start_date: document.getElementById('leave-start').value,
+        end_date: document.getElementById('leave-end').value,
+        reason: document.getElementById('leave-reason').value.trim()
+      })
+    });
+    const data = await res.json();
+    if (data.ok) {
+      showToast(data.message, 'success');
+      closeLeaveModal();
+      await loadMyLeaves();
+    } else showToast(data.error, 'error');
+  } catch (e) { showToast('Error applying for leave', 'error'); }
+  finally { btn.disabled = false; }
+}
+
+async function loadNotifications() {
+  try {
+    const res = await fetch('/api/notifications');
+    const data = await res.json();
+    const container = document.getElementById('notifications-list');
+
+    if (data.ok && data.notifications && data.notifications.length > 0) {
+      container.innerHTML = data.notifications.map(n => `
+        <div style="background:var(--bg-input); border:1px solid var(--border-subtle); border-radius:var(--radius-md); padding:14px 16px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;">
+            <strong style="color:var(--text-primary); font-size:13.5px;">${n.title || 'Notification'}</strong>
+            <span style="font-size:11px; font-family:var(--font-mono); color:var(--text-muted);">${n.timestamp_utc ? n.timestamp_utc.slice(11, 19) : ''}</span>
+          </div>
+          <div style="font-size:13px; color:var(--text-secondary); line-height:1.5;">${n.message}</div>
+        </div>
+      `).join('');
+    }
+  } catch (err) {}
+}
+
+function openNotificationsModal() { document.getElementById('notifications-modal').classList.add('active'); }
+function closeNotificationsModal() { document.getElementById('notifications-modal').classList.remove('active'); }
+
+async function doLogout() {
+  await fetch('/api/logout', { method: 'POST' });
+  window.location.href = '/';
+}
+
+function showToast(msg, type = 'info') {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `<span>${type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ'}</span> <div>${msg}</div>`;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 300);
+  }, 4000);
+}
+
+window.onload = initEmployeePortal;
+</script>
+</body>
+</html>

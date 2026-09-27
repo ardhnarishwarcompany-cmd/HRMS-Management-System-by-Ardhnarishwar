@@ -1,0 +1,6 @@
+Added employee verification API:
+GET  /api/employee/verification
+POST /api/employee/verification (multipart: doc_type + file)
+
+The route uses the existing employee JWT middleware and scopes all document reads/writes to req.employee.id.
+Uploaded records use the existing verification_documents table and therefore appear in the Super Admin verification queue.
